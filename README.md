@@ -7,6 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Status](https://img.shields.io/badge/status-planning-blue)]()
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
+[![Sponsor](https://img.shields.io/badge/Sponsor-PayPal-00457C?logo=paypal)](https://paypal.me/ntt68)
 
 🌏 **Tiếng Việt** | **[English](./README.en.md)**
 

@@ -7,6 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Status](https://img.shields.io/badge/status-planning-blue)]()
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
+[![Sponsor](https://img.shields.io/badge/Sponsor-PayPal-00457C?logo=paypal)](https://paypal.me/ntt68)
 
 🌏 **[Tiếng Việt](./README.md)** | **English**
 
@@ -108,6 +109,14 @@ Currently in **Planning & Design** phase. All BA documentation and Use Cases are
 ## 🤝 Contributing
 
 Contributions are welcome! Please read [CONTRIBUTING.md](./CONTRIBUTING.md) before submitting a Pull Request.
+
+---
+
+## 💖 Support the Project
+
+If you find this project useful and want to support its development, feel free to buy me a coffee!
+
+[![Sponsor via PayPal](https://img.shields.io/badge/Donate-PayPal-00457C?style=for-the-badge&logo=paypal)](https://paypal.me/ntt68)
 
 ---
 
