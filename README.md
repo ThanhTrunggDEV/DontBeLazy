@@ -8,6 +8,8 @@
 [![Status](https://img.shields.io/badge/status-planning-blue)]()
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
 
+🌏 **Tiếng Việt** | **[English](./README.en.md)**
+
 </div>
 
 ---
