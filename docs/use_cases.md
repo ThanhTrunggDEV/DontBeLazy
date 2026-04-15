@@ -32,6 +32,9 @@
 - **Luồng thay thế:** 
   - Tại bước 2, người dùng có thể nhấp vào biểu tượng "Sửa" hoặc "Xóa" một task.
   - Khi hoàn thành công việc, người dùng click chọn checkbox "Hoàn thành". Hệ thống gạch ngang task và đưa vào trạng thái Done.
+- **Luồng ngoại lệ — Xóa task đang chạy Focus Mode:**
+  - Nếu người dùng cố xóa một task đang trong phiên tập trung (trạng thái Active), hệ thống từ chối và hiển thị thông báo: *"Không thể xóa task đang trong phiên Focus. Hãy kết thúc hoặc hủy phiên hiện tại trước."*
+  - Nút "Xóa" của task đang Active sẽ bị disable (grayed out) để tránh thao tác nhầm.
 - **Hậu điều kiện:** Dữ liệu task được lưu trữ cục bộ trên máy.
 
 ### UC02: Quản lý bộ quy tắc ưu tiên (Whitelist Profiles)
@@ -43,8 +46,11 @@
   2. Người dùng đặt tên Profile và chọn tab "Websites" hoặc "Apps".
   3. Nhập URL (VD: `github.com`) hoặc trỏ đường dẫn tới file chạy của ứng dụng (VD: `code.exe` - VS Code).
   4. Bấm "Thêm". Hệ thống lưu Profile ngoại lệ này vào danh sách cục bộ để sẵn sàng gán cho Task.
-- **Luồng ngoại lệ:** 
-  - Nếu người dùng nhập URL không hợp lệ, hệ thống cảnh báo syntax lỗi và yêu cầu nhập lại.
+- **Luồng ngoại lệ — URL không hợp lệ:**
+  - Nếu người dùng nhập URL không hợp lệ (sai format, thiếu TLD...), hệ thống highlight đỏ ô input và hiển thị gợi ý cú pháp đúng.
+- **Luồng ngoại lệ — Sửa Profile đang được dùng trong phiên Focus:**
+  - Nếu người dùng cố sửa hoặc xóa một Profile đang được một task áp dụng trong phiên Focus hiện tại, hệ thống từ chối và hiển thị: *"Profile này đang được dùng trong phiên Focus. Không thể chỉnh sửa cho đến khi phiên kết thúc."*
+  - Mọi thay đổi với Profile chỉ có hiệu lực ở phiên **tiếp theo**, không ảnh hưởng ngược lại phiên đang chạy.
 
 ### UC03: Bắt đầu phiên tập trung (Focus Mode)
 - **Tác nhân:** Người dùng
@@ -67,23 +73,43 @@
 
 ### UC04: Quản lý cấu hình Strict Mode
 - **Tác nhân:** Người dùng
-- **Mô tả:** Bật/tắt chế độ "kỷ luật thép" (chặn tối đa, chống gian lận).
-- **Tiền điều kiện:** Chỉ được tinh chỉnh khi hệ thống CHƯA trong trạng thái Start Focus.
-- **Luồng sự kiện chính:**
-  1. Người dùng vào Cài đặt (Settings) -> Giao diện "Strict Mode".
-  2. Quẹt công tắc chuyển sang trạng thái ON.
-  3. Hệ thống hiển thị hộp thoại cảnh báo: *"Khi bật Strict Mode, bạn sẽ KHÔNG THỂ dừng thời gian sớm, không thể sửa Whitelist và không thể tắt/kill app bằng Task Manager trong lúc Focus. Bạn có chắc chắn?"*.
-  4. Người dùng xác nhận "Đồng ý". Hệ thống ghi nhận trạng thái vào Settings.
+- **Mô tả:** Bật/tắt chế độ "kỷ luật thép" (chặn tối đa, chống mọi sự can thiệp trong phiên làm việc).
+- **Tiền điều kiện:** Chỉ được tinh chỉnh khi hệ thống **CHƯA** trong trạng thái Start Focus.
+
+#### Luồng bật Strict Mode (OFF → ON):
+  1. Người dùng vào Settings → toggle "Strict Mode" sang ON.
+  2. Hệ thống hiển thị hộp thoại xác nhận cảnh báo:
+     > *"Khi bật Strict Mode trong phiên làm việc, bạn sẽ KHÔNG THỂ: dừng sớm, sửa Whitelist, hay kill app bằng Task Manager. Phiên chỉ kết thúc khi hết giờ hoặc hoàn thành task. Bạn có chắc chắn?"*
+  3. Người dùng xác nhận "Đồng ý". Hệ thống lưu trạng thái `strict_mode = true` vào Settings.
+  4. UI hiển thị badge/icon cảnh báo nhỏ để nhắc nhở Strict Mode đang bật.
+
+#### Luồng tắt Strict Mode (ON → OFF):
+  1. Người dùng toggle "Strict Mode" sang OFF.
+  2. Hệ thống hiển thị hộp thoại xác nhận 2 bước để tránh tắt nhầm:
+     - **Bước 1:** *"Bạn có chắc muốn tắt Strict Mode? Điều này sẽ cho phép bỏ cuộc dễ dàng hơn trong phiên tiếp theo."* → Bấm "Tiếp tục".
+     - **Bước 2:** Yêu cầu nhập lại câu xác nhận: *"Tôi chấp nhận giảm mức độ kỷ luật"* → Bấm "Xác nhận tắt".
+  3. Hệ thống lưu `strict_mode = false`. Badge cảnh báo biến mất.
+
+#### Luồng ngoại lệ:
+  - Nếu người dùng đang trong phiên Focus, toggle Strict Mode bị **disable hoàn toàn** trên UI — không thể thay đổi cho đến khi phiên kết thúc.
 
 ### UC05: Xem báo cáo & thống kê
 - **Tác nhân:** Người dùng
-- **Mô tả:** Xem lại lịch sử kỷ luật của bản thân để đánh giá hành trình và có thêm động lực.
-- **Tiền điều kiện:** Ứng dụng đang mở.
+- **Mô tả:** Xem lại lịch sử kỷ luật của bản thân để đánh giá hành trình, nhìn thấy tiến bộ và duy trì động lực.
+- **Tiền điều kiện:** Ứng dụng đang mở, đã có ít nhất 1 phiên làm việc được lưu trong Local DB.
 - **Luồng sự kiện chính:**
   1. Người dùng điều hướng tới tab "Thống kê" (Analytics/Dashboard).
-  2. Hệ thống query dữ liệu ở Local DB của các phiên làm việc trước.
-  3. Hệ thống render biểu đồ cột về "Thời gian thực tế tập trung" trong tuần / tháng qua.
-  4. Hệ thống hiển thị chỉ số "Số lần cản phá" (VD: Số lần bạn cố mở Facebook bị hệ thống tóm lại và block trong ngày hôm nay).
+  2. Hệ thống mặc định hiển thị dữ liệu của **7 ngày gần nhất**.
+  3. Người dùng có thể chọn bộ lọc thời gian: **Hôm nay / 7 ngày / 30 ngày / Tất cả**.
+  4. Hệ thống query Local DB theo bộ lọc đã chọn và render các chỉ số:
+     - 📊 **Biểu đồ cột** — Tổng thời gian tập trung thực tế theo từng ngày.
+     - 🔥 **Streak Counter** — Chuỗi ngày liên tục có ít nhất 1 phiên hoàn thành (không bỏ cuộc). Hiển thị nổi bật ở đầu trang.
+     - 🚫 **Số lần bị chặn** — Tổng số lần cố truy cập app/web nằm ngoài Whitelist trong khoảng thời gian đã chọn.
+     - ✅ **Tỷ lệ hoàn thành** — Số phiên hoàn thành / tổng số phiên đã bắt đầu (%).
+- **Logic tính Streak:**
+  - Mỗi ngày dương lịch có ít nhất 1 phiên Focus **hoàn thành** (không bị hủy giữa chừng) → cộng 1 ngày vào Streak.
+  - Nếu không có phiên hoàn thành nào trong ngày hôm qua → Streak **reset về 0**.
+  - Streak được cập nhật tự động sau mỗi phiên kết thúc (tại UC03 bước 5).
 
 ### UC06: Hiển thị Motivation Quote
 - **Tác nhân:** Hệ thống (kích hoạt tự động theo sự kiện), Người dùng (có thể quản lý kho quote).
