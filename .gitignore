@@ -6,6 +6,11 @@
 # dotenv files
 .env
 
+# SQLite databases (runtime data — never commit)
+*.db
+*.db-shm
+*.db-wal
+
 # User-specific files
 *.rsuser
 *.suo
