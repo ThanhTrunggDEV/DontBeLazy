@@ -44,6 +44,17 @@ public partial class App : Application
         }
 
         var mainWindow = Services.GetRequiredService<MainWindow>();
+
+        // Set window icon from the .ico file next to the exe
+        var icoPath = Path.Combine(AppContext.BaseDirectory, "app.ico");
+        if (File.Exists(icoPath))
+        {
+            using var stream = File.OpenRead(icoPath);
+            mainWindow.Icon = System.Windows.Media.Imaging.BitmapFrame.Create(
+                stream, System.Windows.Media.Imaging.BitmapCreateOptions.None,
+                System.Windows.Media.Imaging.BitmapCacheOption.OnLoad);
+        }
+
         mainWindow.Show();
 
         // Background update check — non-blocking, silent on failure

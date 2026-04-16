@@ -29,6 +29,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Copy ico to output dir so App.xaml.cs can load it at runtime -->
+    <Content Include="app.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\DontBeLazy.Ports\DontBeLazy.Ports.csproj" />
     <ProjectReference Include="..\DontBeLazy.UseCases\DontBeLazy.UseCases.csproj" />
     <ProjectReference Include="..\DontBeLazy.Infrastructure\DontBeLazy.Infrastructure.csproj" />
