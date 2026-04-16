@@ -38,25 +38,35 @@ public class GeminiAiServices : IAiTaskAssistantPort, IAiGuiltTripPort, IAiProfi
         };
 
         var response = await _httpClient.PostAsJsonAsync(
-            $"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={_apiKey}", 
+            $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={_apiKey}", 
             requestBody);
 
         response.EnsureSuccessStatusCode();
         var responseString = await response.Content.ReadAsStringAsync();
         
         using var document = JsonDocument.Parse(responseString);
-        var candidate = document.RootElement.GetProperty("candidates")[0];
 
-        if (candidate.TryGetProperty("content", out var contentElement) && 
-            contentElement.TryGetProperty("parts", out var partsElement))
+        if (document.RootElement.TryGetProperty("promptFeedback", out var promptFeedback) &&
+            promptFeedback.TryGetProperty("blockReason", out var blockReason))
         {
-            var text = partsElement[0].GetProperty("text").GetString();
-            return text?.Trim() ?? string.Empty;
+            return $"[AI_WARNING]: Cấu hình hoặc chủ đề bị cấm bởi hệ thống an toàn Google: {blockReason.GetString()}";
         }
 
-        if (candidate.TryGetProperty("finishReason", out var finishReason) && finishReason.GetString() == "SAFETY")
+        if (document.RootElement.TryGetProperty("candidates", out var candidates) && candidates.GetArrayLength() > 0)
         {
-            return "[AI_WARNING]: Bị chặn bởi Google Safety vì nhạy cảm/bạo lực.";
+            var candidate = candidates[0];
+
+            if (candidate.TryGetProperty("content", out var contentElement) && 
+                contentElement.TryGetProperty("parts", out var partsElement))
+            {
+                var text = partsElement[0].GetProperty("text").GetString();
+                return text?.Trim() ?? string.Empty;
+            }
+
+            if (candidate.TryGetProperty("finishReason", out var finishReason) && finishReason.GetString() == "SAFETY")
+            {
+                return "[AI_WARNING]: Bị chặn bởi Google Safety vì nhạy cảm/bạo lực.";
+            }
         }
 
         return string.Empty;

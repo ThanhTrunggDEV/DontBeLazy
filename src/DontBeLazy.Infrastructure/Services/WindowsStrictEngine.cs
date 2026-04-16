@@ -39,6 +39,11 @@ public class WindowsStrictEngine : IStrictEnginePort, IDisposable
 
     private List<string> _allowedAppNames = new();
 
+    public WindowsStrictEngine()
+    {
+        RestoreHosts(); // Self-heal: cleanup any leftover blocks from previous crashes
+    }
+
     public Task ApplyProfileAsync(IReadOnlyCollection<SessionProfileSnapshot> profiles)
     {
         // 1. Process Domains (Website Whitelist protects against Blacklist)
@@ -79,6 +84,8 @@ public class WindowsStrictEngine : IStrictEnginePort, IDisposable
 
     private void ApplyHostsBlocking(List<string> domainsToBlock)
     {
+        RestoreHosts(); // Always ensure a clean state before blocking
+
         try
         {
             if (!File.Exists(_hostsPath)) return;
@@ -93,6 +100,7 @@ public class WindowsStrictEngine : IStrictEnginePort, IDisposable
                 }
                 blockLines += "### DONTBELAZY BLOCK END ###\n";
                 File.AppendAllText(_hostsPath, blockLines);
+                FlushDns();
             }
         }
         catch (Exception ex)
@@ -117,10 +125,23 @@ public class WindowsStrictEngine : IStrictEnginePort, IDisposable
                 if (line.Contains("### DONTBELAZY BLOCK END ###")) skip = false;
             }
             File.WriteAllLines(_hostsPath, newLines);
+            FlushDns();
         }
         catch
         {
             // Require Admin rights implicitly
+        }
+    }
+
+    private void FlushDns()
+    {
+        try 
+        {
+            Process.Start(new ProcessStartInfo("ipconfig", "/flushdns") { CreateNoWindow = true, WindowStyle = ProcessWindowStyle.Hidden })?.WaitForExit();
+        }
+        catch 
+        {
+            // Ignore if ipconfig is unavailable
         }
     }
 
