@@ -31,10 +31,12 @@ jobs:
         id: ver
         shell: bash
         run: |
-          TAG="${GITHUB_REF_NAME}"
-          VER="${TAG#v}"
+          TAG="${GITHUB_REF_NAME}"          # e.g. v0.1.0-beta
+          VER="${TAG#v}"                    # e.g. 0.1.0-beta
+          NUM="${VER%%-*}"                  # e.g. 0.1.0  (numeric only, for MSI/csproj)
           echo "tag=$TAG"     >> "$GITHUB_OUTPUT"
           echo "version=$VER" >> "$GITHUB_OUTPUT"
+          echo "semver=$NUM"  >> "$GITHUB_OUTPUT"
 
       # ── 4. Restore ─────────────────────────────────────────────
       - name: Restore
@@ -51,7 +53,7 @@ jobs:
             -p:PublishSingleFile=true `
             -p:IncludeNativeLibrariesForSelfExtract=true `
             -p:EnableCompressionInSingleFile=true `
-            -p:Version="${{ steps.ver.outputs.version }}" `
+            -p:Version="${{ steps.ver.outputs.semver }}" `
             --output publish/
 
       # ── 6. Install WiX v4 ──────────────────────────────────────
@@ -66,10 +68,11 @@ jobs:
       - name: Build MSI
         shell: pwsh
         run: |
-          $ver = "${{ steps.ver.outputs.version }}"
+          $ver    = "${{ steps.ver.outputs.version }}"
+          $semver = "${{ steps.ver.outputs.semver }}"
           wix build installer/Product.wxs `
             -ext WixToolset.UI.wixext `
-            -d Version="$ver" `
+            -d Version="$semver" `
             -d PublishDir="publish/" `
             -o "DontBeLazy-$ver-win-x64.msi" `
             -arch x64
