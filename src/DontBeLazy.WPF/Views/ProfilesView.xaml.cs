@@ -31,10 +31,20 @@ public partial class ProfilesView : UserControl
             vm.IsAddProfileDialogOpen = false;
     }
 
-    private void OnAddEntryDialogClosing(object sender, DialogClosingEventArgs e)
+    private void OnAddEntryDialogClosing(object sender, DialogClosingEventArgs eventArgs)
     {
-        if (DataContext is ProfilesViewModel vm)
+        if (DataContext is ProfilesViewModel vm && Equals(eventArgs.Parameter, false))
+        {
             vm.IsAddEntryDialogOpen = false;
+        }
+    }
+
+    private void OnEditEntryDialogClosing(object sender, DialogClosingEventArgs eventArgs)
+    {
+        if (DataContext is ProfilesViewModel vm && Equals(eventArgs.Parameter, false))
+        {
+            vm.IsEditEntryDialogOpen = false;
+        }
     }
 
     private void OnRenameProfileDialogClosing(object sender, DialogClosingEventArgs e)

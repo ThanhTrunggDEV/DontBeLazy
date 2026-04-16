@@ -27,6 +27,19 @@ public class ProfileEntry
         ExePath = exePath;
     }
 
+    public void Update(ProfileEntryType type, string value, string? exePath = null)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            throw new System.ArgumentException("Value cannot be empty.");
+
+        if (type == ProfileEntryType.Website && (value.Contains("http://") || value.Contains("https://") || value.Contains(" ")))
+            throw new System.ArgumentException("Website value must be a clean domain without protocol or spaces (e.g., 'github.com').");
+
+        Type = type;
+        Value = value;
+        ExePath = exePath;
+    }
+
 #pragma warning disable CS8618 // EF Core constructor
     private ProfileEntry() {}
 #pragma warning restore CS8618

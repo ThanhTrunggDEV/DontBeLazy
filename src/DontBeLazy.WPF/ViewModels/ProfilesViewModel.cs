@@ -21,6 +21,12 @@ public partial class ProfilesViewModel : ObservableObject
     [ObservableProperty] private ProfileEntryTypeDto _newEntryType = ProfileEntryTypeDto.Website;
     [ObservableProperty] private bool _isAddEntryDialogOpen;
 
+    // Edit Entry
+    [ObservableProperty] private bool _isEditEntryDialogOpen;
+    [ObservableProperty] private ProfileEntryDto? _editingEntry;
+    [ObservableProperty] private string _editEntryValue = string.Empty;
+    [ObservableProperty] private ProfileEntryTypeDto _editEntryType = ProfileEntryTypeDto.Website;
+
     // AI Smart Profile
     [ObservableProperty] private bool _isAiProfileDialogOpen;
     [ObservableProperty] private bool _isAiProfileLoading;
@@ -62,9 +68,11 @@ public partial class ProfilesViewModel : ObservableObject
     private async Task CreateProfileAsync()
     {
         if (string.IsNullOrWhiteSpace(NewProfileName)) return;
+        var newName = NewProfileName;
         await _profileUseCase.CreateProfileAsync(NewProfileName, NewProfileIsDefault);
         IsAddProfileDialogOpen = false;
         await LoadDataAsync();
+        SelectedProfile = Profiles.FirstOrDefault(p => p.Name == newName);
     }
 
     [RelayCommand]
@@ -88,9 +96,48 @@ public partial class ProfilesViewModel : ObservableObject
     private async Task AddEntryAsync()
     {
         if (SelectedProfile == null || string.IsNullOrWhiteSpace(NewEntryValue)) return;
-        await _profileEntryUseCase.AddProfileEntryAsync(SelectedProfile.Id, NewEntryType, NewEntryValue);
-        IsAddEntryDialogOpen = false;
-        await LoadDataAsync();
+        
+        var val = NewEntryValue.Trim();
+        if (NewEntryType == ProfileEntryTypeDto.Website) {
+            val = val.Replace("http://", "").Replace("https://", "").Replace("www.", "").Split('/')[0].Trim();
+        }
+
+        try {
+            await _profileEntryUseCase.AddProfileEntryAsync(SelectedProfile.Id, NewEntryType, val);
+            IsAddEntryDialogOpen = false;
+            await LoadDataAsync();
+        } catch (Exception ex) {
+            System.Windows.MessageBox.Show(ex.Message, "Lỗi", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+        }
+    }
+
+    [RelayCommand]
+    private void OpenEditEntryDialog(ProfileEntryDto entry)
+    {
+        if (SelectedProfile == null) return;
+        EditingEntry = entry;
+        EditEntryType = entry.Type;
+        EditEntryValue = entry.Value;
+        IsEditEntryDialogOpen = true;
+    }
+
+    [RelayCommand]
+    private async Task SaveEditEntryAsync()
+    {
+        if (SelectedProfile == null || EditingEntry == null || string.IsNullOrWhiteSpace(EditEntryValue)) return;
+        
+        var val = EditEntryValue.Trim();
+        if (EditEntryType == ProfileEntryTypeDto.Website) {
+            val = val.Replace("http://", "").Replace("https://", "").Replace("www.", "").Split('/')[0].Trim();
+        }
+
+        try {
+            await _profileEntryUseCase.UpdateProfileEntryAsync(SelectedProfile.Id, EditingEntry.Id, EditEntryType, val);
+            IsEditEntryDialogOpen = false;
+            await LoadDataAsync();
+        } catch (Exception ex) {
+            System.Windows.MessageBox.Show(ex.Message, "Lỗi", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+        }
     }
 
     [RelayCommand]

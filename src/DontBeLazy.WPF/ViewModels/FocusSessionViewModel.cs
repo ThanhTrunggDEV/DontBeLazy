@@ -20,8 +20,13 @@ public partial class FocusSessionViewModel : ObservableObject
 
     [ObservableProperty] private ObservableCollection<FocusTaskDto> _availableTasks = new();
     [ObservableProperty] private ObservableCollection<ProfileDto> _availableProfiles = new();
-    [ObservableProperty] private FocusTaskDto? _selectedTask;
-    [ObservableProperty] private ProfileDto? _selectedProfile;
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(OpenIntentionDialogCommand))]
+    private FocusTaskDto? _selectedTask;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(OpenIntentionDialogCommand))]
+    private ProfileDto? _selectedProfile;
     [ObservableProperty] private int _durationMinutes = 25;
     [ObservableProperty] private string _intentionText = string.Empty;
     [ObservableProperty] private bool _isSessionActive;
@@ -63,7 +68,9 @@ public partial class FocusSessionViewModel : ObservableObject
         AvailableProfiles = new ObservableCollection<ProfileDto>(profiles);
     }
 
-    [RelayCommand]
+    private bool CanOpenIntentionDialog() => SelectedTask != null && SelectedProfile != null;
+
+    [RelayCommand(CanExecute = nameof(CanOpenIntentionDialog))]
     private void OpenIntentionDialog()
     {
         var taskName = SelectedTask?.Name ?? "công việc của tôi";
