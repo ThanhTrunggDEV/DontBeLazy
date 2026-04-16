@@ -28,7 +28,35 @@ public partial class App : Application
         using (var scope = Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            dbContext.Database.Migrate(); // auto-applies all pending migrations
+            try
+            {
+                dbContext.Database.Migrate(); // auto-applies all pending migrations
+            }
+            catch (System.Exception ex) when (ex.Message.Contains("already exists"))
+            {
+                // Self-healing: if the DB was made with EnsureCreated (beta versions), it has no migration history.
+                // Migrate() tries to run InitialCreate and crashes because 'Profiles' already exists.
+                // We manually inject the history record for InitialCreate so Migrate() skips it.
+                var connection = dbContext.Database.GetDbConnection();
+                if (connection.State != System.Data.ConnectionState.Open) connection.Open();
+                
+                using (var cmd = connection.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        CREATE TABLE IF NOT EXISTS ""__EFMigrationsHistory"" (
+                            ""MigrationId"" TEXT NOT NULL CONSTRAINT ""PK___EFMigrationsHistory"" PRIMARY KEY,
+                            ""ProductVersion"" TEXT NOT NULL
+                        );
+                        INSERT OR IGNORE INTO ""__EFMigrationsHistory"" (""MigrationId"", ""ProductVersion"")
+                        VALUES ('20260416085506_InitialCreate', '9.0.4');
+                    ";
+                    cmd.ExecuteNonQuery();
+                }
+                connection.Close();
+                
+                // Retry migration for any missing schemas (e.g. AddGeminiConfigToSettings)
+                dbContext.Database.Migrate();
+            }
 
             var settingsRepo = scope.ServiceProvider.GetRequiredService<DontBeLazy.Ports.Outbound.Repositories.ISystemSettingsRepository>();
             settingsRepo.EnsureDefaultSettingsAsync().GetAwaiter().GetResult();
@@ -64,8 +92,19 @@ public partial class App : Application
 
     private void ConfigureServices(IServiceCollection services)
     {
-        // Register lower layers (for DI wiring only)
-        var dbPath = Path.Combine(AppContext.BaseDirectory, "dontbelazy.db");
+        // Use LocalAppData so MSI installs don't fail due to read-only Program Files
+        var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        var appFolder = Path.Combine(localAppData, "DontBeLazy");
+        Directory.CreateDirectory(appFolder);
+        var dbPath = Path.Combine(appFolder, "dontbelazy.db");
+
+        // Smooth upgrade path for portable beta users who had db in exe folder
+        var oldDbPath = Path.Combine(AppContext.BaseDirectory, "dontbelazy.db");
+        if (File.Exists(oldDbPath) && !File.Exists(dbPath))
+        {
+            try { File.Copy(oldDbPath, dbPath); } catch { }
+        }
+
         services.AddSqliteDataAccess($"Data Source={dbPath}");
         services.AddUseCases();
         services.AddInfrastructureServices();
