@@ -10,6 +10,7 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 
 ### Added / Feature
+- **Light Mode UI Refactoring**: Thay thế toàn bộ mã màu HEX cứng trong giao diện (Settings, Dashboard, Focus, Profiles, MainWindow, App) bằng hệ thống `DynamicResource` của MaterialDesign. Đảm bảo ứng dụng hiển thị xuất sắc và đồng nhất trên cả 2 nền tối và sáng, tự động theo theme người dùng chọn.
 - **Motivation Quote UI**: Triển khai hiển thị câu chữ truyền động lực (Motivation Quote) bên dưới đồng hồ đếm ngược. UI tự động gọi AI lấy câu quote (theo database hoặc fallback) dựa trên các cột mốc chiến lược: `PreFocus` (bắt đầu ngẫu nhiên), `MidFocus` (qua 50% thời gian), và `PostFocus` (gần hoàn thành, vượt 90%). Khi khôi phục phiên sẽ hiển thị quote giữ lửa cố định.
 
 ---
