@@ -11,6 +11,26 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [0.2.0-beta] - 2026-04-16
+
+### Added
+- **Auto-elevate Administrator** (`app.manifest`): app tự động hiện UAC prompt khi khởi chạy — không cần người dùng phải right-click "Run as administrator"
+  - `requestedExecutionLevel level="requireAdministrator"` — bắt buộc vì app dùng DNS flush và kill process trong Strict Mode
+  - `PerMonitorV2` DPI awareness — giao diện sắc nét trên màn hình HiDPI
+- **App Icon**: logo được nhúng vào exe dưới dạng `.ico` (256×256), hiển thị trong taskbar, Alt+Tab, title bar và File Explorer
+- **Branch Protection** cho nhánh `master`: không cho phép push trực tiếp, mọi thay đổi phải qua Pull Request và phải pass CI
+- **CI Workflow** (`.github/workflows/ci.yml`): tự động build + test cho mọi PR vào `master`
+- **App Logo**: thiết kế logo cho app (power/motivation concept — fist breaking chains), thêm vào README
+
+### Fixed
+- File `.db`, `.db-shm`, `.db-wal` bị commit lên remote — đã xóa khỏi tracking và thêm rule vào `.gitignore`
+
+### Changed
+- README viết lại hoàn toàn: thêm badge CI/CD, hướng dẫn cài đặt (MSI vs portable), Tech Stack table, hướng dẫn GEMINI_API_KEY
+- CHANGELOG sắp xếp lại theo version thực tế
+
+---
+
 ## [0.1.0-beta] - 2026-04-16
 
 Bản phát hành beta đầu tiên. Toàn bộ tính năng cốt lõi đã hoạt động trên Windows.
