@@ -9,6 +9,18 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+---
+
+## [1.0.3] - 2026-04-17
+
+### Added / Feature
+- **AI Priority Auto-Sort**: Cập nhật tính năng `AiSuggestPriority` để hệ thống tự động lưu `SortOrder` vào Database dựa vào JSON phân tích của AI thay vì chỉ in chuỗi tĩnh ra cho người dùng đọc. Thay đổi luồng hiển thị ưu tiên.
+- **Session UI Binding**: Tự động bind giá trị `ExpectedMinutes` và `Profile` của công việc vào giao diện (ngoài Dialog và vào màn đếm ngược `25:00` gốc) ngay khi người dùng pick item, tiết kiệm thao tác thiết lập lại cho người dùng.
+
+---
+
+## [1.0.2] - 2026-04-16
+
 ### Added / Feature
 - **File Logging System (Decorator Pattern)**: Triển khai hệ thống ghi log ra file theo ngày tại `%AppData%\DontBeLazy\logs\app-YYYY-MM-DD.log`. Sử dụng Decorator Design Pattern để bọc `IFocusSessionUseCase` và `IStrictEnginePort` — ghi lại mọi sự kiện quan trọng (bắt đầu phiên, hoàn thành, chặn web, lỗi hệ thống) mà không chạm vào logic lõi. Log tự động xoay vòng, giữ tối đa 7 ngày gần nhất.
 - **Settings → Mở file log**: Thêm nút "Mở file log" trong mục Quản lý Dữ liệu ở màn hình Cài đặt.
@@ -22,6 +34,13 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - **Crash Recovery**: Vá các lỗi crash tĩnh (silent crash) và quản lý ngoại lệ chưa xử lý qua `Dispatcher.UnhandledException` bằng Logger.
 - **UI / SettingsView**: Sửa lỗi thẻ tag XAML bị sai lệch làm rối `DialogHost`, khắc phục lỗi không thể compile WPF.
 - **ViewModel Syntax & Null Checks**: Xử lý bug namespace `IFocusSessionUseCase`, thuộc tính `PerTaskStrictMode` không tồn tại, và chặn `NullReferenceException` cho Quote Author tại `DtoMapper`. Khép lại toàn bộ vòng lặp review kiến trúc mã nguồn.
+
+---
+
+## [1.0.1] - 2026-04-16
+
+### Fixed
+- **Startup Crash**: Sửa lỗi crash vòng lặp khởi động (startup crash loop) trên các phiên bản cài đặt MSI và bản portable sau khi người dùng upgrade lên version `1.0.0`.
 
 ---
 

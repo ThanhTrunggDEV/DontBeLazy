@@ -156,15 +156,63 @@ public partial class DashboardViewModel : ObservableObject
         await LoadDataAsync();
     }
 
-    // ── AI ───────────────────────────────────────────────────────
     [RelayCommand]
     private async Task AiSuggestPriorityAsync()
     {
-        AiDialogTitle = "AI Suggest Priority";
-        AiResultText = string.Empty;
+        AiDialogTitle = "AI Sắp xếp ưu tiên";
+        AiResultText = "Đang phân tích các công việc...";
         IsAiLoading = true;
         IsAiDialogOpen = true;
-        try { AiResultText = await _taskUseCase.AiSuggestPriorityAsync(); }
+        try 
+        { 
+            var result = await _taskUseCase.AiSuggestPriorityAsync(); 
+            var cleanStr = result.Replace("```json", "").Replace("```", "").Trim();
+            try
+            {
+                var parsed = System.Text.Json.JsonDocument.Parse(cleanStr);
+                if (parsed.RootElement.ValueKind == System.Text.Json.JsonValueKind.Array)
+                {
+                    int index = 1;
+                    int appliedCount = 0;
+                    foreach (var element in parsed.RootElement.EnumerateArray())
+                    {
+                        if (element.TryGetProperty("Id", out var idProp) && idProp.TryGetGuid(out var id))
+                        {
+                            await _taskUseCase.UpdateTaskSortOrderAsync(id, index);
+                            appliedCount++;
+                        }
+                        // Fallback matching by name just in case Gemini dropped Id
+                        else if (element.TryGetProperty("Name", out var nameProp))
+                        {
+                            string name = nameProp.GetString() ?? "";
+                            var match = Tasks.FirstOrDefault(t => string.Equals(t.Name, name, StringComparison.OrdinalIgnoreCase));
+                            if (match != null)
+                            {
+                                await _taskUseCase.UpdateTaskSortOrderAsync(match.Id, index);
+                                appliedCount++;
+                            }
+                        }
+                        index++;
+                    }
+                    
+                    AiResultText = $"Đã tự động thay đổi Sort Order của {appliedCount} công việc để tối ưu hiệu suất!";
+                    await LoadDataAsync();
+                    
+                    // Task list is loaded. We may need to sort it locally if the View depends on the bound collection order,
+                    // but depending on how the view binds, maybe ReloadDataAsync is enough.
+                    var sortedList = Tasks.OrderBy(t => t.SortOrder).ToList();
+                    Tasks = new ObservableCollection<FocusTaskDto>(sortedList);
+                }
+                else
+                {
+                    AiResultText = System.Text.RegularExpressions.Regex.Unescape(cleanStr);
+                }
+            }
+            catch
+            {
+                AiResultText = result;
+            }
+        }
         catch (Exception ex) { AiResultText = $"Lỗi: {ex.Message}"; }
         finally { IsAiLoading = false; }
     }

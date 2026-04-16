@@ -45,6 +45,31 @@ public partial class FocusSessionViewModel : ObservableObject
 
     private int _totalSeconds;
 
+    partial void OnSelectedTaskChanged(FocusTaskDto? value)
+    {
+        if (value != null)
+        {
+            if (value.ExpectedMinutes > 0)
+            {
+                DurationMinutes = value.ExpectedMinutes;
+            }
+            
+            if (value.ProfileId.HasValue)
+            {
+                SelectedProfile = AvailableProfiles.FirstOrDefault(p => p.Id == value.ProfileId.Value);
+            }
+        }
+    }
+
+    partial void OnDurationMinutesChanged(int value)
+    {
+        if (!IsSessionActive)
+        {
+            RemainingSeconds = value * 60;
+            UpdateTimerDisplay();
+        }
+    }
+
     public FocusSessionViewModel(
         IFocusSessionUseCase sessionUseCase,
         IFocusTaskUseCase taskUseCase,

@@ -112,7 +112,7 @@ public class FocusTaskUseCase : IFocusTaskUseCase
         var pendingTasks = tasks
             .Where(t => t.Status == DontBeLazy.Domain.Enums.TaskStatus.Pending ||
                         t.Status == DontBeLazy.Domain.Enums.TaskStatus.Active)
-            .Select(t => new { t.Name, EstimatedMinutes = t.ExpectedMinutes })
+            .Select(t => new { Id = t.Id.Value, t.Name, EstimatedMinutes = t.ExpectedMinutes })
             .ToList();
 
         if (!pendingTasks.Any())
