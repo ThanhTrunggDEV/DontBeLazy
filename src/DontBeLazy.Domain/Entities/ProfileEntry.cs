@@ -14,6 +14,12 @@ public class ProfileEntry
 
     public ProfileEntry(ProfileId profileId, ProfileEntryType type, string value, string? exePath = null)
     {
+        if (string.IsNullOrWhiteSpace(value))
+            throw new System.ArgumentException("Value cannot be empty.");
+
+        if (type == ProfileEntryType.Website && (value.Contains("http://") || value.Contains("https://") || value.Contains(" ")))
+            throw new System.ArgumentException("Website value must be a clean domain without protocol or spaces (e.g., 'github.com').");
+
         Id = ProfileEntryId.New();
         ProfileId = profileId;
         Type = type;

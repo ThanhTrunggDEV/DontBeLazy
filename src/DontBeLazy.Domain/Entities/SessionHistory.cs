@@ -22,7 +22,7 @@ public class SessionHistory
     public bool WasStrictMode { get; private set; }
 
     // Navigation property
-    private readonly System.Collections.Generic.List<SessionProfileSnapshot> _snapshots = new();
+    private System.Collections.Generic.List<SessionProfileSnapshot> _snapshots = new();
     public System.Collections.Generic.IReadOnlyCollection<SessionProfileSnapshot> Snapshots => _snapshots.AsReadOnly();
 
     public SessionHistory(TaskId? taskId, string taskName, string? profileName, int expectedSeconds, bool wasStrictMode)

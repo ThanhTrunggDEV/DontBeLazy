@@ -53,8 +53,13 @@ public class FocusTask
         UpdatedAt = DateTime.Now;
     }
 
-    public void SetRecurring(RecurringType type, string config)
+    public void SetRecurring(DontBeLazy.Domain.Enums.RecurringType type, string config)
     {
+        if (type == DontBeLazy.Domain.Enums.RecurringType.Weekly && string.IsNullOrWhiteSpace(config))
+            throw new ArgumentException("Weekly recurring task must have a day config (e.g., '1,3,5').");
+        if (type == DontBeLazy.Domain.Enums.RecurringType.Custom && (!int.TryParse(config, out int days) || days <= 0))
+            throw new ArgumentException("Custom recurring task must have a positive integer config for days.");
+
         TaskType = TaskType.Recurring;
         RecurringType = type;
         RecurringConfig = config;
@@ -63,6 +68,21 @@ public class FocusTask
 
     public void ChangeStatus(TaskStatus newStatus)
     {
+        bool isValid = (Status, newStatus) switch
+        {
+            (TaskStatus.Pending, TaskStatus.Active) => true,
+            (TaskStatus.Active, TaskStatus.Done) => true,
+            (TaskStatus.Active, TaskStatus.Abandoned) => true,
+            (TaskStatus.Active, TaskStatus.Pending) => true,
+            (TaskStatus.Done, TaskStatus.Pending) => true,
+            (TaskStatus.Abandoned, TaskStatus.Pending) => true,
+            (var cur, var next) when cur == next => true,
+            _ => false
+        };
+
+        if (!isValid)
+            throw new InvalidOperationException($"Cannot transition task from {Status} to {newStatus}.");
+
         Status = newStatus;
         if (newStatus == TaskStatus.Done || newStatus == TaskStatus.Abandoned)
         {

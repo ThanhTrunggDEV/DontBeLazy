@@ -12,6 +12,9 @@ public class SystemSettings
 
     public SystemSettings(bool globalStrictMode, bool enableQuotes, string quoteLanguage, bool darkTheme)
     {
+        if (quoteLanguage != "vi" && quoteLanguage != "en")
+            throw new System.ArgumentException("Quote language must be 'vi' or 'en'.");
+
         GlobalStrictMode = globalStrictMode;
         EnableQuotes = enableQuotes;
         QuoteLanguage = quoteLanguage;
@@ -20,6 +23,9 @@ public class SystemSettings
 
     public void UpdatePreferences(bool globalStrictMode, bool enableQuotes, string quoteLanguage, bool darkTheme)
     {
+        if (quoteLanguage != "vi" && quoteLanguage != "en")
+            throw new System.ArgumentException("Quote language must be 'vi' or 'en'.");
+
         GlobalStrictMode = globalStrictMode;
         EnableQuotes = enableQuotes;
         QuoteLanguage = quoteLanguage;

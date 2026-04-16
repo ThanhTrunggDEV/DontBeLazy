@@ -13,7 +13,7 @@ public class Profile
     public DateTime? UpdatedAt { get; private set; }
 
     // Navigation property
-    private readonly List<ProfileEntry> _entries = new();
+    private List<ProfileEntry> _entries = new();
     public IReadOnlyCollection<ProfileEntry> Entries => _entries.AsReadOnly();
 
     public Profile(string name, bool isDefault)
