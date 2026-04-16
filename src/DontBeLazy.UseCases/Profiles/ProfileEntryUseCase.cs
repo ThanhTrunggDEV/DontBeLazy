@@ -44,6 +44,20 @@ public class ProfileEntryUseCase : IProfileEntryUseCase
         }
     }
 
+    public async Task UpdateProfileEntryAsync(Guid profileId, Guid entryId, ProfileEntryTypeDto type, string value, string? exePath = null)
+    {
+        var profile = await _profileRepository.GetByIdAsync(new ProfileId(profileId));
+        if (profile == null) throw new KeyNotFoundException($"Profile {profileId} not found.");
+
+        var entry = profile.Entries.FirstOrDefault(e => e.Id.Value == entryId);
+        if (entry != null)
+        {
+            entry.Update(DtoMapper.ToDomain(type), value, exePath);
+            await _profileRepository.UpdateAsync(profile);
+            await _unitOfWork.SaveChangesAsync();
+        }
+    }
+
     public async Task ClearProfileEntriesAsync(Guid profileId)
     {
         var profile = await _profileRepository.GetByIdAsync(new ProfileId(profileId));

@@ -241,6 +241,38 @@
                             </Border>
                         </materialDesign:DialogHost.DialogContent>
 
+                        <materialDesign:DialogHost IsOpen="{Binding IsEditEntryDialogOpen}"
+                                                   DialogClosing="OnEditEntryDialogClosing">
+                            <materialDesign:DialogHost.DialogContent>
+                                <Border Padding="32" MinWidth="380" Background="#1E1E3F" CornerRadius="16">
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                                            <materialDesign:PackIcon Kind="PencilOutline" Width="24" Height="24"
+                                                                     Foreground="#7C4DFF" Margin="0,0,10,0"
+                                                                     VerticalAlignment="Center"/>
+                                            <TextBlock Text="Sửa Website / App" FontSize="18" FontWeight="Bold"
+                                                       VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <ComboBox materialDesign:HintAssist.Hint="Loại"
+                                                  ItemsSource="{Binding EntryTypes}"
+                                                  SelectedItem="{Binding EditEntryType}"
+                                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                                                  Margin="0,0,0,12"/>
+                                        <TextBox materialDesign:HintAssist.Hint="URL hoặc tên app"
+                                                 Text="{Binding EditEntryValue}"
+                                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                                 Margin="0,0,0,24"/>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                            <Button Content="Huỷ" Style="{StaticResource MaterialDesignFlatButton}"
+                                                    Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                                    Margin="0,0,8,0"/>
+                                            <Button Content="Lưu" Style="{StaticResource LargePrimaryButton}"
+                                                    Command="{Binding SaveEditEntryCommand}" Height="40"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </materialDesign:DialogHost.DialogContent>
+
                         <DockPanel>
                             <StackPanel DockPanel.Dock="Top" Margin="0,0,0,20">
                                 <TextBlock Text="{Binding SelectedProfile.Name, StringFormat='Whitelist — {0}'}"
@@ -268,6 +300,7 @@
                                                         <ColumnDefinition Width="Auto"/>
                                                         <ColumnDefinition Width="*"/>
                                                         <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="Auto"/>
                                                     </Grid.ColumnDefinitions>
                                                     <Border Grid.Column="0" Background="#7C4DFF22"
                                                             CornerRadius="8" Padding="8" Margin="0,0,14,0">
@@ -279,8 +312,13 @@
                                                         <TextBlock Text="{Binding Type}" Foreground="#9E9E9E" FontSize="11"/>
                                                     </StackPanel>
                                                     <Button Grid.Column="2" Style="{StaticResource MaterialDesignIconButton}"
+                                                            Command="{Binding DataContext.OpenEditEntryDialogCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                            CommandParameter="{Binding}" ToolTip="Sửa">
+                                                        <materialDesign:PackIcon Kind="Pencil" Foreground="#FF9800"/>
+                                                    </Button>
+                                                    <Button Grid.Column="3" Style="{StaticResource MaterialDesignIconButton}"
                                                             Command="{Binding DataContext.RemoveEntryCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                            CommandParameter="{Binding}">
+                                                            CommandParameter="{Binding}" ToolTip="Xoá">
                                                         <materialDesign:PackIcon Kind="Close" Foreground="#F44336"/>
                                                     </Button>
                                                 </Grid>
@@ -290,6 +328,7 @@
                                 </ItemsControl>
                             </ScrollViewer>
                         </DockPanel>
+                        </materialDesign:DialogHost>
                     </materialDesign:DialogHost>
                 </Grid>
             </Grid>
