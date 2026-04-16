@@ -56,7 +56,7 @@ public partial class SettingsView : UserControl
         DownloadProgress.Value       = _updateVm.DownloadProgress;
 
         ReleaseNotesBorder.Visibility = _updateVm.IsUpdateAvailable ? Visibility.Visible : Visibility.Collapsed;
-        ReleaseNotesText.Text         = _updateVm.ReleaseNotes;
+        ReleaseNotesMd.Markdown       = _updateVm.ReleaseNotes;
 
         InstallBtn.Visibility   = _updateVm.IsUpdateAvailable && !_updateVm.IsDownloading
                                   ? Visibility.Visible : Visibility.Collapsed;
