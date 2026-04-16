@@ -11,6 +11,15 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [0.4.1] - 2026-04-16
+
+### Fixed
+- **Crash khi mở Settings** (`XamlParseException`): icon `UpdateOutline` và `DownloadOutline` không tồn tại trong MaterialDesignThemes 5.3.1 — thay bằng `CloudSync` và `Download`
+- **Crash khi mở Settings** (`InvalidOperationException: SystemSettings have not been initialized`): DB path `dontbelazy.db` là relative path, resolve sai thư mục khi chạy `dotnet run` — đổi sang `Path.Combine(AppContext.BaseDirectory, "dontbelazy.db")` để luôn dùng đúng file
+- `SettingsView.xaml.cs`: bọc `UserControl_Loaded` bằng `try-catch` để lỗi không crash toàn app
+
+---
+
 ## [0.4.0] - 2026-04-16
 
 ### Added
