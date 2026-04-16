@@ -255,29 +255,59 @@
                        Margin="0,0,0,12"/>
 
             <materialDesign:Card Padding="0" UniformCornerRadius="16" Background="#1E1E3F" Margin="0,0,0,28">
-                <Grid Margin="24,20">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Border Grid.Column="0" Background="#F4433622" CornerRadius="10"
-                            Padding="10" Margin="0,0,16,0" VerticalAlignment="Center">
-                        <materialDesign:PackIcon Kind="History" Width="20" Height="20"
-                                                 Foreground="#F44336"/>
-                    </Border>
-                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                        <TextBlock Text="Xoá lịch sử tập trung" FontSize="15" FontWeight="SemiBold"/>
-                        <TextBlock Text="Dọn dẹp dữ liệu cũ để giải phóng bộ nhớ"
-                                   Foreground="#9E9E9E" FontSize="12" Margin="0,3,0,0"/>
-                    </StackPanel>
-                    <Button Grid.Column="2" Content="Xoá lịch sử"
-                            Command="{Binding OpenClearHistoryDialogCommand}"
-                            Style="{StaticResource MaterialDesignOutlinedButton}"
-                            Foreground="#F44336" BorderBrush="#F44336"
-                            materialDesign:ButtonAssist.CornerRadius="10"
-                            VerticalAlignment="Center"/>
-                </Grid>
+                <StackPanel>
+                    <!-- Clear History Row -->
+                    <Grid Margin="24,20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Background="#F4433622" CornerRadius="10"
+                                Padding="10" Margin="0,0,16,0" VerticalAlignment="Center">
+                            <materialDesign:PackIcon Kind="History" Width="20" Height="20"
+                                                     Foreground="#F44336"/>
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="Xoá lịch sử tập trung" FontSize="15" FontWeight="SemiBold"/>
+                            <TextBlock Text="Dọn dẹp dữ liệu cũ để giải phóng bộ nhớ"
+                                       Foreground="#9E9E9E" FontSize="12" Margin="0,3,0,0"/>
+                        </StackPanel>
+                        <Button Grid.Column="2" Content="Xoá lịch sử"
+                                Command="{Binding OpenClearHistoryDialogCommand}"
+                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                Foreground="#F44336" BorderBrush="#F44336"
+                                materialDesign:ButtonAssist.CornerRadius="10"
+                                VerticalAlignment="Center"/>
+                    </Grid>
+
+                    <!-- Separator -->
+                    <Separator Background="#2D2D4E" Margin="24,0"/>
+
+                    <!-- Open Log File Row -->
+                    <Grid Margin="24,16,24,20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Background="#7C4DFF22" CornerRadius="10"
+                                Padding="10" Margin="0,0,16,0" VerticalAlignment="Center">
+                            <materialDesign:PackIcon Kind="FileFindOutline" Width="20" Height="20"
+                                                     Foreground="#7C4DFF"/>
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="Nhật ký hoạt động" FontSize="15" FontWeight="SemiBold"/>
+                            <TextBlock Text="Xem file log hôm nay để kiểm tra lỗi"
+                                       Foreground="#9E9E9E" FontSize="12" Margin="0,3,0,0"/>
+                        </StackPanel>
+                        <Button Grid.Column="2" Content="Mở file log"
+                                Command="{Binding OpenLogFileCommand}"
+                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                materialDesign:ButtonAssist.CornerRadius="10"
+                                VerticalAlignment="Center"/>
+                    </Grid>
+                </StackPanel>
             </materialDesign:Card>
 
             <!-- Update Section -->
