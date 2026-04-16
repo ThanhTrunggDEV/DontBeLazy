@@ -32,10 +32,19 @@
 - **Luồng thay thế:** 
   - Tại bước 2, người dùng có thể nhấp vào biểu tượng "Sửa" hoặc "Xóa" một task.
   - Khi hoàn thành công việc, người dùng click chọn checkbox "Hoàn thành". Hệ thống gạch ngang task và đưa vào trạng thái Done.
+- **Trạng thái của Task (Task State Machine):**
+  | Trạng thái | Ý nghĩa |
+  |---|---|
+  | `Pending` | Task đã tạo, chưa bắt đầu phiên Focus nào |
+  | `Active` | Đang được chọn để thực hiện trong phiên Focus hiện tại |
+  | `Done` | Đã được đánh dấu hoàn thành bởi người dùng |
+  | `Abandoned` | Phiên sớm kết thúc (người dùng bỏ cuộc), task được trả về `Pending` |
+  - Task chỉ được Xóa vĩnh viễn khi ở trạng thái `Pending`, `Done` hoặc `Abandoned`.
+  - Task ở trạng thái `Active` sẽ disable nút Xóa và nút Sửa trên UI.
 - **Luồng ngoại lệ — Xóa task đang chạy Focus Mode:**
-  - Nếu người dùng cố xóa một task đang trong phiên tập trung (trạng thái Active), hệ thống từ chối và hiển thị thông báo: *"Không thể xóa task đang trong phiên Focus. Hãy kết thúc hoặc hủy phiên hiện tại trước."*
-  - Nút "Xóa" của task đang Active sẽ bị disable (grayed out) để tránh thao tác nhầm.
-- **Hậu điều kiện:** Dữ liệu task được lưu trữ cục bộ trên máy.
+  - Nếu người dùng cố xóa một task đang ở trạng thái `Active`, hệ thống từ chối và hiển thị: *"Không thể xóa task đang trong phiên Focus. Hãy kết thúc hoặc hủy phiên hiện tại trước."*
+  - Nút "Xóa" của task đang `Active` sẽ bị disable (grayed out) để tránh thao tác nhầm.
+- **Hậu điều kiện:** Dữ liệu task và trạng thái được lưu trữ cục bộ trên máy.
 
 ### UC02: Quản lý bộ quy tắc ưu tiên (Whitelist Profiles)
 - **Tác nhân:** Người dùng
@@ -51,6 +60,10 @@
 - **Luồng ngoại lệ — Sửa Profile đang được dùng trong phiên Focus:**
   - Nếu người dùng cố sửa hoặc xóa một Profile đang được một task áp dụng trong phiên Focus hiện tại, hệ thống từ chối và hiển thị: *"Profile này đang được dùng trong phiên Focus. Không thể chỉnh sửa cho đến khi phiên kết thúc."*
   - Mọi thay đổi với Profile chỉ có hiệu lực ở phiên **tiếp theo**, không ảnh hưởng ngược lại phiên đang chạy.
+- **Khái niệm Profile Mặc định (Default Profile):**
+  - Hệ thống luôn duy trì một **"Default Profile"** không thể xóa, chỉ có thể sửa nội dung.
+  - Nếu người dùng tạo Task mà **không gán bất kỳ Profile nào**, hệ thống tự động gán Default Profile (chỉ cho phép mở chính app Don't Be Lazy, không có internet và không có app nào khác).
+  - Default Profile được hiển thị rõ trong UI bằng badge "Mặc định" để người dùng biết mình chưa cấu hình Whitelist.
 
 ### UC03: Bắt đầu phiên tập trung (Focus Mode)
 - **Tác nhân:** Người dùng
@@ -69,6 +82,12 @@
   - Sau khi gõ xong, hệ thống mới huỷ phiên làm việc, mở khóa ứng dụng và tự động Reset Streak về 0.
 - **Luồng ngoại lệ (Khi Strict Mode đang Bật):** 
   - Nút Stop sẽ bị Disable, ẩn hoàn toàn hoặc thông báo bị từ chối thoát mọi hình thức.
+- **Luồng ngoại lệ — Máy tính sleep / tắt màn hình giữa phiên:**
+  - Nếu hệ điều hành đưa máy vào trạng thái ngủ (sleep/hibernate) hoặc tắt màn hình (screen lock), timer được **tạm dừng tự động**.
+  - Khi máy thức dậy và người dùng đăng nhập lại, hệ thống hiển thị hộp thoại:
+    > *"Phiên Focus của bạn đã bị gián đoạn. Bạn muốn: **Tiếp tục** (tiếp tục đếm ngược từ chỗ dừng) hay **Đặt lại** (xóa bỏ phiên hiện tại)?"*
+  - Thời gian sleep không được tính vào thời gian tập trung thực tế trong Analytics.
+  - Trong Strict Mode: luôn tự động **Tiếp tục** khi máy thức dậy, không hiển thị hộp thoại chọn.
 - **Hậu điều kiện:** Lưu lại tổng thời gian tập trung vừa qua vào Local DB.
 
 ### UC04: Quản lý cấu hình Strict Mode
@@ -110,6 +129,12 @@
   - Mỗi ngày dương lịch có ít nhất 1 phiên Focus **hoàn thành** (không bị hủy giữa chừng) → cộng 1 ngày vào Streak.
   - Nếu không có phiên hoàn thành nào trong ngày hôm qua → Streak **reset về 0**.
   - Streak được cập nhật tự động sau mỗi phiên kết thúc (tại UC03 bước 5).
+- **Luồng ngoại lệ — Empty State (Lần đầu sử dụng, chưa có dữ liệu):**
+  - Nếu Local DB chưa có phiên nào được ghi lại, trang Analytics không hiển thị biểu đồ trống rỗng hay lỗi.
+  - Hệ thống hiển thị màn hình **Empty State** với:
+    - Icon minh họa (VD: đồng hồ cát hoặc rocket chưa phóng).
+    - Dòng chữ: *"Bạn chưa có phiên làm việc nào. Hãy bắt đầu phiên đầu tiên để xây dựng Streak!"*
+    - Nút CTA *"Bắt đầu ngay"* dẫn thẳng về màn hình chọn Task.
 
 ### UC06: Hiển thị Motivation Quote
 - **Tác nhân:** Hệ thống (kích hoạt tự động theo sự kiện), Người dùng (có thể quản lý kho quote).
