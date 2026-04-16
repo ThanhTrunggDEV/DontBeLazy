@@ -13,6 +13,7 @@ public static class UseCaseServiceCollectionExtensions
         services.AddSingleton<ActiveSessionState>();
 
         // Use Cases
+        services.AddScoped<IFocusTaskUseCase, FocusTaskUseCase>();
         services.AddScoped<IFocusSessionUseCase, FocusSessionUseCase>();
         services.AddScoped<IProfileUseCase, ProfileUseCase>();
         services.AddScoped<IProfileEntryUseCase, ProfileEntryUseCase>();

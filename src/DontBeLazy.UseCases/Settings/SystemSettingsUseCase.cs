@@ -8,10 +8,12 @@ namespace DontBeLazy.UseCases.Settings;
 public class SystemSettingsUseCase : ISystemSettingsUseCase
 {
     private readonly ISystemSettingsRepository _settingsRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public SystemSettingsUseCase(ISystemSettingsRepository settingsRepository)
+    public SystemSettingsUseCase(ISystemSettingsRepository settingsRepository, IUnitOfWork unitOfWork)
     {
         _settingsRepository = settingsRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<SystemSettings> GetSettingsAsync()
@@ -24,5 +26,6 @@ public class SystemSettingsUseCase : ISystemSettingsUseCase
         var settings = await _settingsRepository.GetSettingsAsync();
         settings.UpdatePreferences(globalStrictMode, enableQuotes, quoteLanguage, darkTheme);
         await _settingsRepository.UpdateSettingsAsync(settings);
+        await _unitOfWork.SaveChangesAsync();
     }
 }

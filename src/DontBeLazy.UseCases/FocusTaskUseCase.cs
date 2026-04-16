@@ -11,10 +11,12 @@ namespace DontBeLazy.UseCases;
 public class FocusTaskUseCase : IFocusTaskUseCase
 {
     private readonly ITaskRepository _taskRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public FocusTaskUseCase(ITaskRepository taskRepository)
+    public FocusTaskUseCase(ITaskRepository taskRepository, IUnitOfWork unitOfWork)
     {
         _taskRepository = taskRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<IReadOnlyCollection<FocusTask>> GetAllTasksAsync()
@@ -25,9 +27,13 @@ public class FocusTaskUseCase : IFocusTaskUseCase
     public async Task<FocusTask> CreateTaskAsync(string name, int expectedMinutes, ProfileId? profileId = null, bool? perTaskStrictMode = null)
     {
         var task = new FocusTask(name, expectedMinutes);
-        task.UpdateDetails(name, expectedMinutes, profileId, perTaskStrictMode);
+        if (profileId.HasValue || perTaskStrictMode.HasValue)
+        {
+            task.UpdateDetails(name, expectedMinutes, profileId, perTaskStrictMode);
+        }
         
         await _taskRepository.AddAsync(task);
+        await _unitOfWork.SaveChangesAsync();
         return task;
     }
 
@@ -39,11 +45,13 @@ public class FocusTaskUseCase : IFocusTaskUseCase
 
         task.UpdateDetails(name, expectedMinutes, profileId, perTaskStrictMode);
         await _taskRepository.UpdateAsync(task);
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task DeleteTaskAsync(TaskId taskId)
     {
         await _taskRepository.DeleteAsync(taskId);
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task ChangeTaskStatusAsync(TaskId taskId, DontBeLazy.Domain.Enums.TaskStatus newStatus)
@@ -54,6 +62,7 @@ public class FocusTaskUseCase : IFocusTaskUseCase
 
         task.ChangeStatus(newStatus);
         await _taskRepository.UpdateAsync(task);
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task SetTaskRecurringAsync(TaskId taskId, RecurringType type, string config)
@@ -64,6 +73,7 @@ public class FocusTaskUseCase : IFocusTaskUseCase
 
         task.SetRecurring(type, config);
         await _taskRepository.UpdateAsync(task);
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task UpdateTaskSortOrderAsync(TaskId taskId, int newSortOrder)
@@ -74,6 +84,7 @@ public class FocusTaskUseCase : IFocusTaskUseCase
 
         task.UpdateSortOrder(newSortOrder);
         await _taskRepository.UpdateAsync(task);
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task PauseTaskAsync(TaskId taskId, bool isPaused)
@@ -84,5 +95,6 @@ public class FocusTaskUseCase : IFocusTaskUseCase
 
         task.SetPaused(isPaused);
         await _taskRepository.UpdateAsync(task);
+        await _unitOfWork.SaveChangesAsync();
     }
 }

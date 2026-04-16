@@ -1,3 +1,5 @@
+using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 using DontBeLazy.Ports.Inbound;
 using DontBeLazy.Ports.Outbound.Repositories;
@@ -13,15 +15,14 @@ public class ProfileSyncUseCase : IProfileSyncUseCase
         _profileRepository = profileRepository;
     }
 
-    public Task<string> ExportProfilesAsync()
+    public async Task<string> ExportProfilesAsync()
     {
-        // Simple mock for exporting json. In production, use System.Text.Json to serialize profiles.
-        return Task.FromResult("{ \"exported\": true }");
+        var profiles = await _profileRepository.GetAllAsync();
+        return JsonSerializer.Serialize(profiles, new JsonSerializerOptions { WriteIndented = true });
     }
 
     public Task ImportProfilesAsync(string jsonContent, bool overwriteExisting)
     {
-        // Simple mock for parsing JSON string to domain entities and calling Replace/Merge
-        return Task.CompletedTask;
+        throw new NotImplementedException("Importing profiles is not fully supported yet because it involves syncing or replacing existing database entries with potentially new IDs. To be implemented.");
     }
 }

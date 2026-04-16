@@ -11,10 +11,12 @@ namespace DontBeLazy.UseCases.Profiles;
 public class ProfileEntryUseCase : IProfileEntryUseCase
 {
     private readonly IProfileRepository _profileRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public ProfileEntryUseCase(IProfileRepository profileRepository)
+    public ProfileEntryUseCase(IProfileRepository profileRepository, IUnitOfWork unitOfWork)
     {
         _profileRepository = profileRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task AddProfileEntryAsync(ProfileId profileId, ProfileEntryType type, string value, string? exePath = null)
@@ -27,6 +29,7 @@ public class ProfileEntryUseCase : IProfileEntryUseCase
         profile.AddEntry(entry);
         
         await _profileRepository.UpdateAsync(profile);
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task RemoveProfileEntryAsync(ProfileId profileId, ProfileEntryId entryId)
@@ -40,6 +43,7 @@ public class ProfileEntryUseCase : IProfileEntryUseCase
         {
             profile.RemoveEntry(entry);
             await _profileRepository.UpdateAsync(profile);
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 
@@ -51,5 +55,6 @@ public class ProfileEntryUseCase : IProfileEntryUseCase
 
         profile.ClearEntries();
         await _profileRepository.UpdateAsync(profile);
+        await _unitOfWork.SaveChangesAsync();
     }
 }

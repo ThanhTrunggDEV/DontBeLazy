@@ -46,16 +46,17 @@ public class AnalyticsUseCase : IAnalyticsUseCase
             .ToList();
 
         // Very basic streak logic
-        if (!sessionDates.Contains(checkDate) && !sessionDates.Contains(checkDate.AddDays(-1)))
-            return 0;
-
+        var expectedDate = checkDate;
+        
         foreach (var date in sessionDates)
         {
-            if (date == checkDate || date == checkDate.AddDays(-streak))
+            // If date is today, or date is yesterday and we haven't found today yet (streak=0)
+            if (date == expectedDate || (date == checkDate.AddDays(-1) && streak == 0))
             {
                 streak++;
+                expectedDate = date.AddDays(-1); // next expected date is the day before the matched date
             }
-            else if (date < checkDate.AddDays(-streak))
+            else
             {
                 break;
             }

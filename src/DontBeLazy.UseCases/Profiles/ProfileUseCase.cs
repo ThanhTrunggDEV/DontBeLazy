@@ -10,10 +10,12 @@ namespace DontBeLazy.UseCases.Profiles;
 public class ProfileUseCase : IProfileUseCase
 {
     private readonly IProfileRepository _profileRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public ProfileUseCase(IProfileRepository profileRepository)
+    public ProfileUseCase(IProfileRepository profileRepository, IUnitOfWork unitOfWork)
     {
         _profileRepository = profileRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<IReadOnlyCollection<Profile>> GetAllProfilesAsync()
@@ -34,13 +36,8 @@ public class ProfileUseCase : IProfileUseCase
     {
         var profile = await _profileRepository.GetDefaultProfileAsync();
         if (profile == null)
-        {
-            // Seed default if none
-            profile = new Profile("Default Profile", true);
-            await _profileRepository.AddAsync(profile);
-            // It is safe to assume default creation doesn't heavily violate UI UoW constraint if it occurs as a silent backend normalization, but strictly adhering to no-save policy means UI will handle this seed instead. 
-            // Wait, if it doesn't save here, the caller must save.
-        }
+            throw new System.InvalidOperationException("Default Profile has not been initialized. Call EnsureDefaultProfileAsync() at application startup.");
+            
         return profile;
     }
 
@@ -48,6 +45,7 @@ public class ProfileUseCase : IProfileUseCase
     {
         var profile = new Profile(name, isDefault);
         await _profileRepository.AddAsync(profile);
+        await _unitOfWork.SaveChangesAsync();
         return profile;
     }
 
@@ -59,6 +57,7 @@ public class ProfileUseCase : IProfileUseCase
 
         profile.UpdateName(newName);
         await _profileRepository.UpdateAsync(profile);
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task DeleteProfileAsync(ProfileId profileId)
@@ -68,5 +67,6 @@ public class ProfileUseCase : IProfileUseCase
             throw new System.Collections.Generic.KeyNotFoundException($"Profile {profileId} not found.");
 
         await _profileRepository.DeleteAsync(profileId);
+        await _unitOfWork.SaveChangesAsync();
     }
 }

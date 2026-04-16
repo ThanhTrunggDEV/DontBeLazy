@@ -43,14 +43,16 @@ public class SessionRepository : ISessionRepository
             .FirstOrDefaultAsync(s => s.Id == id);
     }
 
-    public async Task AddAsync(SessionHistory session)
+    public Task AddAsync(SessionHistory session)
     {
-        await _context.Sessions.AddAsync(session);
+        _context.Sessions.Add(session);
+        return Task.CompletedTask;
     }
 
-    public async Task UpdateAsync(SessionHistory session)
+    public Task UpdateAsync(SessionHistory session)
     {
         _context.Sessions.Update(session);
+        return Task.CompletedTask;
     }
 
     public async Task DeleteByDateRangeAsync(DateTime startDate, DateTime endDate)

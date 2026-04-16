@@ -16,22 +16,36 @@ public class SystemSettingsRepository : ISystemSettingsRepository
 
     public async Task<SystemSettings> GetSettingsAsync()
     {
+        // No seeding here — seed is handled via EnsureDefaultSettingsAsync() at app startup.
+        // This strictly reads existing data. Caller must ensure settings exist beforehand.
         var settings = await _context.Settings.FirstOrDefaultAsync();
         
         if (settings == null)
-        {
-            // Seed default if not exists
-            settings = new SystemSettings(false, true, "vi", false);
-            await _context.Settings.AddAsync(settings);
-            // Must save seed immediately otherwise tracking fails or subsequent calls duplicate
-            await _context.SaveChangesAsync();
-        }
+            throw new System.InvalidOperationException(
+                "SystemSettings have not been initialized. Call EnsureDefaultSettingsAsync() at application startup.");
         
         return settings;
     }
 
-    public async Task UpdateSettingsAsync(SystemSettings settings)
+    /// <summary>
+    /// Called ONCE at application startup to seed default settings if not present.
+    /// Immediately calls SaveChangesAsync internally as this is an infrastructure-level init,
+    /// not a business transaction — safe to bypass UoW since it only runs when DB is empty.
+    /// </summary>
+    public async Task EnsureDefaultSettingsAsync()
+    {
+        var exists = await _context.Settings.AnyAsync();
+        if (!exists)
+        {
+            var defaults = new SystemSettings(false, true, "vi", false);
+            await _context.Settings.AddAsync(defaults);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public Task UpdateSettingsAsync(SystemSettings settings)
     {
         _context.Settings.Update(settings);
+        return Task.CompletedTask;
     }
 }

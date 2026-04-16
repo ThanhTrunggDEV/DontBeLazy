@@ -45,14 +45,16 @@ public class TaskRepository : ITaskRepository
         return allTasks;
     }
 
-    public async Task AddAsync(FocusTask task)
+    public Task AddAsync(FocusTask task)
     {
-        await _context.Tasks.AddAsync(task);
+        _context.Tasks.Add(task);
+        return Task.CompletedTask;
     }
 
-    public async Task UpdateAsync(FocusTask task)
+    public Task UpdateAsync(FocusTask task)
     {
         _context.Tasks.Update(task);
+        return Task.CompletedTask;
     }
 
     public async Task DeleteAsync(TaskId id)

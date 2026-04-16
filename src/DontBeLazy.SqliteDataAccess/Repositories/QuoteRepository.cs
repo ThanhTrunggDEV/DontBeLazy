@@ -35,14 +35,16 @@ public class QuoteRepository : IQuoteRepository
         return await _context.Quotes.FindAsync(id);
     }
 
-    public async Task AddAsync(Quote quote)
+    public Task AddAsync(Quote quote)
     {
-        await _context.Quotes.AddAsync(quote);
+        _context.Quotes.Add(quote);
+        return Task.CompletedTask;
     }
 
-    public async Task UpdateAsync(Quote quote)
+    public Task UpdateAsync(Quote quote)
     {
         _context.Quotes.Update(quote);
+        return Task.CompletedTask;
     }
 
     public async Task DeleteAsync(QuoteId id)

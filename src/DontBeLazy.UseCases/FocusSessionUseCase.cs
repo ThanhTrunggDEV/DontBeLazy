@@ -17,6 +17,7 @@ public class FocusSessionUseCase : IFocusSessionUseCase
     private readonly IMonotonicClockPort _clockPort;
     private readonly IStrictEnginePort _processPort;
     private readonly ActiveSessionState _sessionState;
+    private readonly IUnitOfWork _unitOfWork;
 
     public FocusSessionUseCase(
         ISessionRepository sessionRepository,
@@ -24,7 +25,8 @@ public class FocusSessionUseCase : IFocusSessionUseCase
         ISystemSettingsRepository settingsRepository,
         IMonotonicClockPort clockPort,
         IStrictEnginePort processPort,
-        ActiveSessionState sessionState)
+        ActiveSessionState sessionState,
+        IUnitOfWork unitOfWork)
     {
         _sessionRepository = sessionRepository;
         _profileRepository = profileRepository;
@@ -32,6 +34,7 @@ public class FocusSessionUseCase : IFocusSessionUseCase
         _clockPort = clockPort;
         _processPort = processPort;
         _sessionState = sessionState;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<SessionHistory> StartSessionAsync(TaskId? taskId, string taskName, ProfileId? profileId, int expectedSeconds)
@@ -64,10 +67,10 @@ public class FocusSessionUseCase : IFocusSessionUseCase
         }
 
         await _sessionRepository.AddAsync(session);
+        await _unitOfWork.SaveChangesAsync();
         
-        _sessionState.CurrentSession = session;
-        _sessionState.CurrentProfile = profile;
-        _sessionState.LastTickAmount = _clockPort.GetTickCount();
+        _sessionState.StartSession(session, profile);
+        _sessionState.UpdateLastTick(_clockPort.GetTickCount());
 
         return session;
     }
@@ -88,9 +91,10 @@ public class FocusSessionUseCase : IFocusSessionUseCase
         {
             _sessionState.CurrentSession.IncrementActualSeconds(validSeconds);
             await _sessionRepository.UpdateAsync(_sessionState.CurrentSession);
+            await _unitOfWork.SaveChangesAsync();
         }
 
-        _sessionState.LastTickAmount = currentTicks;
+        _sessionState.UpdateLastTick(currentTicks);
     }
 
     public Task PauseSessionAsync(SessionId sessionId)
@@ -101,7 +105,7 @@ public class FocusSessionUseCase : IFocusSessionUseCase
 
     public Task ResumeSessionAsync(SessionId sessionId)
     {
-        _sessionState.LastTickAmount = _clockPort.GetTickCount();
+        _sessionState.UpdateLastTick(_clockPort.GetTickCount());
         return Task.CompletedTask;
     }
 
@@ -112,6 +116,7 @@ public class FocusSessionUseCase : IFocusSessionUseCase
 
         _sessionState.CurrentSession.CompleteSession(status);
         await _sessionRepository.UpdateAsync(_sessionState.CurrentSession);
+        await _unitOfWork.SaveChangesAsync();
         
         // Release block engine logic here if applicable
         await _processPort.ClearRestrictionsAsync();
@@ -125,6 +130,7 @@ public class FocusSessionUseCase : IFocusSessionUseCase
         
         _sessionState.CurrentSession.IncrementBlockedCount();
         await _sessionRepository.UpdateAsync(_sessionState.CurrentSession);
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public Task<SessionHistory> GetCurrentSessionAsync()

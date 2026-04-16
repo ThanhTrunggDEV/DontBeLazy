@@ -13,10 +13,12 @@ namespace DontBeLazy.UseCases.Settings;
 public class QuoteUseCase : IQuoteUseCase
 {
     private readonly IQuoteRepository _quoteRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public QuoteUseCase(IQuoteRepository quoteRepository)
+    public QuoteUseCase(IQuoteRepository quoteRepository, IUnitOfWork unitOfWork)
     {
         _quoteRepository = quoteRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<IReadOnlyCollection<Quote>> GetAllQuotesAsync()
@@ -40,6 +42,7 @@ public class QuoteUseCase : IQuoteUseCase
     {
         var quote = new Quote(content, author, type, lang, isBundled: false);
         await _quoteRepository.AddAsync(quote);
+        await _unitOfWork.SaveChangesAsync();
         return quote;
     }
 
@@ -51,6 +54,7 @@ public class QuoteUseCase : IQuoteUseCase
 
         quote.UpdateContent(newContent, newAuthor);
         await _quoteRepository.UpdateAsync(quote);
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task DeleteQuoteAsync(QuoteId quoteId)
@@ -64,5 +68,6 @@ public class QuoteUseCase : IQuoteUseCase
             throw new InvalidOperationException("Cannot delete a bundled quote.");
 
         await _quoteRepository.DeleteAsync(quoteId);
+        await _unitOfWork.SaveChangesAsync();
     }
 }

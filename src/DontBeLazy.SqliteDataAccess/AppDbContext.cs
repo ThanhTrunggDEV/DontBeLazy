@@ -1,6 +1,8 @@
 using System;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using DontBeLazy.Domain.Entities;
+using DontBeLazy.Domain.Enums;
 using DontBeLazy.Domain.ValueObjects;
 using DontBeLazy.SqliteDataAccess.Converters;
 
@@ -72,10 +74,15 @@ public class AppDbContext : DbContext
         });
 
         // --- SessionHistory Configuration ---
+        // Nullable enum converter for CompletionStatus
+        var completionStatusConverter = new ValueConverter<CompletionStatus?, string?>(
+            v => v.HasValue ? v.Value.ToString() : null,
+            v => v != null ? Enum.Parse<CompletionStatus>(v) : (CompletionStatus?)null);
+
         modelBuilder.Entity<SessionHistory>(e =>
         {
             e.HasKey(s => s.Id);
-            e.Property(s => s.CompletionStatus).HasConversion<string>();
+            e.Property(s => s.CompletionStatus).HasConversion(completionStatusConverter);
             
             // 1-N Relationship SessionHistory -> SessionProfileSnapshot
             e.HasMany(s => s.Snapshots)
@@ -93,7 +100,7 @@ public class AppDbContext : DbContext
             e.HasKey(sp => sp.Id);
             e.Property(sp => sp.Type).HasConversion<string>();
             e.Property(sp => sp.Value).IsRequired();
-            e.Property(sp => sp.Id).HasConversion<SnapshotIdConverter>();
+            // SnapshotId already configured globally in ConfigureConventions — no duplicate needed
         });
 
         // --- SystemSettings Configuration ---

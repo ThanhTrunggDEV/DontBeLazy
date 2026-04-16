@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using DontBeLazy.Domain.Entities;
 
@@ -8,4 +7,9 @@ public interface ISystemSettingsRepository
 {
     Task<SystemSettings> GetSettingsAsync();
     Task UpdateSettingsAsync(SystemSettings settings);
+
+    /// <summary>
+    /// Seeds default settings if none exist. Call once at application startup before any UseCase runs.
+    /// </summary>
+    Task EnsureDefaultSettingsAsync();
 }
