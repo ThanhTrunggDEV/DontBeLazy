@@ -85,7 +85,7 @@ public class GeminiAiServices : IAiTaskAssistantPort, IAiGuiltTripPort, IAiProfi
 
     public async Task<string> BreakdownTaskAsync(string taskName)
     {
-        var prompt = $"Break down the following task into 3-5 subtasks:\n\nTask: {taskName}";
+        var prompt = $"Break down the following task into 3-5 subtasks:\n\nTask: {taskName}\n\nReturn strictly a JSON array of strings containing the subtask names. Do not wrap in markdown block or any additional text.";
         return await GenerateTextAsync(prompt);
     }
 
@@ -97,7 +97,7 @@ public class GeminiAiServices : IAiTaskAssistantPort, IAiGuiltTripPort, IAiProfi
 
     public async Task<string> GenerateSmartProfileAsync(string intent)
     {
-        var prompt = $"I want to create a focus profile for this intent: '{intent}'. Give me a JSON list of extremely distracting website domains and desktop application names that I should DEFINITELY block for this task type. Do not wrap in markdown.";
+        var prompt = $"I want to create a focus profile for this intent: '{intent}'. Give me a JSON list of website domains and desktop application names that I should ALLOW (whitelist) for this task type. Return strictly a JSON object with two properties: 'websites' (array of domain strings without https://) and 'apps' (array of process names without .exe). Do not wrap in markdown block or any additional text.";
         return await GenerateTextAsync(prompt);
     }
 }

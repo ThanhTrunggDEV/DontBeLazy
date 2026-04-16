@@ -11,6 +11,7 @@ public partial class MainWindow : Window
         InitializeComponent();
         DataContext = App.Services.GetRequiredService<MainViewModel>();
         this.Closing += MainWindow_Closing;
+        this.Loaded += async (s, e) => await ((MainViewModel)DataContext).InitializeAsync();
     }
 
     private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)

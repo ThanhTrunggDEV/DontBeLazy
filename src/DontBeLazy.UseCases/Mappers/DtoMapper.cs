@@ -56,7 +56,7 @@ internal static class DtoMapper
     public static QuoteDto ToDto(Quote quote) => new(
         quote.Id.Value,
         quote.Content,
-        quote.Author,
+        quote.Author ?? string.Empty,
         (QuoteEventTypeDto)quote.EventType,
         quote.Language
     );

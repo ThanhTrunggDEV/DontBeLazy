@@ -12,4 +12,7 @@ public interface IFocusSessionUseCase
     Task CompleteSessionAsync(Guid sessionId, CompletionStatusDto status);
     Task LogBlockedAttemptAsync(Guid sessionId);
     Task<SessionHistoryDto?> GetCurrentSessionAsync();
+    Task<SessionHistoryDto?> GetIncompleteSessionAsync();
+    Task<SessionHistoryDto> RestoreSessionAsync(Guid sessionId);
+    Task DiscardSessionAsync(Guid sessionId);
 }

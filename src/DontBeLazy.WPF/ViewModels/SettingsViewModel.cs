@@ -10,6 +10,7 @@ namespace DontBeLazy.WPF.ViewModels;
 public partial class SettingsViewModel : ObservableObject
 {
     private readonly ISystemSettingsUseCase _settingsUseCase;
+    private readonly IAnalyticsUseCase _analyticsUseCase;
 
     private bool _globalStrictMode;
     public bool GlobalStrictMode
@@ -38,6 +39,11 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _isStrictConfirmDialogOpen;
     [ObservableProperty] private string _frictionInput = string.Empty;
 
+    // History Cleanup
+    [ObservableProperty] private DateTime _historyStartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+    [ObservableProperty] private DateTime _historyEndDate = DateTime.Today;
+    [ObservableProperty] private bool _isClearHistoryDialogOpen;
+
     public bool CanConfirmDisableStrict => FrictionInput?.Trim() == "Tôi chấp nhận giảm mức độ kỷ luật";
     
     partial void OnFrictionInputChanged(string value) => OnPropertyChanged(nameof(CanConfirmDisableStrict));
@@ -51,6 +57,30 @@ public partial class SettingsViewModel : ObservableObject
         _isInternalSet = false;
         IsStrictConfirmDialogOpen = false;
         await SaveAsync();
+    }
+
+    [RelayCommand]
+    private void OpenClearHistoryDialog()
+    {
+        IsClearHistoryDialogOpen = true;
+    }
+
+    [RelayCommand]
+    private async Task ClearHistoryAsync()
+    {
+        IsClearHistoryDialogOpen = false;
+        
+        var result = System.Windows.MessageBox.Show(
+            $"Bạn có chắc chắn muốn xoá toàn bộ lịch sử từ {HistoryStartDate:dd/MM/yyyy} đến {HistoryEndDate:dd/MM/yyyy} không? Hành động này không thể hoàn tác.",
+            "Xác nhận xoá",
+            System.Windows.MessageBoxButton.YesNo,
+            System.Windows.MessageBoxImage.Warning);
+            
+        if (result == System.Windows.MessageBoxResult.Yes)
+        {
+            await _analyticsUseCase.DeleteSessionHistoryAsync(HistoryStartDate, HistoryEndDate.AddDays(1).AddSeconds(-1));
+            System.Windows.MessageBox.Show("Đã xoá lịch sử thành công!", "Thông báo", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+        }
     }
 
     [ObservableProperty]
@@ -82,9 +112,10 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private bool _isLoaded;
 
-    public SettingsViewModel(ISystemSettingsUseCase settingsUseCase)
+    public SettingsViewModel(ISystemSettingsUseCase settingsUseCase, IAnalyticsUseCase analyticsUseCase)
     {
         _settingsUseCase = settingsUseCase;
+        _analyticsUseCase = analyticsUseCase;
     }
 
     [RelayCommand]

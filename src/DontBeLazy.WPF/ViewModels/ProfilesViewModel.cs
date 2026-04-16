@@ -160,11 +160,51 @@ public partial class ProfilesViewModel : ObservableObject
     private async Task AiGenerateProfileAsync()
     {
         if (string.IsNullOrWhiteSpace(AiProfileIntent)) return;
+        if (SelectedProfile == null)
+        {
+            AiProfileResult = "Vui lòng chọn một Profile trong danh sách bên trái trước khi tạo gợi ý AI.";
+            return;
+        }
+
         IsAiProfileLoading = true;
         AiProfileResult = string.Empty;
-        try { AiProfileResult = await _profileUseCase.AiGenerateProfileSuggestionAsync(AiProfileIntent); }
-        catch (Exception ex) { AiProfileResult = $"Lỗi: {ex.Message}"; }
-        finally { IsAiProfileLoading = false; }
+        try 
+        { 
+            var jsonResult = await _profileUseCase.AiGenerateProfileSuggestionAsync(AiProfileIntent); 
+            // Clean markdown if present
+            var cleanStr = jsonResult.Replace("```json", "").Replace("```", "").Trim();
+            
+            var parsed = System.Text.Json.JsonDocument.Parse(cleanStr);
+            var websites = parsed.RootElement.GetProperty("websites").EnumerateArray().Select(x => x.GetString());
+            var apps = parsed.RootElement.GetProperty("apps").EnumerateArray().Select(x => x.GetString());
+            
+            int addedCount = 0;
+            foreach(var w in websites)
+            {
+                if (!string.IsNullOrWhiteSpace(w)) {
+                    await _profileEntryUseCase.AddProfileEntryAsync(SelectedProfile.Id, ProfileEntryTypeDto.Website, w);
+                    addedCount++;
+                }
+            }
+            foreach(var a in apps)
+            {
+                if (!string.IsNullOrWhiteSpace(a)) {
+                    await _profileEntryUseCase.AddProfileEntryAsync(SelectedProfile.Id, ProfileEntryTypeDto.App, a);
+                    addedCount++;
+                }
+            }
+
+            AiProfileResult = $"Đã thêm thành công {addedCount} ngoại lệ vào Profile {SelectedProfile.Name}.";
+            await LoadDataAsync();
+        }
+        catch (Exception ex) 
+        { 
+            AiProfileResult = $"Lỗi: Không thể phân tích dữ liệu AI ({ex.Message}).\n\nOriginal Text:\n{AiProfileResult}"; 
+        }
+        finally 
+        { 
+            IsAiProfileLoading = false; 
+        }
     }
 
     [RelayCommand]

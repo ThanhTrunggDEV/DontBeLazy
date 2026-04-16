@@ -38,4 +38,23 @@ public partial class AnalyticsViewModel : ObservableObject
         TotalFocusHoursThisWeek = stats.TotalFocusHoursThisWeek;
         TotalSessionsThisWeek = stats.TotalSessionsThisWeek;
     }
+    
+    [RelayCommand]
+    private async Task ExportCsvAsync()
+    {
+        var csvContent = await _analyticsUseCase.ExportSessionsToCsvAsync();
+        
+        var dialog = new Microsoft.Win32.SaveFileDialog
+        {
+            FileName = $"DontBeLazy_Sessions_{DateTime.Now:yyyyMMdd}.csv",
+            DefaultExt = ".csv",
+            Filter = "CSV documents (.csv)|*.csv"
+        };
+
+        if (dialog.ShowDialog() == true)
+        {
+            System.IO.File.WriteAllText(dialog.FileName, csvContent, System.Text.Encoding.UTF8);
+            System.Windows.MessageBox.Show("Đã xuất dữ liệu lịch sử thành công!", "Thông báo", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+        }
+    }
 }

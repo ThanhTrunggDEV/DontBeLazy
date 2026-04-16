@@ -43,6 +43,15 @@ public class SessionRepository : ISessionRepository
             .FirstOrDefaultAsync(s => s.Id == id);
     }
 
+    public async Task<SessionHistory?> GetIncompleteSessionAsync()
+    {
+        return await _context.Sessions
+            .Include(s => s.Snapshots)
+            .Where(s => s.CompletionStatus == null)
+            .OrderByDescending(s => s.FocusStartDate)
+            .FirstOrDefaultAsync();
+    }
+
     public Task AddAsync(SessionHistory session)
     {
         _context.Sessions.Add(session);

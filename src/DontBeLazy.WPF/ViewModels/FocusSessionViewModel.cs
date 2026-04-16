@@ -57,6 +57,22 @@ public partial class FocusSessionViewModel : ObservableObject
         _quoteUseCase = quoteUseCase;
     }
 
+    public void LoadRestoredSession(SessionHistoryDto restoredSession)
+    {
+        _currentSession = restoredSession;
+        IsSessionActive = true;
+        _totalSeconds = restoredSession.ExpectedSeconds;
+        RemainingSeconds = _totalSeconds - restoredSession.ActualSeconds;
+        if (RemainingSeconds < 0) RemainingSeconds = 1;
+
+        TimerDisplay = $"{RemainingSeconds / 60:D2}:{RemainingSeconds % 60:D2}";
+        TimerProgress = ((double)restoredSession.ActualSeconds / _totalSeconds) * 100;
+        
+        _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+        _timer.Tick += OnTimerTick;
+        _timer.Start();
+    }
+
     [RelayCommand]
     private async Task LoadDataAsync()
     {
