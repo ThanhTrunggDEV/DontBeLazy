@@ -1,0 +1,142 @@
+<UserControl x:Class="DontBeLazy.WPF.Views.ProfilesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:DontBeLazy.WPF.Converters"
+             Loaded="UserControl_Loaded"
+             Background="{DynamicResource MaterialDesign.Brush.Background}">
+    <UserControl.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVis"/>
+        <converters:ProfileEntryTypeToIconConverter x:Key="TypeToIcon"/>
+    </UserControl.Resources>
+
+    <materialDesign:DialogHost IsOpen="{Binding IsAddProfileDialogOpen}">
+        <materialDesign:DialogHost.DialogContent>
+            <Border Padding="32" MinWidth="380" Background="#1E1E3F" CornerRadius="12">
+                <StackPanel>
+                    <TextBlock Text="Tạo Profile mới" FontSize="20" FontWeight="Bold" Margin="0,0,0,20"/>
+                    <TextBox materialDesign:HintAssist.Hint="Tên Profile *"
+                             Text="{Binding NewProfileName}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,12"/>
+                    <CheckBox Content="Đặt làm mặc định" IsChecked="{Binding NewProfileIsDefault}" Margin="0,0,0,20"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="Huỷ" Style="{StaticResource MaterialDesignFlatButton}" Command="{Binding OpenAddProfileDialogCommand}" Margin="0,0,8,0"/>
+                        <Button Content="Tạo" Style="{StaticResource MaterialDesignRaisedButton}" Command="{Binding CreateProfileCommand}" materialDesign:ButtonAssist.CornerRadius="8"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </materialDesign:DialogHost.DialogContent>
+
+        <Grid Margin="32">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="260"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left: Profile List -->
+            <DockPanel Grid.Column="0" Margin="0,0,24,0">
+                <StackPanel DockPanel.Dock="Top" Margin="0,0,0,16">
+                    <TextBlock Text="🛡️ Profiles" FontSize="22" FontWeight="Bold"/>
+                    <Button Content="+ Tạo Profile" Command="{Binding OpenAddProfileDialogCommand}"
+                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                            HorizontalAlignment="Stretch" Margin="0,12,0,0"
+                            materialDesign:ButtonAssist.CornerRadius="8"/>
+                </StackPanel>
+
+                <ListBox ItemsSource="{Binding Profiles}"
+                         SelectedItem="{Binding SelectedProfile}"
+                         Background="Transparent">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding Entries.Count, StringFormat='{}{0} entries'}"
+                                               Foreground="#9E9E9E" FontSize="11"/>
+                                </StackPanel>
+                                <Button Grid.Column="1" Style="{StaticResource MaterialDesignIconButton}"
+                                        Command="{Binding DataContext.DeleteProfileCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                        CommandParameter="{Binding}">
+                                    <materialDesign:PackIcon Kind="TrashCanOutline" Width="16" Foreground="#F44336"/>
+                                </Button>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+
+            <!-- Right: Entry Detail -->
+            <Grid Grid.Column="1">
+                <TextBlock Text="← Chọn một Profile để xem danh sách"
+                           Foreground="#9E9E9E" FontSize="16"
+                           VerticalAlignment="Center" HorizontalAlignment="Center"
+                           Visibility="{Binding SelectedProfile, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}"/>
+
+                <materialDesign:DialogHost IsOpen="{Binding IsAddEntryDialogOpen}"
+                                           Visibility="{Binding SelectedProfile, Converter={StaticResource BoolToVis}}">
+                    <materialDesign:DialogHost.DialogContent>
+                        <Border Padding="28" MinWidth="360" Background="#1E1E3F" CornerRadius="12">
+                            <StackPanel>
+                                <TextBlock Text="Thêm Website / App" FontSize="18" FontWeight="Bold" Margin="0,0,0,16"/>
+                                <ComboBox materialDesign:HintAssist.Hint="Loại"
+                                          ItemsSource="{Binding EntryTypes}"
+                                          SelectedItem="{Binding NewEntryType}"
+                                          Style="{StaticResource MaterialDesignFloatingHintComboBox}" Margin="0,0,0,12"/>
+                                <TextBox materialDesign:HintAssist.Hint="URL hoặc tên app"
+                                         Text="{Binding NewEntryValue}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,20"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button Content="Huỷ" Style="{StaticResource MaterialDesignFlatButton}" Command="{Binding OpenAddEntryDialogCommand}" Margin="0,0,8,0"/>
+                                    <Button Content="Thêm" Style="{StaticResource MaterialDesignRaisedButton}" Command="{Binding AddEntryCommand}" materialDesign:ButtonAssist.CornerRadius="8"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </materialDesign:DialogHost.DialogContent>
+
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Top" Margin="0,0,0,16">
+                            <TextBlock Text="{Binding SelectedProfile.Name, StringFormat='Entries — {0}'}"
+                                       FontSize="20" FontWeight="Bold"/>
+                            <Button Content="+ Thêm Website / App" Command="{Binding OpenAddEntryDialogCommand}"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                                    HorizontalAlignment="Left" Margin="0,12,0,0"
+                                    materialDesign:ButtonAssist.CornerRadius="8"/>
+                        </StackPanel>
+
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{Binding SelectedProfile.Entries}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <materialDesign:Card Margin="0,0,0,8" Padding="16,12" UniformCornerRadius="10" Background="#1E1E3F">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Border Grid.Column="0" Background="#7C4DFF22" CornerRadius="8" Padding="8" Margin="0,0,12,0">
+                                                    <materialDesign:PackIcon Kind="{Binding Type, Converter={StaticResource TypeToIcon}}" Width="20" Height="20" Foreground="#7C4DFF"/>
+                                                </Border>
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Value}" FontSize="14" FontWeight="SemiBold"/>
+                                                    <TextBlock Text="{Binding Type}" Foreground="#9E9E9E" FontSize="11"/>
+                                                </StackPanel>
+                                                <Button Grid.Column="2" Style="{StaticResource MaterialDesignIconButton}"
+                                                        Command="{Binding DataContext.RemoveEntryCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                        CommandParameter="{Binding}">
+                                                    <materialDesign:PackIcon Kind="Close" Foreground="#F44336"/>
+                                                </Button>
+                                            </Grid>
+                                        </materialDesign:Card>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </DockPanel>
+                </materialDesign:DialogHost>
+            </Grid>
+        </Grid>
+    </materialDesign:DialogHost>
+</UserControl>

@@ -1,12 +1,130 @@
 <Window x:Class="DontBeLazy.WPF.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:DontBeLazy.WPF"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:vm="clr-namespace:DontBeLazy.WPF.ViewModels"
+        xmlns:views="clr-namespace:DontBeLazy.WPF.Views"
+        Title="Don't Be Lazy"
+        Width="1100" Height="720"
+        MinWidth="900" MinHeight="600"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource MaterialDesign.Brush.Background}"
+        TextElement.Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"
+        TextElement.FontFamily="{materialDesign:MaterialDesignFont}"
+        Style="{StaticResource MaterialDesignWindow}">
 
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ===== SIDEBAR ===== -->
+        <Border Grid.Column="0"
+                Background="#1A1A2E"
+                CornerRadius="0,0,0,0">
+            <DockPanel>
+                <!-- Logo -->
+                <StackPanel DockPanel.Dock="Top" Margin="24,32,24,24">
+                    <materialDesign:PackIcon Kind="BrainOutline"
+                                            Width="40" Height="40"
+                                            Foreground="#7C4DFF"
+                                            HorizontalAlignment="Left"/>
+                    <TextBlock Text="Don't Be Lazy"
+                               FontSize="18" FontWeight="Bold"
+                               Foreground="White"
+                               Margin="0,8,0,4"/>
+                    <TextBlock Text="Kỷ luật tạo nên thành công"
+                               FontSize="11"
+                               Foreground="#9E9E9E"/>
+                </StackPanel>
+
+                <!-- Nav Items -->
+                <StackPanel DockPanel.Dock="Top" Margin="0,8,0,0">
+                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            Command="{Binding NavigateToCommand}"
+                            CommandParameter="Dashboard"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Height="52" Padding="24,0">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="CheckboxMultipleOutline" Margin="0,0,16,0" Width="22" Height="22"/>
+                            <TextBlock Text="Công việc" FontSize="14"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            Command="{Binding NavigateToCommand}"
+                            CommandParameter="Profiles"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Height="52" Padding="24,0">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="ShieldCheckOutline" Margin="0,0,16,0" Width="22" Height="22"/>
+                            <TextBlock Text="Profiles" FontSize="14"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            Command="{Binding NavigateToCommand}"
+                            CommandParameter="Focus"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Height="52" Padding="24,0">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="TimerOutline" Margin="0,0,16,0" Width="22" Height="22"/>
+                            <TextBlock Text="Bắt đầu tập trung" FontSize="14"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            Command="{Binding NavigateToCommand}"
+                            CommandParameter="Analytics"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Height="52" Padding="24,0">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="ChartLine" Margin="0,0,16,0" Width="22" Height="22"/>
+                            <TextBlock Text="Thống kê" FontSize="14"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+                <!-- Bottom: Settings -->
+                <StackPanel DockPanel.Dock="Bottom" Margin="0,0,0,24">
+                    <Separator Background="#2D2D4E" Margin="24,0"/>
+                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            Command="{Binding NavigateToCommand}"
+                            CommandParameter="Settings"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Height="52" Padding="24,0">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="CogOutline" Margin="0,0,16,0" Width="22" Height="22"/>
+                            <TextBlock Text="Cài đặt" FontSize="14"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- ===== CONTENT AREA ===== -->
+        <ContentControl Grid.Column="1"
+                        Content="{Binding CurrentView}">
+            <ContentControl.Resources>
+                <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
+                    <views:DashboardView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:ProfilesViewModel}">
+                    <views:ProfilesView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:FocusSessionViewModel}">
+                    <views:FocusSessionView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:AnalyticsViewModel}">
+                    <views:AnalyticsView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
+                    <views:SettingsView/>
+                </DataTemplate>
+            </ContentControl.Resources>
+        </ContentControl>
     </Grid>
 </Window>

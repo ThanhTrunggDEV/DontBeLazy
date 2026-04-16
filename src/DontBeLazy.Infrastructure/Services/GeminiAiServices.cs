@@ -8,7 +8,7 @@ using DontBeLazy.Ports.Outbound.Services;
 namespace DontBeLazy.Infrastructure.Services;
 
 /// <summary>
-/// Giao tiếp với API của Google Gemini (Model: gemini-1.5-flash).
+/// Giao tiếp với API của Google Gemini (Model: gemini-2.5-flash).
 /// Yêu cầu phải set biến môi trường GEMINI_API_KEY hoặc truyền config.
 /// </summary>
 public class GeminiAiServices : IAiTaskAssistantPort, IAiGuiltTripPort, IAiProfileAssistantPort
