@@ -134,7 +134,7 @@
                     <!-- Version row -->
                     <Grid Margin="0,0,0,16">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <materialDesign:PackIcon Kind="UpdateOutline" Width="22" Height="22"
+                            <materialDesign:PackIcon Kind="CloudSync" Width="22" Height="22"
                                                      Foreground="#7C4DFF" Margin="0,0,10,0"
                                                      VerticalAlignment="Center"/>
                             <StackPanel>
@@ -179,7 +179,7 @@
                             Style="{StaticResource LargePrimaryButton}" Height="40"
                             Visibility="Collapsed" Click="Install_Click">
                         <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="DownloadOutline" Width="18" Height="18"
+                            <materialDesign:PackIcon Kind="Download" Width="18" Height="18"
                                                      Margin="0,0,8,0" VerticalAlignment="Center"/>
                             <TextBlock x:Name="InstallBtnText" Text="Tải và cài đặt" VerticalAlignment="Center"/>
                         </StackPanel>
