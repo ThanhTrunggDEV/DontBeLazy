@@ -71,11 +71,12 @@
 
 #### Logic reset Recurring Task:
   - Hệ thống dùng **lazy reset** — không cần background process chạy đêm. Kiểm tra khi app mở hoặc tab Tasks được focus.
-  - Điều kiện reset: `last_done_date < hôm nay` (Daily) hoặc hôm nay nằm trong danh sách ngày đã chọn (Weekly) hoặc `today >= last_done_date + X` (Custom).
+  - Điều kiện reset: `last_done_date < hôm nay` (Daily) hoặc hôm nay nằm trong danh sách ngày đã chọn (Weekly) hoặc `today >= last_done_date + X` (Custom). Mọi điều kiện so sánh `Date` đều dùng **Múi giờ địa phương (Local Time)**.
+  - **Cross-midnight rule:** Nếu phiên focus kéo dài qua nửa đêm (VD: bắt đầu thứ Ba, kết thúc thứ Tư), `last_done_date` được ghi nhận theo **ngày bắt đầu phiên** (thứ Ba) để đồng bộ với Analytics và tránh bị lỗi chu kỳ lặp.
   - Khi reset: task về trạng thái `Pending`. **Chỉ hiện 1 instance** — không backfill nếu bỏ lỡ nhiều ngày.
   - **Không reset** nếu task đang ở trạng thái `Active`.
-  - **Recurring + Abandoned:** Nếu đến ngày reset mà task đang `Abandoned`, hệ thống reset về `Pending` bình thường (xem State Machine phía trên).
-  - **Mark Done Early trên Recurring Task:** Hệ thống ghi `last_done_date = hôm nay`, Streak cộng bình thường. Task **KHÔNG reset ngay lập tức** — chờ đến lần kiểm tra tiếp theo (mở app hôm sau hoặc khi đủ điều kiện chu kỳ) mới reset về `Pending`.
+  - **Recurring + Abandoned:** Nếu đến ngày reset mà task đang `Abandoned`, hệ thống reset về `Pending` bình thường.
+  - **Hoàn thành Task trên Recurring Task:** Hệ thống ghi `last_done_date`, Streak cộng bình thường. Task **KHÔNG reset ngay lập tức** — chờ đến lần kiểm tra tiếp theo (mở app hôm sau hoặc khi đủ điều kiện chu kỳ) mới reset về `Pending`.
   - Xóa vĩnh viễn recurring task **không xóa lịch sử phiên** — Analytics vẫn giữ nguyên dữ liệu cũ.
 
 - **Luồng thay thế — Pause Recurring Task:**
@@ -109,8 +110,9 @@
     - **Theo đường dẫn file thực thi** (VD: `C:\Program Files\Code\code.exe`) — chính xác nhưng phụ thuộc vào nơi cài đặt.
     - **Theo process name** (VD: `code`) — linh hoạt hơn, không cần biết path. Hệ thống so sánh với tên process đang chạy trong Task Manager.
   - Người dùng có thể dùng nút **"Browse..."** để chọn file `.exe` — hệ thống tự điền cả path và process name.
-- **Giới hạn entries:**
-  - Mỗi Profile tối đa **50 entries** (website + app cộng lại). Nếu vượt quá, nút "Thêm" bị disable và hiển thị: *"Profile đã đạt giới hạn 50 mục."*
+- **Giới hạn entries & Empty Profile:**
+  - Mỗi Profile tối đa **50 entries** (website + app cộng lại). Nếu vượt quá, nút "Thêm" bị disable.
+  - **Empty Profile:** Hệ thống cho phép tạo Profile với 0 entries. Khi gán vào Task, Profile này đóng vai trò là "Block-All Profile" (chặn toàn bộ Internet và Apps lạ), cung cấp mức độ cô lập tuyệt đối.
 - **Validation Rules — Tên Profile:**
   - Không được để trống. Độ dài tối đa: **100 ký tự**.
 - **Luồng ngoại lệ — URL không hợp lệ:**
@@ -137,6 +139,7 @@
 - **Tác nhân:** Người dùng
 - **Mô tả:** Kích hoạt quá trình tính thời gian và hệ thống sẽ tự động bật khiên chắn Block mọi app/web nằm ngoài Whitelist.
 - **Tiền điều kiện:** Phải có ít nhất 1 task ở trạng thái `Pending` hoặc `Abandoned` (đã bấm "Thử lại") trong danh sách. Nếu danh sách trống (VD: tất cả Weekly task hôm nay không phải ngày của chúng), màn hình hiển thị Empty State với gợi ý: *"Không có task khả dụng hôm nay. Thêm task mới hoặc kiểm tra lại lịch Recurring."*
+- **Bảo mật đếm ngược (Time-Travel Protection):** Để ngăn chặn người dùng gian lận bằng cách chỉnh giờ OS Clock, đồng hồ đếm ngược sử dụng **Monotonic Clock** (hàng đợi đếm tick phần cứng của hệ thống) để tính mức chênh lệch thời gian thực. Chỉnh giờ máy tính sẽ không làm rút ngắn hoặc kết thúc sớm phiên Focus.
 - **Luồng sự kiện chính:**
   1. Tại màn hình chính, người dùng chọn task cần thực hiện.
   2. Hệ thống áp dụng trick **"Lời hứa chủ động"**: Yêu cầu đặt thời gian đếm ngược và tự tay gõ câu cam kết mục tiêu rồi mới được bấm "Start Focus".
@@ -144,16 +147,21 @@
      - **Hiển thị cấu hình Strict Mode áp dụng:** Ngay trên màn hình này, hệ thống hiển thị rõ: *"Phiên này sẽ chạy với Strict Mode: [BẬT/TẮT]"* (theo thứ tự ưu tiên per-task > global) để người dùng biết trước.
   3. Hệ thống bắt đầu bấm giờ đếm ngược. Task chuyển trạng thái sang `Active`.
   4. Hệ thống gọi kịch bản xử lý ngầm để kích hoạt khiên chặn toàn bộ internet và ứng dụng lạ, sau đó đọc **Whitelist Profile gắn với Task hiện tại** để cấp quyền chạy ngoại lệ.
-  5. Khi hết thời gian đếm ngược, hệ thống phát âm thông báo, thả ngắt chặn web/app, hiển thị chúc mừng và cập nhật **cộng dồn điểm Streak**.
+     - **Profile Snapshot:** Hệ thống chụp lại (snapshot) toàn bộ Rules của Profile tại thời điểm Start. Mọi thay đổi vào Profile này từ UI sau đó sẽ không tác động đến khiên chặn của phiên hiện tại, đảm bảo tính nguyên vẹn của khiên.
+  5. Khi hết thời gian đếm ngược, hệ thống phát âm thông báo, thả ngắt chặn web/app, cập nhật **cộng dồn điểm Streak** và hiển thị hộp thoại xác nhận tình trạng Task:
+     > *"Phiên tập trung đã kết thúc. Bạn đã hoàn thành công việc này chưa?"*
+     > - **Nút 1: "Hoàn thành Task"** -> Task chuyển sang trạng thái `Done` (với Recurring thì cập nhật `last_done_date`).
+     > - **Nút 2: "Vẫn cần làm thêm"** -> Task giữ nguyên trạng thái `Pending` để sẵn sàng cho các phiên Pomodoro tiếp theo.
+
 - **Luồng thay thế — Hoàn thành sớm hơn timer (Mark Done Early):**
   - Trong lúc đếm giờ, nếu người dùng đã xong việc trước khi hết giờ, có thể bấm nút **"Hoàn thành sớm ✓"** (khác với nút Stop/Give up).
   - Hệ thống hiện xác nhận: *"Bạn đã hoàn thành task trước thời hạn? Điều này sẽ kết thúc phiên và đánh dấu task là Done."* → Bấm "Xác nhận".
-  - Hệ thống kết thúc phiên, ghi nhận thời gian thực tế đã tập trung, mở khóa app/web, Task → `Done`, Streak được cộng bình thường.
+  - Hành động này **gộp 2 thao tác:** Kết thúc phiên SỚM + Hoàn thành Task LUÔN. Hệ thống ghi nhận thời gian thực tế, mở khóa app/web, Task → `Done`, Streak được cộng.
   - **Với Recurring Task:** Hệ thống ghi `last_done_date = hôm nay`. Task không reset ngay — chờ đến lần kiểm tra tiếp theo mới về `Pending`.
-- **Luồng thay thế — Nhiều phiên Focus cho 1 Task (Multi-Session):**
-  - Một task `Pending` có thể được focus nhiều lần (VD: 3 phiên Pomodoro). Mỗi phiên tạo ra 1 bản ghi session riêng trong DB.
-  - Analytics hiển thị tổng thời gian tập trung của **tất cả các phiên** gộp lại theo task/theo ngày.
-  - Streak chỉ cần có ít nhất 1 phiên **hoàn thành** trong ngày, không cần tất cả phiên đều thành công.
+- **Luồng thay thế — Nhiều phiên Focus cho 1 Task (Multi-Session / Pomodoro):**
+  - Nhờ cơ chế "Vẫn cần làm thêm" ở Bước 5 luồng chính, một task `Pending` (One-time hoặc Recurring) có thể được focus nhiều lần bằng cách lặp lại phiên.
+  - Mỗi phiên tạo ra 1 bản ghi session riêng trong DB. Analytics hiển thị tổng thời gian tập trung của tất cả các phiên.
+  - Streak chỉ cần có ít nhất 1 phiên **hoán thành phiên** trong ngày (bất kể task đã Done hay chưa).
 - **Luồng thay thế — Dừng sớm (Strict Mode Tắt — Kích hoạt Cản Bước Tâm Lý):**
   - Trong quá trình đếm giờ, người dùng nhấp vào nút "Stop/Give up".
   - Chức năng **Guilt-tripping** và **Loss Aversion** kích hoạt: Hệ thống hiện thông báo đỏ *"Bạn thực sự muốn vứt bỏ công sức và mất đi chuỗi Streak [X] ngày sao?"*.
@@ -167,6 +175,7 @@
     > *"Phiên Focus của bạn đã bị gián đoạn. Bạn muốn: **Tiếp tục** (tiếp tục đếm ngược từ chỗ dừng) hay **Đặt lại** (xóa bỏ phiên hiện tại)?"*
   - Thời gian sleep không được tính vào Analytics.
   - Trong Strict Mode: luôn tự động **Tiếp tục**, không hiển thị hộp thoại chọn.
+  - **Hibernation Drift (Phiên kéo dài qua ngày do Sleep):** Nếu thời gian ngủ kéo dài qua nhiều ngày (VD: Sleep 3 ngày mới mở lại), thời gian ngủ không tính vào tổng bộ đếm. Tuy nhiên, nếu user chọn "Tiếp tục" và hoàn thành, phiên đó vẫn lấy **Ngày bắt đầu gốc** làm cơ sở ghi nhận dữ liệu `last_done_date` và Analytics. Chuỗi Streak của những ngày Sleep trống sẽ bị đứt.
 - **Luồng ngoại lệ — Orphan Session (app bị force-close ngoài Strict Mode):**
   - Nếu app bị tắt đột ngột (không phải Strict Mode), checkpoint vẫn được ghi trong DB.
   - Khi app khởi động lại, nếu phát hiện checkpoint chưa kết thúc của phiên **không phải Strict**: hệ thống hiển thị: *"Có một phiên Focus chưa hoàn thành trước đó. Bạn muốn: **Khôi phục** hay **Bỏ qua** (xóa phiên đó)?"*
