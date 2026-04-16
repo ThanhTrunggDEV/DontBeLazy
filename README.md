@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="./assets/logo.png" alt="Don't Be Lazy Logo" width="180" />
+
 # 🧱 Don't Be Lazy
 
 **Ép bản thân làm việc bằng cách chặn tất cả những thứ không liên quan.**
