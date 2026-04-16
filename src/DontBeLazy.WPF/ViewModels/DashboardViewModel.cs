@@ -176,9 +176,37 @@ public partial class DashboardViewModel : ObservableObject
         AiResultText = string.Empty;
         IsAiLoading = true;
         IsAiDialogOpen = true;
-        try { AiResultText = await _taskUseCase.AiBreakdownTaskAsync(task.Id); }
-        catch (Exception ex) { AiResultText = $"Lỗi: {ex.Message}"; }
-        finally { IsAiLoading = false; }
+        try 
+        { 
+            var jsonResult = await _taskUseCase.AiBreakdownTaskAsync(task.Id); 
+            // Clean Markdown
+            var cleanStr = jsonResult.Replace("```json", "").Replace("```", "").Trim();
+            
+            var parsed = System.Text.Json.JsonDocument.Parse(cleanStr);
+            var subtasks = parsed.RootElement.EnumerateArray().Select(x => x.GetString());
+            
+            int addedCount = 0;
+            foreach (var sub in subtasks)
+            {
+                if (!string.IsNullOrWhiteSpace(sub))
+                {
+                    // Allocate 25 minutes for each subtask and inherit profile if any
+                    await _taskUseCase.CreateTaskAsync(sub, 25, task.ProfileId, null);
+                    addedCount++;
+                }
+            }
+
+            AiResultText = $"Đã chia nhỏ thành công {addedCount} sub-tasks cho nhiệm vụ này.";
+            await LoadDataAsync();
+        }
+        catch (Exception ex) 
+        { 
+            AiResultText = $"Lỗi: Không thể phân tích dữ liệu AI ({ex.Message}).\n\nOriginal Text:\n{AiResultText}"; 
+        }
+        finally 
+        { 
+            IsAiLoading = false; 
+        }
     }
 
     [RelayCommand]

@@ -44,6 +44,40 @@
             </Border>
         </materialDesign:DialogHost.DialogContent>
 
+    <materialDesign:DialogHost IsOpen="{Binding IsClearHistoryDialogOpen}">
+        <materialDesign:DialogHost.DialogContent>
+            <Border Padding="36" MinWidth="400" Background="#1E1E3F" CornerRadius="16">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                        <materialDesign:PackIcon Kind="DeleteSweepOutline" Width="28" Height="28"
+                                                 Foreground="#F44336" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Xoá Lịch Sử" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    
+                    <TextBlock Text="Chọn khoảng thời gian muốn xoá lịch sử:"
+                               Foreground="#9E9E9E" FontSize="13" Margin="0,0,0,24"/>
+                    
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,32">
+                        <DatePicker materialDesign:HintAssist.Hint="Từ ngày"
+                                    SelectedDate="{Binding HistoryStartDate}"
+                                    Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
+                                    Width="130" Margin="0,0,20,0"/>
+                        <DatePicker materialDesign:HintAssist.Hint="Đến ngày"
+                                    SelectedDate="{Binding HistoryEndDate}"
+                                    Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
+                                    Width="130"/>
+                    </StackPanel>
+                    
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="Huỷ" Style="{StaticResource MaterialDesignFlatButton}"
+                                Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="0,0,12,0"/>
+                        <Button Content="Xoá dữ liệu" Style="{StaticResource LargePrimaryButton}" Background="#F44336" BorderBrush="#F44336"
+                                Command="{Binding ClearHistoryCommand}" Height="40"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </materialDesign:DialogHost.DialogContent>
+
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="40,36,40,36" MaxWidth="620">
 
@@ -216,6 +250,35 @@
                               Style="{StaticResource MaterialDesignOutlinedComboBox}"/>
                 </StackPanel>
             </materialDesign:Card>
+            <!-- Data Management Section -->
+            <TextBlock Text="QUẢN LÝ DỮ LIỆU" FontSize="11" FontWeight="Bold" Foreground="#7C4DFF"
+                       Margin="0,0,0,12"/>
+
+            <materialDesign:Card Padding="0" UniformCornerRadius="16" Background="#1E1E3F" Margin="0,0,0,28">
+                <Grid Margin="24,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Border Grid.Column="0" Background="#F4433622" CornerRadius="10"
+                            Padding="10" Margin="0,0,16,0" VerticalAlignment="Center">
+                        <materialDesign:PackIcon Kind="History" Width="20" Height="20"
+                                                 Foreground="#F44336"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="Xoá lịch sử tập trung" FontSize="15" FontWeight="SemiBold"/>
+                        <TextBlock Text="Dọn dẹp dữ liệu cũ để giải phóng bộ nhớ"
+                                   Foreground="#9E9E9E" FontSize="12" Margin="0,3,0,0"/>
+                    </StackPanel>
+                    <Button Grid.Column="2" Content="Xoá lịch sử"
+                            Command="{Binding OpenClearHistoryDialogCommand}"
+                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                            Foreground="#F44336" BorderBrush="#F44336"
+                            materialDesign:ButtonAssist.CornerRadius="10"
+                            VerticalAlignment="Center"/>
+                </Grid>
+            </materialDesign:Card>
 
             <!-- Update Section -->
             <TextBlock Text="CẬP NHẬT" FontSize="11" FontWeight="Bold" Foreground="#7C4DFF"
@@ -296,5 +359,6 @@
 
         </StackPanel>
     </ScrollViewer>
+    </materialDesign:DialogHost>
     </materialDesign:DialogHost>
 </UserControl>

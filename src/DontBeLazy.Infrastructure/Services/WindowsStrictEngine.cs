@@ -18,6 +18,9 @@ public class WindowsStrictEngine : IStrictEnginePort, IDisposable
     [DllImport("user32.dll")]
     private static extern bool LockWorkStation();
 
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    private static extern int MessageBox(IntPtr hWnd, string text, string caption, uint type);
+
     private readonly string _hostsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "drivers", "etc", "hosts");
     private ManagementEventWatcher? _processStartWatcher;
     private System.Threading.CancellationTokenSource? _pollingCts;
@@ -93,7 +96,7 @@ public class WindowsStrictEngine : IStrictEnginePort, IDisposable
     {
         RestoreHosts(); // Always ensure a clean state before blocking
 
-        try
+        RetryFileOperation(() =>
         {
             if (!File.Exists(_hostsPath)) return;
 
@@ -101,7 +104,7 @@ public class WindowsStrictEngine : IStrictEnginePort, IDisposable
             if (!hostsContent.Contains("### DONTBELAZY BLOCK START ###"))
             {
                 var blockLines = "\n### DONTBELAZY BLOCK START ###\n";
-                foreach(var d in domainsToBlock)
+                foreach (var d in domainsToBlock)
                 {
                     blockLines += $"127.0.0.1 {d}\n";
                 }
@@ -109,23 +112,19 @@ public class WindowsStrictEngine : IStrictEnginePort, IDisposable
                 File.AppendAllText(_hostsPath, blockLines);
                 FlushDns();
             }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error modifying hosts file. Run as Admin? {ex.Message}");
-        }
+        });
     }
 
     private void RestoreHosts()
     {
-        try
+        RetryFileOperation(() =>
         {
             if (!File.Exists(_hostsPath)) return;
 
             var lines = File.ReadAllLines(_hostsPath);
             var newLines = new List<string>();
             bool skip = false;
-            foreach(var line in lines)
+            foreach (var line in lines)
             {
                 if (line.Contains("### DONTBELAZY BLOCK START ###")) skip = true;
                 if (!skip) newLines.Add(line);
@@ -133,10 +132,40 @@ public class WindowsStrictEngine : IStrictEnginePort, IDisposable
             }
             File.WriteAllLines(_hostsPath, newLines);
             FlushDns();
-        }
-        catch
+        });
+    }
+
+    private void RetryFileOperation(Action fileAction)
+    {
+        int retries = 5;
+        int delayMs = 200;
+        for (int i = 0; i < retries; i++)
         {
-            // Require Admin rights implicitly
+            try
+            {
+                fileAction();
+                return;
+            }
+            catch (IOException)
+            {
+                if (i == retries - 1)
+                {
+                    MessageBox(IntPtr.Zero, 
+                        "DontBeLazy không thể chặn Website vì file hosts đang bị Hệ điều hành (hoặc Antivirus) khoá.\n\nVui lòng tạm thời tắt tính năng bảo vệ hệ thống của phần mềm diệt virus hoặc thêm Ngoại lệ (Exclusions).", 
+                        "Lỗi phân quyền", 
+                        0x30); // 0x30 = MB_ICONWARNING
+                    return;
+                }
+                System.Threading.Thread.Sleep(delayMs);
+            }
+            catch (Exception ex)
+            {
+                MessageBox(IntPtr.Zero, 
+                    $"Lỗi cấp quyền (System): {ex.Message}\nKhông thể áp dụng chế độ tập trung cho trình duyệt.", 
+                    "Lỗi hệ thống", 
+                    0x10); // 0x10 = MB_ICONERROR
+                return;
+            }
         }
     }
 

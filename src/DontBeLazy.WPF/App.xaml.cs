@@ -15,9 +15,23 @@ namespace DontBeLazy.WPF;
 public partial class App : Application
 {
     public static ServiceProvider Services { get; private set; } = null!;
+    private static System.Threading.Mutex? _mutex;
 
     protected override void OnStartup(StartupEventArgs e)
     {
+        const string appName = "DontBeLazy_SingleInstance_Mutex";
+        _mutex = new System.Threading.Mutex(true, appName, out bool createdNew);
+        if (!createdNew)
+        {
+            MessageBox.Show("Ứng dụng Don't Be Lazy đang được chạy.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+            Application.Current.Shutdown();
+            return;
+        }
+
+        // Global Exception Handling
+        this.DispatcherUnhandledException += App_DispatcherUnhandledException;
+        System.Threading.Tasks.TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+
         base.OnStartup(e);
 
         var serviceCollection = new ServiceCollection();
@@ -110,12 +124,12 @@ public partial class App : Application
         services.AddInfrastructureServices();
 
         // Register ViewModels
-        services.AddTransient<MainViewModel>();
-        services.AddTransient<DashboardViewModel>();
-        services.AddTransient<ProfilesViewModel>();
-        services.AddTransient<FocusSessionViewModel>();
-        services.AddTransient<AnalyticsViewModel>();
-        services.AddTransient<SettingsViewModel>();
+        services.AddSingleton<MainViewModel>();
+        services.AddSingleton<DashboardViewModel>();
+        services.AddSingleton<ProfilesViewModel>();
+        services.AddSingleton<FocusSessionViewModel>();
+        services.AddSingleton<AnalyticsViewModel>();
+        services.AddSingleton<SettingsViewModel>();
         services.AddSingleton<UpdaterService>();
         services.AddSingleton<UpdateViewModel>();
 
@@ -126,6 +140,21 @@ public partial class App : Application
     protected override void OnExit(ExitEventArgs e)
     {
         Services?.Dispose();
+        _mutex?.ReleaseMutex();
+        _mutex?.Dispose();
         base.OnExit(e);
+    }
+
+    private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+    {
+        // Prevent application from crashing due to unhandled UI exceptions
+        e.Handled = true;
+        // Optionally log the exception to a file here
+    }
+
+    private void TaskScheduler_UnobservedTaskException(object? sender, System.Threading.Tasks.UnobservedTaskExceptionEventArgs e)
+    {
+        // Prevent background task exceptions (like file IO in Strict Engine) from crashing the GC thread
+        e.SetObserved();
     }
 }

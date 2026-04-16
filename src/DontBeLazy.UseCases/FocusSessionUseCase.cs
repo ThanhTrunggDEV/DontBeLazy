@@ -135,4 +135,39 @@ public class FocusSessionUseCase : IFocusSessionUseCase
         var dto = _sessionState.CurrentSession == null ? null : DtoMapper.ToDto(_sessionState.CurrentSession);
         return Task.FromResult(dto);
     }
+
+    public async Task<SessionHistoryDto?> GetIncompleteSessionAsync()
+    {
+        var session = await _sessionRepository.GetIncompleteSessionAsync();
+        return session == null ? null : DtoMapper.ToDto(session);
+    }
+
+    public async Task<SessionHistoryDto> RestoreSessionAsync(Guid sessionId)
+    {
+        var session = await _sessionRepository.GetByIdAsync(new SessionId(sessionId));
+        if (session == null || session.CompletionStatus != null)
+            throw new InvalidOperationException("Session not found or already completed.");
+
+        if (session.Snapshots.Count > 0)
+        {
+            await _processPort.ApplyProfileAsync(session.Snapshots);
+        }
+
+        // We don't have the original Profile object to put back into state, but that's okay, 
+        // the Snapshots already carry everything the StrictEngine needs.
+        _sessionState.StartSession(session, null);
+        _sessionState.UpdateLastTick(_clockPort.GetTickCount());
+
+        return DtoMapper.ToDto(session);
+    }
+
+    public async Task DiscardSessionAsync(Guid sessionId)
+    {
+        var session = await _sessionRepository.GetByIdAsync(new SessionId(sessionId));
+        if (session == null || session.CompletionStatus != null) return;
+
+        session.CompleteSession(DontBeLazy.Domain.Enums.CompletionStatus.Abandoned);
+        await _sessionRepository.UpdateAsync(session);
+        await _unitOfWork.SaveChangesAsync();
+    }
 }

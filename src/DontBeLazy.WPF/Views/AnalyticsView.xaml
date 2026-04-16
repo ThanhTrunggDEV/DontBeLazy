@@ -14,13 +14,31 @@
         <StackPanel Margin="40,36,40,36">
 
             <!-- Header -->
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                <materialDesign:PackIcon Kind="ChartBarStacked" Width="32" Height="32"
-                                         Foreground="#7C4DFF" Margin="0,0,14,0"
-                                         VerticalAlignment="Center"/>
-                <TextBlock Text="Thống kê tập trung" FontSize="26" FontWeight="Bold"
-                           VerticalAlignment="Center"/>
-            </StackPanel>
+            <!-- Header -->
+            <Grid Margin="0,0,0,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="ChartBarStacked" Width="32" Height="32"
+                                             Foreground="#7C4DFF" Margin="0,0,14,0"
+                                             VerticalAlignment="Center"/>
+                    <TextBlock Text="Thống kê tập trung" FontSize="26" FontWeight="Bold"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+                
+                <Button Grid.Column="1" Command="{Binding ExportCsvCommand}"
+                        Style="{StaticResource MaterialDesignOutlinedButton}"
+                        Foreground="#7C4DFF" BorderBrush="#7C4DFF"
+                        materialDesign:ButtonAssist.CornerRadius="10"
+                        VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="DownloadOutline" Width="18" Height="18" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Xuất dữ liệu" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
             <TextBlock Text="Theo dõi hành trình kỷ luật của bạn"
                        Foreground="#9E9E9E" FontSize="14" Margin="0,0,0,32"/>
 
