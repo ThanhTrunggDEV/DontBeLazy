@@ -56,18 +56,20 @@ jobs:
             -p:Version="${{ steps.ver.outputs.semver }}" `
             --output publish/
 
-      # ── 6. Install WiX v4 ──────────────────────────────────────
-      - name: Install WiX
-        run: dotnet tool install --global wix --version 4.*
-
-      # ── 7. Add WiX UI extension ────────────────────────────────
-      - name: Add WiX UI extension
-        run: wix extension add --global WixToolset.UI.wixext
-
-      # ── 8. Build MSI ───────────────────────────────────────────
+      # ── 6-8. Install WiX v4, add UI extension, build MSI ───────
       - name: Build MSI
         shell: pwsh
         run: |
+          # Install WiX globally
+          dotnet tool install --global wix --version 4.*
+
+          # Refresh PATH so wix.exe is available in this step
+          $env:PATH = [System.Environment]::GetEnvironmentVariable("PATH", "Machine") + ";" +
+                      [System.Environment]::GetEnvironmentVariable("PATH", "User")
+
+          # Add UI extension
+          wix extension add --global WixToolset.UI.wixext
+
           $ver    = "${{ steps.ver.outputs.version }}"
           $semver = "${{ steps.ver.outputs.semver }}"
           wix build installer/Product.wxs `
@@ -76,6 +78,7 @@ jobs:
             -d PublishDir="publish/" `
             -o "DontBeLazy-$ver-win-x64.msi" `
             -arch x64
+
 
       # ── 9. Package portable zip ────────────────────────────────
       - name: Create portable zip
