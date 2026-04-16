@@ -89,3 +89,54 @@ Mũi tên `─>` thể hiện "Reference tới":
 1. **Dễ Test (Testability):** Có thể viết Unit Test cho tầng `UseCases` cực kì dễ dàng bằng cách Mock các Outbound Ports (giả lập thao tác chặn app mà không cần chạy code chặn thật).
 2. **Ngăn chặn Spagetti Code:** Giao diện WPF thuần túy chỉ có XAML và logic hiển thị, không chứa code cào Database hay gọi system registry. Mọi bug về Business sẽ chỉ nằm duy nhất trong cụm `UseCases`.
 3. **Plug-and-Play Hạ tầng:** Nếu tương lai không xài SQLite mà đổi sang file JSON, chỉ cần viết một file thư viện `JsonDataAccess` implement lại các Outbound Ports là xong, không phải sửa dù chỉ 1 dòng ở tầng WPF UI hay UseCases.
+
+---
+
+## 7. Cấu trúc Thư mục Vật lý (Folder Structure)
+
+Khi implement, dự án sẽ có cấu trúc vật lý tĩnh (các project .csproj) mapping 1-1 với thiết kế kiến trúc ở trên như sau:
+
+``text
+DontBeLazy/
+├── DontBeLazy.slnx                     # Solution File
+├── src/
+│   ├── DontBeLazy.Domain/              # Class Library (.NET Core)
+│   │   ├── Entities/                   # Task, Profile, SessionHistory...
+│   │   ├── ValueObjects/
+│   │   └── DontBeLazy.Domain.csproj
+│   │
+│   ├── DontBeLazy.Ports/               # Class Library (.NET Core)
+│   │   ├── Inbound/                    # ITaskUseCase, ...
+│   │   ├── Outbound/                   # ITaskRepository, IStrictEnginePort, ...
+│   │   └── DontBeLazy.Ports.csproj
+│   │
+│   ├── DontBeLazy.UseCases/            # Class Library (.NET Core)
+│   │   ├── Tasks/                      # StartFocusSessionUseCase...
+│   │   ├── Profiles/
+│   │   └── DontBeLazy.UseCases.csproj
+│   │
+│   ├── DontBeLazy.Infrastructure/      # Class Library (Windows Specific)
+│   │   ├── Windows/                    # ProcessKillerService, ClockService...
+│   │   ├── Proxy/                      # ProxyShieldService...
+│   │   └── DontBeLazy.Infrastructure.csproj
+│   │
+│   ├── DontBeLazy.SqliteDataAccess/    # Class Library (EF Core SQLite)
+│   │   ├── Persistence/                # AppDbContext, Entity Configurations
+│   │   ├── Repositories/               # DbTaskRepository, DbProfileRepository...
+│   │   ├── Migrations/                 # EF Core Migrations
+│   │   └── DontBeLazy.SqliteDataAccess.csproj
+│   │
+│   └── DontBeLazy.WPF/                 # WPF Application (UI & Startup)
+│       ├── Core/                       # Cấu hình DI (ServiceCollection)
+│       ├── Views/                      # DashboardView.xaml, FocusSessionView.xaml...
+│       ├── ViewModels/                 # MainViewModel.cs, TaskListViewModel.cs...
+│       ├── Helpers/                    # UI Converters, XAML Behaviors
+│       ├── App.xaml                    # Bootstrap
+│       └── DontBeLazy.WPF.csproj
+│
+└── docs/                               # Tài liệu dự án
+    ├── system_architecture.md
+    ├── database_schema.md
+    ├── ba_document.md
+    └── use_cases.md
+``
