@@ -18,6 +18,9 @@ public class WindowsStrictEngine : IStrictEnginePort, IDisposable
     [DllImport("user32.dll")]
     private static extern bool LockWorkStation();
 
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    private static extern int MessageBox(IntPtr hWnd, string text, string caption, uint type);
+
     private readonly string _hostsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "drivers", "etc", "hosts");
     private ManagementEventWatcher? _processStartWatcher;
     private System.Threading.CancellationTokenSource? _pollingCts;
@@ -147,16 +150,20 @@ public class WindowsStrictEngine : IStrictEnginePort, IDisposable
             {
                 if (i == retries - 1)
                 {
-                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                        System.Windows.MessageBox.Show("DontBeLazy không thể chặn Website vì file hosts đang bị Hệ điều hành (hoặc Antivirus) khoá.\n\nVui lòng tạm thời tắt tính năng bảo vệ hệ thống của phần mềm diệt virus hoặc thêm Ngoại lệ (Exclusions).", "Lỗi phân quyền", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning));
+                    MessageBox(IntPtr.Zero, 
+                        "DontBeLazy không thể chặn Website vì file hosts đang bị Hệ điều hành (hoặc Antivirus) khoá.\n\nVui lòng tạm thời tắt tính năng bảo vệ hệ thống của phần mềm diệt virus hoặc thêm Ngoại lệ (Exclusions).", 
+                        "Lỗi phân quyền", 
+                        0x30); // 0x30 = MB_ICONWARNING
                     return;
                 }
                 System.Threading.Thread.Sleep(delayMs);
             }
             catch (Exception ex)
             {
-                System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                    System.Windows.MessageBox.Show($"Lỗi cấp quyền (System): {ex.Message}\nKhông thể áp dụng chế độ tập trung cho trình duyệt.", "Lỗi hệ thống", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error));
+                MessageBox(IntPtr.Zero, 
+                    $"Lỗi cấp quyền (System): {ex.Message}\nKhông thể áp dụng chế độ tập trung cho trình duyệt.", 
+                    "Lỗi hệ thống", 
+                    0x10); // 0x10 = MB_ICONERROR
                 return;
             }
         }
