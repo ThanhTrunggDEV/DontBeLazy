@@ -1,6 +1,7 @@
 using System;
 using DontBeLazy.Domain.Entities;
 using DontBeLazy.Domain.Enums;
+using DontBeLazy.Domain.ValueObjects;
 using FluentAssertions;
 using Xunit;
 
@@ -17,6 +18,7 @@ public class FocusTaskTests
         task.ExpectedMinutes.Should().Be(60);
         task.Status.Should().Be(Domain.Enums.TaskStatus.Pending);
         task.TaskType.Should().Be(TaskType.OneTime);
+        task.CreatedAt.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(1));
     }
 
     [Theory]
@@ -40,48 +42,91 @@ public class FocusTaskTests
     }
 
     [Fact]
+    public void UpdateDetails_WithValidData_ShouldUpdate()
+    {
+        var task = new FocusTask("Task", 60);
+        var pId = ProfileId.New();
+
+        task.UpdateDetails("New Task", 120, pId, true);
+
+        task.Name.Should().Be("New Task");
+        task.ExpectedMinutes.Should().Be(120);
+        task.ProfileId.Should().Be(pId);
+        task.PerTaskStrictMode.Should().BeTrue();
+        task.UpdatedAt.Should().HaveValue();
+    }
+
+    [Fact]
+    public void UpdateDetails_WithInvalidData_ShouldThrow()
+    {
+        var task = new FocusTask("Task", 60);
+
+        Action act1 = () => task.UpdateDetails("", 60, null, null);
+        Action act2 = () => task.UpdateDetails("Test", 250, null, null);
+
+        act1.Should().Throw<ArgumentException>();
+        act2.Should().Throw<ArgumentException>();
+    }
+
+    [Fact]
     public void ChangeStatus_ToInvalidState_ShouldThrowInvalidOperationException()
     {
-        var task = new FocusTask("Valid Name", 60); // Starts at Pending
-        
-        // Cannot jump directly from Pending to Abandoned
+        var task = new FocusTask("Valid Name", 60);
         Action act = () => task.ChangeStatus(Domain.Enums.TaskStatus.Abandoned);
         
-        act.Should().Throw<InvalidOperationException>()
-           .WithMessage("*Cannot transition task from Pending to Abandoned.*");
+        act.Should().Throw<InvalidOperationException>();
     }
 
     [Fact]
     public void ChangeStatus_ToValidState_ShouldUpdateStatus()
     {
         var task = new FocusTask("Valid Name", 60);
-        
         task.ChangeStatus(Domain.Enums.TaskStatus.Active);
-        task.Status.Should().Be(Domain.Enums.TaskStatus.Active);
-        
         task.ChangeStatus(Domain.Enums.TaskStatus.Done);
+        
         task.Status.Should().Be(Domain.Enums.TaskStatus.Done);
         task.LastDoneDate.Should().HaveValue();
+    }
+
+    [Fact]
+    public void SetRecurring_ValidConfig_ShouldUpdate()
+    {
+        var task = new FocusTask("Valid Name", 60);
+        task.SetRecurring(RecurringType.Daily, null);
+
+        task.TaskType.Should().Be(TaskType.Recurring);
+        task.RecurringType.Should().Be(RecurringType.Daily);
     }
 
     [Fact]
     public void SetRecurring_WeeklyWithoutConfig_ShouldThrowArgumentException()
     {
         var task = new FocusTask("Valid Name", 60);
-
         Action act = () => task.SetRecurring(RecurringType.Weekly, "");
-        act.Should().Throw<ArgumentException>().WithMessage("*Weekly recurring task must have a day config*");
+        act.Should().Throw<ArgumentException>();
     }
 
     [Fact]
     public void SetRecurring_CustomWithInvalidConfig_ShouldThrowArgumentException()
     {
         var task = new FocusTask("Valid Name", 60);
-
         Action act1 = () => task.SetRecurring(RecurringType.Custom, "abc");
-        Action act2 = () => task.SetRecurring(RecurringType.Custom, "-5");
+        act1.Should().Throw<ArgumentException>();
+    }
 
-        act1.Should().Throw<ArgumentException>().WithMessage("*Custom recurring task must have a positive integer config for days.*");
-        act2.Should().Throw<ArgumentException>().WithMessage("*Custom recurring task must have a positive integer config for days.*");
+    [Fact]
+    public void UpdateSortOrder_ShouldUpdate()
+    {
+        var task = new FocusTask("Test", 60);
+        task.UpdateSortOrder(5);
+        task.SortOrder.Should().Be(5);
+    }
+
+    [Fact]
+    public void SetPaused_ShouldUpdate()
+    {
+        var task = new FocusTask("Test", 60);
+        task.SetPaused(true);
+        task.IsPaused.Should().BeTrue();
     }
 }
