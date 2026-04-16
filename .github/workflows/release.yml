@@ -18,7 +18,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # full history for changelog
+          fetch-depth: 0
 
       # ── 2. Setup .NET 9 ────────────────────────────────────────
       - name: Setup .NET 9
@@ -26,14 +26,14 @@ jobs:
         with:
           dotnet-version: "9.0.x"
 
-      # ── 3. Extract version from tag (strip leading 'v') ───────
+      # ── 3. Extract version from tag ────────────────────────────
       - name: Extract version
         id: ver
         shell: bash
         run: |
-          TAG="${GITHUB_REF_NAME}"            # e.g. v1.2.3
-          VER="${TAG#v}"                      # e.g. 1.2.3
-          echo "tag=$TAG"   >> "$GITHUB_OUTPUT"
+          TAG="${GITHUB_REF_NAME}"        # e.g. v1.2.3
+          VER="${TAG#v}"                  # e.g. 1.2.3
+          echo "tag=$TAG"     >> "$GITHUB_OUTPUT"
           echo "version=$VER" >> "$GITHUB_OUTPUT"
 
       # ── 4. Restore ────────────────────────────────────────────
@@ -42,6 +42,7 @@ jobs:
 
       # ── 5. Publish — win-x64 self-contained single file ───────
       - name: Publish
+        shell: pwsh
         run: |
           dotnet publish src/DontBeLazy.WPF/DontBeLazy.WPF.csproj `
             --configuration Release `
@@ -49,38 +50,55 @@ jobs:
             --self-contained true `
             -p:PublishSingleFile=true `
             -p:IncludeNativeLibrariesForSelfExtract=true `
-            -p:Version=${{ steps.ver.outputs.version }} `
             -p:EnableCompressionInSingleFile=true `
+            -p:Version="${{ steps.ver.outputs.version }}" `
             --output publish/
 
-      # ── 6. Package into zip ────────────────────────────────────
-      - name: Create zip
+      # ── 6. Install WiX v4 toolset ─────────────────────────────
+      - name: Install WiX
+        run: dotnet tool install --global wix --version 4.*
+
+      # ── 7. Add WiX UI extension ───────────────────────────────
+      - name: Add WiX UI extension
+        run: wix extension add --global WixToolset.UI.wixext
+
+      # ── 8. Build MSI ──────────────────────────────────────────
+      - name: Build MSI
+        shell: pwsh
+        run: |
+          $ver = "${{ steps.ver.outputs.version }}"
+          wix build installer/Product.wxs `
+            -ext WixToolset.UI.wixext `
+            -d Version="$ver" `
+            -d PublishDir="publish/" `
+            -o "DontBeLazy-$ver-win-x64.msi" `
+            -arch x64
+
+      # ── 9. Package portable zip ───────────────────────────────
+      - name: Create portable zip
         shell: pwsh
         run: |
           $ver = "${{ steps.ver.outputs.version }}"
           Compress-Archive `
             -Path publish/* `
-            -DestinationPath "DontBeLazy-$ver-win-x64.zip" `
+            -DestinationPath "DontBeLazy-$ver-win-x64-portable.zip" `
             -Force
 
-      # ── 7. Generate release notes from CHANGELOG.md ───────────
+      # ── 10. Generate release notes ────────────────────────────
       - name: Extract changelog section
         id: notes
         shell: pwsh
         run: |
-          $tag  = "${{ steps.ver.outputs.tag }}"
-          $ver  = "${{ steps.ver.outputs.version }}"
-          $cl   = Get-Content CHANGELOG.md -Raw -ErrorAction SilentlyContinue
-          # Extract the block between this version header and the next
+          $ver = "${{ steps.ver.outputs.version }}"
+          $cl  = Get-Content CHANGELOG.md -Raw -ErrorAction SilentlyContinue
           if ($cl -match "(?s)## \[$ver\][^\n]*\n(.+?)(?=\n## \[|\z)") {
             $notes = $Matches[1].Trim()
           } else {
             $notes = "See [CHANGELOG.md](CHANGELOG.md) for details."
           }
-          # Write to file to avoid multiline output issues
           $notes | Out-File -FilePath release_notes.md -Encoding utf8
 
-      # ── 8. Create GitHub Release ───────────────────────────────
+      # ── 11. Create GitHub Release ─────────────────────────────
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -90,4 +108,5 @@ jobs:
           draft: false
           prerelease: ${{ contains(steps.ver.outputs.tag, '-') }}
           files: |
-            DontBeLazy-${{ steps.ver.outputs.version }}-win-x64.zip
+            DontBeLazy-${{ steps.ver.outputs.version }}-win-x64.msi
+            DontBeLazy-${{ steps.ver.outputs.version }}-win-x64-portable.zip
