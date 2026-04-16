@@ -18,13 +18,26 @@ public partial class SettingsView : UserControl
 
     private async void UserControl_Loaded(object sender, RoutedEventArgs e)
     {
-        if (DataContext is SettingsViewModel vm)
-            await vm.LoadDataCommand.ExecuteAsync(null);
+        try
+        {
+            if (DataContext is SettingsViewModel vm)
+                await vm.LoadDataCommand.ExecuteAsync(null);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[SettingsView] Load failed: {ex.Message}");
+        }
 
-        // Wire update panel
-        _updateVm = App.Services.GetRequiredService<UpdateViewModel>();
-        _updateVm.PropertyChanged += OnUpdateVmChanged;
-        RefreshUpdateUI();
+        try
+        {
+            _updateVm = App.Services.GetRequiredService<UpdateViewModel>();
+            _updateVm.PropertyChanged += OnUpdateVmChanged;
+            RefreshUpdateUI();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[SettingsView] UpdateVM init failed: {ex.Message}");
+        }
     }
 
     private void OnUpdateVmChanged(object? sender, PropertyChangedEventArgs e)

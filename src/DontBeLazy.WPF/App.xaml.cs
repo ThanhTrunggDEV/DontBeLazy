@@ -1,3 +1,4 @@
+using System.IO;
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using DontBeLazy.Infrastructure;
@@ -52,7 +53,8 @@ public partial class App : Application
     private void ConfigureServices(IServiceCollection services)
     {
         // Register lower layers (for DI wiring only)
-        services.AddSqliteDataAccess("Data Source=dontbelazy.db");
+        var dbPath = Path.Combine(AppContext.BaseDirectory, "dontbelazy.db");
+        services.AddSqliteDataAccess($"Data Source={dbPath}");
         services.AddUseCases();
         services.AddInfrastructureServices();
 
