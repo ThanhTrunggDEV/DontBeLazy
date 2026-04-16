@@ -54,6 +54,38 @@
 - **Luồng ngoại lệ — Xóa task đang ở trạng thái `Active`:**
   - Hệ thống từ chối và hiển thị: *"Không thể xóa task đang trong phiên Focus. Hãy kết thúc hoặc hủy phiên hiện tại trước."*
 - **Hậu điều kiện:** Dữ liệu task, trạng thái và thứ tự sắp xếp được lưu trữ cục bộ trên máy.
+- **Loại Task (Task Type):**
+  - Khi tạo hoặc sửa task, người dùng chọn một trong hai loại:
+    - **One-time** (mặc định): Task thông thường, hoàn thành xong là xong.
+    - **Recurring**: Task tự động tái xuất hiện theo chu kỳ đã cấu hình.
+
+#### Cấu hình Recurring Task:
+  | Loại lặp | Mô tả |
+  |---|---|
+  | `Daily` | Reset về `Pending` mỗi ngày — dùng cho thói quen hàng ngày như học tiếng Anh, tập gym |
+  | `Weekly` | Chọn cụ thể các ngày trong tuần (VD: T2, T4, T6) — chỉ visible và `Pending` đúng ngày đã chọn |
+  | `Custom` | Tự đặt chu kỳ: sau mỗi X ngày |
+
+#### Logic reset Recurring Task:
+  - Hệ thống dùng **lazy reset** — không cần background process chạy đêm. Kiểm tra khi app mở hoặc tab Tasks được focus.
+  - Điều kiện reset: `last_done_date < hôm nay` (Daily) hoặc hôm nay nằm trong danh sách ngày đã chọn (Weekly).
+  - Khi reset: task về trạng thái `Pending`. **Chỉ hiện 1 instance** — không backfill nếu bỏ lỡ nhiều ngày.
+  - **Không reset** nếu task đang ở trạng thái `Active`.
+  - Recurring task **không bao giờ vào `Done` vĩnh viễn** — sau khi Done, nó tự reset vào lần kiểm tra tiếp theo.
+  - Xóa vĩnh viễn recurring task **không xóa lịch sử phiên** — Analytics vẫn giữ nguyên dữ liệu cũ.
+
+- **Luồng thay thế — Pause Recurring Task:**
+  - Người dùng nhấp icon ⏸ trên một recurring task → hệ thống hiện xác nhận: *"Tạm dừng task này? Task sẽ không hiện trong danh sách cho đến khi bạn bật lại."*
+  - Khi Pause: task ẩn khỏi danh sách, vòng lặp reset bị tạm dừng, **không ảnh hưởng Streak**.
+  - Người dùng có thể vào Settings → Recurring Tasks → xem danh sách đang Pause và bật lại bất kỳ lúc nào.
+
+- **Luồng ngoại lệ — Profile bị xóa trên Recurring Task:**
+  - Nếu Profile gắn với một recurring task bị xóa, task hiển thị badge cảnh báo màu vàng: *"Profile bị xóa — đang dùng Default"* mỗi khi task reset về Pending.
+  - Người dùng cần vào Sửa task để gán lại Profile phù hợp.
+
+- **Luồng ngoại lệ — Weekly task visibility:**
+  - Task weekly chỉ **visible và có thể Focus** vào đúng các ngày đã chọn. Ngày khác: task ẩn hoàn toàn khỏi danh sách (không hiển thị dù đang Pending).
+  - Trong Analytics, vẫn hiển thị lịch sử các phiên đã làm đúng ngày.
 
 ### UC02: Quản lý bộ quy tắc ưu tiên (Whitelist Profiles)
 - **Tác nhân:** Người dùng
