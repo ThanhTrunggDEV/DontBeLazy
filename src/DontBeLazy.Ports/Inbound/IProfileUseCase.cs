@@ -10,10 +10,15 @@ public interface IProfileUseCase
 {
     Task<IReadOnlyCollection<Profile>> GetAllProfilesAsync();
     Task<Profile> GetProfileByIdAsync(ProfileId profileId);
+    Task<Profile> GetDefaultProfileAsync();
     Task<Profile> CreateProfileAsync(string name, bool isDefault);
     Task UpdateProfileNameAsync(ProfileId profileId, string newName);
     Task DeleteProfileAsync(ProfileId profileId);
     
     Task AddProfileEntryAsync(ProfileId profileId, ProfileEntryType type, string value, string? exePath = null);
     Task RemoveProfileEntryAsync(ProfileId profileId, ProfileEntryId entryId);
+    Task ClearProfileEntriesAsync(ProfileId profileId);
+    
+    Task<string> ExportProfilesAsync();
+    Task ImportProfilesAsync(string jsonContent, bool overwriteExisting);
 }

@@ -20,4 +20,18 @@ public interface IAiMotivatorPort
     /// Dựa vào danh sách task trong ngày để AI gợi ý thứ tự làm việc (Sorting).
     /// </summary>
     Task<string> AnalyzeAndSuggestTaskPriorityAsync(string dailyTasksDump);
+
+    /// <summary>
+    /// AI (Phase 2): Phân rã một task lớn thành các task nhỏ (Pomodoro).
+    /// </summary>
+    /// <param name="taskName">Tên task bự</param>
+    /// <returns>Danh sách các task nhỏ được đề xuất (tách bằng dấu phẩy hoặc JSON)</returns>
+    Task<string> BreakdownTaskAsync(string taskName);
+
+    /// <summary>
+    /// AI (Phase 2): Tự động sinh danh sách Web/App cho một mục đích cụ thể.
+    /// </summary>
+    /// <param name="intent">Mục đích (VD: 'code java', 'đọc tài liệu')</param>
+    /// <returns>Danh sách suggested URL và App Process (JSON)</returns>
+    Task<string> GenerateSmartProfileAsync(string intent);
 }

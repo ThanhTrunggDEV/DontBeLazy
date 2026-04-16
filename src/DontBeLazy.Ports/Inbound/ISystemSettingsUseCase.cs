@@ -10,6 +10,8 @@ public interface ISystemSettingsUseCase
     Task UpdateSettingsAsync(bool globalStrictMode, bool enableQuotes, string quoteLanguage, bool darkTheme);
     
     Task<IReadOnlyCollection<Quote>> GetAllQuotesAsync();
+    Task<Quote> GetQuoteForEventAsync(DontBeLazy.Domain.Enums.QuoteEventType eventType, string language);
     Task<Quote> AddQuoteAsync(string content, string author, DontBeLazy.Domain.Enums.QuoteEventType type, string lang);
+    Task UpdateQuoteAsync(DontBeLazy.Domain.ValueObjects.QuoteId quoteId, string newContent, string newAuthor);
     Task DeleteQuoteAsync(DontBeLazy.Domain.ValueObjects.QuoteId quoteId);
 }
