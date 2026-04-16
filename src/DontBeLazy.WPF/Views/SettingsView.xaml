@@ -7,6 +7,43 @@
              Loaded="UserControl_Loaded"
              Background="{DynamicResource MaterialDesign.Brush.Background}">
 
+    <materialDesign:DialogHost IsOpen="{Binding IsStrictConfirmDialogOpen}">
+        <materialDesign:DialogHost.DialogContent>
+            <Border Padding="36" MinWidth="420" Background="#1E1E3F" CornerRadius="16">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                        <materialDesign:PackIcon Kind="AlertOutline" Width="32" Height="32"
+                                                 Foreground="#FF9800" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Cảnh báo Kỷ luật" FontSize="20" FontWeight="Bold" Foreground="#FF9800" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    
+                    <TextBlock Text="Bạn đang muốn giảm mức độ kỷ luật."
+                               Foreground="#E0E0E0" FontSize="14" Margin="0,0,0,8" TextWrapping="Wrap"/>
+                    <TextBlock Text="Bạn sẽ có thể tắt ép buộc và thoát phần mềm giữa chừng."
+                               Foreground="#9E9E9E" FontSize="13" Margin="0,0,0,24" TextWrapping="Wrap"/>
+                    
+                    <TextBlock Text="Hãy tự tay gõ vào dòng chữ sau để xác nhận:"
+                               Foreground="#9E9E9E" FontSize="13" Margin="0,0,0,8"/>
+                    <TextBlock Text="Tôi chấp nhận giảm mức độ kỷ luật" Foreground="#FF9800" FontWeight="Bold"
+                               FontSize="16" Margin="0,0,0,16" FontFamily="Consolas"
+                               HorizontalAlignment="Center"/>
+                    
+                    <TextBox Text="{Binding FrictionInput, UpdateSourceTrigger=PropertyChanged}"
+                             materialDesign:HintAssist.Hint="Nhập chính xác chuỗi ký tự trên"
+                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                             Margin="0,0,0,32" Foreground="White" CaretBrush="White"/>
+                    
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="Giữ Kỷ Luật" Style="{StaticResource MaterialDesignFlatButton}"
+                                Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="0,0,12,0"/>
+                        <Button Content="Xác nhận Tắt" Style="{StaticResource LargePrimaryButton}" Background="#F44336" BorderBrush="#F44336"
+                                Command="{Binding ConfirmDisableStrictCommand}" Height="40"
+                                IsEnabled="{Binding CanConfirmDisableStrict}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </materialDesign:DialogHost.DialogContent>
+
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="40,36,40,36" MaxWidth="620">
 
@@ -202,4 +239,5 @@
 
         </StackPanel>
     </ScrollViewer>
+    </materialDesign:DialogHost>
 </UserControl>
