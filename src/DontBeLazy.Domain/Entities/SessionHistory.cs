@@ -21,6 +21,10 @@ public class SessionHistory
     public int BlockedCount { get; private set; }
     public bool WasStrictMode { get; private set; }
 
+    // Navigation property
+    private readonly System.Collections.Generic.List<SessionProfileSnapshot> _snapshots = new();
+    public System.Collections.Generic.IReadOnlyCollection<SessionProfileSnapshot> Snapshots => _snapshots.AsReadOnly();
+
     public SessionHistory(TaskId? taskId, string taskName, string? profileName, int expectedSeconds, bool wasStrictMode)
     {
         Id = SessionId.New();
@@ -44,6 +48,9 @@ public class SessionHistory
 
     public void CompleteSession(CompletionStatus status)
     {
+        if (CompletionStatus != null)
+            throw new InvalidOperationException("Session is already completed or abandoned.");
+
         if (status == Enums.CompletionStatus.CompletedEarly)
         {
             // The actual logic of completing early should update ActualSeconds accurately up to that point
@@ -63,4 +70,13 @@ public class SessionHistory
     {
         return Math.Max(0, ExpectedSeconds - ActualSeconds);
     }
+
+    public void AddSnapshot(SessionProfileSnapshot snapshot)
+    {
+        _snapshots.Add(snapshot);
+    }
+
+#pragma warning disable CS8618 // EF Core constructor
+    private SessionHistory() {}
+#pragma warning restore CS8618
 }

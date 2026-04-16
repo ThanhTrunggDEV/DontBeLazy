@@ -20,4 +20,8 @@ public class ProfileEntry
         Value = value;
         ExePath = exePath;
     }
+
+#pragma warning disable CS8618 // EF Core constructor
+    private ProfileEntry() {}
+#pragma warning restore CS8618
 }

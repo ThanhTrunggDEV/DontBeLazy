@@ -40,6 +40,12 @@ public class FocusTask
 
     public void UpdateDetails(string name, int expectedMinutes, ProfileId? profileId, bool? perTaskStrictMode)
     {
+        if (string.IsNullOrWhiteSpace(name) || name.Length > 200)
+            throw new ArgumentException("Task name must be between 1 and 200 characters.");
+            
+        if (expectedMinutes <= 0 || expectedMinutes > 240)
+            throw new ArgumentException("Expected minutes must be between 1 and 240.");
+
         Name = name;
         ExpectedMinutes = expectedMinutes;
         ProfileId = profileId;
@@ -76,4 +82,8 @@ public class FocusTask
         IsPaused = isPaused;
         UpdatedAt = DateTime.Now;
     }
+
+#pragma warning disable CS8618 // EF Core constructor
+    private FocusTask() {}
+#pragma warning restore CS8618
 }

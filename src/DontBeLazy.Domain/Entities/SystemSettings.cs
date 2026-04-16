@@ -25,4 +25,8 @@ public class SystemSettings
         QuoteLanguage = quoteLanguage;
         DarkTheme = darkTheme;
     }
+
+#pragma warning disable CS8618 // EF Core constructor
+    private SystemSettings() {}
+#pragma warning restore CS8618
 }

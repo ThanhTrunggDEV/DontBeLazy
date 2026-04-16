@@ -14,6 +14,9 @@ public class Quote
 
     public Quote(string content, string? author, QuoteEventType eventType, string language, bool isBundled)
     {
+        if (string.IsNullOrWhiteSpace(content))
+            throw new System.ArgumentException("Quote content cannot be empty.");
+
         Id = QuoteId.New();
         Content = content;
         Author = author;
@@ -26,8 +29,15 @@ public class Quote
     {
         if (IsBundled)
             throw new System.InvalidOperationException("Cannot modify a bundled quote.");
+        
+        if (string.IsNullOrWhiteSpace(content))
+            throw new System.ArgumentException("Quote content cannot be empty.");
             
         Content = content;
         Author = author;
     }
+
+#pragma warning disable CS8618 // EF Core constructor
+    private Quote() {}
+#pragma warning restore CS8618
 }

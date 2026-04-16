@@ -56,4 +56,8 @@ public class Profile
         _entries.Clear();
         UpdatedAt = DateTime.Now;
     }
+
+#pragma warning disable CS8618 // EF Core constructor
+    private Profile() {}
+#pragma warning restore CS8618
 }
