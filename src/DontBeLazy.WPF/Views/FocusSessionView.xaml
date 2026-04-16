@@ -141,8 +141,16 @@
                             </StackPanel>
                         </Grid>
 
+                        <!-- Motivation Quote (Pre, Mid, Post focus) -->
+                        <TextBlock Text="{Binding CurrentMotivationQuote}" 
+                                   FontSize="15" Foreground="#CCBBFF" Opacity="0.85" 
+                                   TextWrapping="Wrap" TextAlignment="Center" 
+                                   FontStyle="Italic"
+                                   MaxWidth="280" Margin="0,24,0,0"
+                                   Visibility="{Binding IsSessionActive, Converter={StaticResource BoolToVis}}" />
+
                         <!-- Controls (session active) -->
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,32,0,0"
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,24,0,0"
                                     Visibility="{Binding IsSessionActive, Converter={StaticResource BoolToVis}}">
                             <!-- Pause button -->
                             <Button Command="{Binding PauseResumeCommand}"

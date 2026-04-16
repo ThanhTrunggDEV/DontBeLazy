@@ -44,6 +44,10 @@ public partial class FocusSessionViewModel : ObservableObject
     public bool CanConfirmAbandon => FrictionInput.Trim() == FrictionPhrase;
 
     private int _totalSeconds;
+    private bool _hasShownMidFocus;
+    private bool _hasShownPostFocus;
+
+    [ObservableProperty] private string _currentMotivationQuote = string.Empty;
 
     partial void OnSelectedTaskChanged(FocusTaskDto? value)
     {
@@ -93,6 +97,10 @@ public partial class FocusSessionViewModel : ObservableObject
         TimerDisplay = $"{RemainingSeconds / 60:D2}:{RemainingSeconds % 60:D2}";
         TimerProgress = ((double)restoredSession.ActualSeconds / _totalSeconds) * 100;
         
+        CurrentMotivationQuote = "Hãy tiếp tục hoàn thành mục tiêu dang dở của bạn!";
+        _hasShownMidFocus = TimerProgress >= 50;
+        _hasShownPostFocus = TimerProgress >= 90;
+
         _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
         _timer.Tick += OnTimerTick;
         _timer.Start();
@@ -135,6 +143,11 @@ public partial class FocusSessionViewModel : ObservableObject
 
         IsSessionActive = true;
         IsPaused = false;
+        
+        _hasShownMidFocus = false;
+        _hasShownPostFocus = false;
+        var q = await _quoteUseCase.GetQuoteForEventAsync(QuoteEventTypeDto.PreFocus, "vi");
+        CurrentMotivationQuote = q?.Content ?? "Hãy tập trung hết sức cho mục tiêu của bạn!";
 
         _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
         _timer.Tick += OnTimerTick;
@@ -147,6 +160,20 @@ public partial class FocusSessionViewModel : ObservableObject
         RemainingSeconds--;
         TimerProgress = ((double)(_totalSeconds - RemainingSeconds) / _totalSeconds) * 100;
         UpdateTimerDisplay();
+        
+        if (TimerProgress >= 50 && !_hasShownMidFocus)
+        {
+            _hasShownMidFocus = true;
+            var q = await _quoteUseCase.GetQuoteForEventAsync(QuoteEventTypeDto.MidFocus, "vi");
+            if (q != null) CurrentMotivationQuote = q.Content;
+        }
+        else if (TimerProgress >= 90 && !_hasShownPostFocus)
+        {
+            _hasShownPostFocus = true;
+            var q = await _quoteUseCase.GetQuoteForEventAsync(QuoteEventTypeDto.PostFocus, "vi");
+            if (q != null) CurrentMotivationQuote = q.Content;
+        }
+
         await _sessionUseCase.SyncSessionTimeAsync(_currentSession.Id, 1);
         if (RemainingSeconds <= 0) await CompleteSessionAsync();
     }
