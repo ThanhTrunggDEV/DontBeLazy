@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
+using DontBeLazy.Ports.Inbound;
 using DontBeLazy.Ports.Outbound.Services;
 
 namespace DontBeLazy.Infrastructure.Services;
@@ -14,19 +15,23 @@ namespace DontBeLazy.Infrastructure.Services;
 public class GeminiAiServices : IAiTaskAssistantPort, IAiGuiltTripPort, IAiProfileAssistantPort
 {
     private readonly HttpClient _httpClient;
-    private readonly string _apiKey;
+    private readonly ISystemSettingsUseCase _settingsUseCase;
 
-    public GeminiAiServices(HttpClient httpClient)
+    public GeminiAiServices(HttpClient httpClient, ISystemSettingsUseCase settingsUseCase)
     {
         _httpClient = httpClient;
-        _apiKey = Environment.GetEnvironmentVariable("GEMINI_API_KEY") ?? "MOCK_KEY_FOR_NOW";
+        _settingsUseCase = settingsUseCase;
     }
 
     private async Task<string> GenerateTextAsync(string prompt)
     {
-        if (_apiKey == "MOCK_KEY_FOR_NOW" || string.IsNullOrEmpty(_apiKey))
+        var settings = await _settingsUseCase.GetSettingsAsync();
+        var apiKey = settings.GeminiApiKey;
+        var model  = settings.GeminiModel;
+
+        if (string.IsNullOrWhiteSpace(apiKey))
         {
-            return $"[AI MOCK]: Please configure GEMINI_API_KEY in environment variables. You asked: {prompt}";
+            return $"[AI MOCK]: Vui lòng cấu hình Gemini API Key trong mục Cài đặt → AI. You asked: {prompt}";
         }
 
         var requestBody = new
@@ -38,7 +43,7 @@ public class GeminiAiServices : IAiTaskAssistantPort, IAiGuiltTripPort, IAiProfi
         };
 
         var response = await _httpClient.PostAsJsonAsync(
-            $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={_apiKey}", 
+            $"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={apiKey}", 
             requestBody);
 
         response.EnsureSuccessStatusCode();

@@ -23,10 +23,11 @@ public class SystemSettingsUseCase : ISystemSettingsUseCase
         return DtoMapper.ToDto(settings);
     }
 
-    public async Task UpdateSettingsAsync(bool globalStrictMode, bool enableQuotes, string quoteLanguage, bool darkTheme)
+    public async Task UpdateSettingsAsync(bool globalStrictMode, bool enableQuotes, string quoteLanguage, bool darkTheme,
+        string? geminiApiKey = null, string geminiModel = "gemini-2.5-flash")
     {
         var settings = await _settingsRepository.GetSettingsAsync();
-        settings.UpdatePreferences(globalStrictMode, enableQuotes, quoteLanguage, darkTheme);
+        settings.UpdatePreferences(globalStrictMode, enableQuotes, quoteLanguage, darkTheme, geminiApiKey, geminiModel);
         await _settingsRepository.UpdateSettingsAsync(settings);
         await _unitOfWork.SaveChangesAsync();
     }

@@ -162,6 +162,61 @@
                 </StackPanel>
             </materialDesign:Card>
 
+            <!-- AI Config Section -->
+            <TextBlock Text="AI (GEMINI)" FontSize="11" FontWeight="Bold" Foreground="#7C4DFF"
+                       Margin="0,0,0,12"/>
+
+            <materialDesign:Card Padding="24" UniformCornerRadius="16" Background="#1E1E3F" Margin="0,0,0,28">
+                <StackPanel>
+                    <!-- API Key -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                        <materialDesign:PackIcon Kind="KeyOutline" Width="20" Height="20"
+                                                 Foreground="#7C4DFF" Margin="0,0,10,0"
+                                                 VerticalAlignment="Center"/>
+                        <TextBlock Text="Gemini API Key" FontSize="15"
+                                   FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBlock Text="Lấy API key miễn phí tại aistudio.google.com"
+                               Foreground="#9E9E9E" FontSize="12" Margin="0,0,0,12"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="ApiKeyBox"
+                                 Grid.Column="0"
+                                 Text="{Binding GeminiApiKey, UpdateSourceTrigger=PropertyChanged}"
+                                 materialDesign:HintAssist.Hint="AIzaSy..."
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 FontFamily="Consolas" FontSize="13"
+                                 VerticalAlignment="Center"/>
+                        <Button Grid.Column="1" Margin="10,0,0,0" Padding="10,0"
+                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                materialDesign:ButtonAssist.CornerRadius="10"
+                                ToolTip="Mở AI Studio" Click="OpenAiStudio_Click">
+                            <materialDesign:PackIcon Kind="OpenInNew" Width="16" Height="16"/>
+                        </Button>
+                    </Grid>
+
+                    <Separator Background="#2D2D4E" Margin="0,20"/>
+
+                    <!-- Model Selection -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                        <materialDesign:PackIcon Kind="RobotOutline" Width="20" Height="20"
+                                                 Foreground="#7C4DFF" Margin="0,0,10,0"
+                                                 VerticalAlignment="Center"/>
+                        <TextBlock Text="Chọn Model" FontSize="15"
+                                   FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBlock Text="Chọn model phù hợp với nhu cầu và quota của bạn"
+                               Foreground="#9E9E9E" FontSize="12" Margin="0,0,0,12"/>
+                    <ComboBox ItemsSource="{Binding GeminiModels}"
+                              SelectedItem="{Binding GeminiModel}"
+                              Width="280" HorizontalAlignment="Left"
+                              Style="{StaticResource MaterialDesignOutlinedComboBox}"/>
+                </StackPanel>
+            </materialDesign:Card>
+
             <!-- Update Section -->
             <TextBlock Text="CẬP NHẬT" FontSize="11" FontWeight="Bold" Foreground="#7C4DFF"
                        Margin="0,8,0,12" x:Name="UpdateSectionLabel"/>

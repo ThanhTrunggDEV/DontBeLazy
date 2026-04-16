@@ -82,4 +82,13 @@ public partial class SettingsView : UserControl
         InstallBtn.IsEnabled = false;
         await _updateVm.DownloadAndInstallCommand.ExecuteAsync(null);
     }
+
+    private void OpenAiStudio_Click(object sender, RoutedEventArgs e)
+    {
+        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+        {
+            FileName = "https://aistudio.google.com",
+            UseShellExecute = true
+        });
+    }
 }

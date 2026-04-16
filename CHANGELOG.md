@@ -10,6 +10,7 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 
 ### Added / Feature
+- **AI Settings**: Bổ sung giao diện thiết lập trực tiếp Gemini API Key và chọn Model trong trang Cài đặt. Hỗ trợ cấu hình tự động cho các phiên bản Model mới nhất (Gemini 2.5 Flash, 2.5 Pro, 3.1 Pro Preview...).
 - **Settings UI**: Thêm thông tin tác giả (ThanhTrunggDEV) vào giao diện Cài đặt.
 - **Strict Mode Friction (UC04)**: Tích hợp hộp thoại cảnh báo bắt buộc gõ "Tôi chấp nhận giảm mức độ kỷ luật" trước khi cho phép tắt Global Strict Mode.
 - **Ultimate Strict Mode**: Bổ sung `taskmgr` vào danh sách ứng dụng bị tắt bắt buộc (blacklist) trong quá trình đếm ngược, cùng với cơ chế chặn đóng bằng Alt+F4 / Window Close.
@@ -17,19 +18,14 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - **Fallback Polling Loop**: Kích hoạt bộ theo dõi dự phòng giám sát ứng dụng vòng lặp trong `WindowsStrictEngine`.
 
 ### Fixed & Changed
+- **Database Architecture**: Chuyển đổi cơ chế khởi tạo Database từ `EnsureCreated()` sang `Database.Migrate()` lúc khởi động (App Startup) để hỗ trợ Auto Migration. Tự động apply pending migrations vào SQLite, đảm bảo nâng cấp schema mượt mà không loss data (Ví dụ: Thêm cột cho Settings).
 - **WindowsStrictEngine**: Bổ sung khối lệnh `try-catch/finally` vào quá trình xóa cờ chặn (ClearRestrictions) để chắc chắn việc đồng bộ khóa / DB không ghim file `hosts`. Giải quyết crash hệ thống qua container `ActiveSessionState`.
 - **Profiles UI**: Khắc phục lỗi `DialogHost` bị ẩn do Binding Converter, sửa lỗi chồng lấn các nút (overlapping icons) và lệch hộp thoại Danh sách Profile. Tự động chuyển mục chọn Profile ngay khi tạo Profile mới.
-
----
-
-## [0.3.1-beta] - 2026-04-16
-
-### Fixed
 - **Analytics UI**: Sửa lỗi tràn chữ ở thẻ *Streak hiện tại* trên các chuỗi thông báo dài.
 - **Session Validation**: Bắt buộc người dùng phải chọn cả `Task` và `Profile` trước khi hiển thị khung nhập cam kết ý định khởi tạo phiên tập trung.
-
-### Changed
 - **Update Dialog**: Tích hợp Markdown (thông qua thư viện `MdXaml`) để render giao diện danh sách các chức năng mới (Release Notes) trở nên có format, chuyên nghiệp và có màu sắc hơn thay vì chuỗi thô.
+
+
 
 ---
 
