@@ -25,7 +25,7 @@
 - **Tiền điều kiện:** Ứng dụng đang mở.
 - **Luồng sự kiện chính — Thêm Task mới:**
   1. Người dùng chọn chức năng "Quản lý công việc" (hoặc nhập trực tiếp từ màn hình chính).
-  2. Hệ thống hiển thị danh sách các task hiện có, **sắp xếp theo thứ tự tạo mới nhất ở trên** (mặc định). Người dùng có thể kéo thả (drag-and-drop) để sắp xếp lại theo ý muốn.
+  2. Hệ thống hiển thị danh sách các task hiện có, **sắp xếp theo thứ tự tạo mới nhất ở trên** (mặc định). Người dùng có thể kéo thả (drag-and-drop) để sắp xếp lại — thứ tự này được lưu vào Local DB (trường `sort_order`) và giữ nguyên sau khi khởi động lại app.
   3. Người dùng nhập tên công việc, thiết lập thời gian (VD: 60 phút) và **gán một bộ Whitelist Profile** cấu hình riêng cho Task này.
   4. Người dùng bấm "Thêm".
   5. Hệ thống validate dữ liệu đầu vào (xem Validation Rules bên dưới), sau đó lưu kết nối (Task <-> Whitelist) vào Local DB và cập nhật hiển thị.
@@ -35,13 +35,17 @@
   - Sau khi lưu, hệ thống cập nhật bản ghi trong Local DB mà không thay đổi trạng thái hiện tại của task.
 - **Luồng thay thế — Hoàn thành Task:**
   - Người dùng click checkbox "Hoàn thành". Hệ thống gạch ngang task và chuyển trạng thái sang `Done`.
+- **Luồng thay thế — Hoàn tác Done (Undo Done):**
+  - Người dùng click lại vào checkbox của task đang ở trạng thái `Done` → hệ thống hiện xác nhận: *"Bỏ đánh dấu hoàn thành và đưa task về Pending?"* → Bấm "Xác nhận".
+  - Task trở về trạng thái `Pending`, gạch ngang biến mất. Streak **không bị ảnh hưởng** (phiên Focus đã hoàn thành vẫn được tính).
 - **Trạng thái của Task (Task State Machine):**
-  | Trạng thái | Ý nghĩa |
-  |---|---|
-  | `Pending` | Task đã tạo, chưa bắt đầu phiên Focus nào |
-  | `Active` | Đang được chọn để thực hiện trong phiên Focus hiện tại |
-  | `Done` | Đã được đánh dấu hoàn thành bởi người dùng |
-  | `Abandoned` | Phiên kết thúc sớm (người dùng bỏ cuộc), task tự trả về `Pending` |
+  | Trạng thái | Ý nghĩa | Hiển thị trong danh sách |
+  |---|---|---|
+  | `Pending` | Task đã tạo, chưa bắt đầu phiên Focus nào | ✅ Hiện — bình thường |
+  | `Active` | Đang được thực hiện trong phiên Focus hiện tại | ✅ Hiện — có badge "Đang Focus" |
+  | `Done` | Đã được đánh dấu hoàn thành bởi người dùng | ✅ Hiện — gạch ngang, mờ đi |
+  | `Abandoned` | Phiên bị hủy sớm; task **ở lại danh sách với badge "Đã bỏ"** cho đến khi người dùng tự restart | ✅ Hiện — badge màu cam "Đã bỏ cuộc" |
+  - `Abandoned` là **persistent state** — task không tự động về `Pending`. Người dùng phải chủ động bấm "Thử lại" để chuyển task về `Pending` và bắt đầu phiên mới.
   - Task ở trạng thái `Active` sẽ **disable** nút Xóa và nút Sửa trên UI.
   - Task chỉ được Xóa vĩnh viễn khi ở trạng thái `Pending`, `Done` hoặc `Abandoned`.
 - **Validation Rules — Tên Task:**
@@ -49,7 +53,7 @@
   - Độ dài tối đa: **200 ký tự** → nếu vượt quá, hệ thống highlight đỏ và hiển thị bộ đếm ký tự còn lại.
 - **Luồng ngoại lệ — Xóa task đang ở trạng thái `Active`:**
   - Hệ thống từ chối và hiển thị: *"Không thể xóa task đang trong phiên Focus. Hãy kết thúc hoặc hủy phiên hiện tại trước."*
-- **Hậu điều kiện:** Dữ liệu task và trạng thái được lưu trữ cục bộ trên máy.
+- **Hậu điều kiện:** Dữ liệu task, trạng thái và thứ tự sắp xếp được lưu trữ cục bộ trên máy.
 
 ### UC02: Quản lý bộ quy tắc ưu tiên (Whitelist Profiles)
 - **Tác nhân:** Người dùng
@@ -58,12 +62,19 @@
 - **Luồng sự kiện chính:**
   1. Chọn mục cài đặt "Whitelist Profiles" → Bấm tạo mới Profile.
   2. Người dùng đặt tên Profile và chọn tab "Websites" hoặc "Apps".
-  3. Nhập URL theo quy tắc định dạng (xem URL Rules bên dưới) hoặc trỏ đường dẫn tới file thực thi (VD: `code.exe`).
+  3. Nhập URL theo quy tắc định dạng (xem URL Rules bên dưới) hoặc thêm ứng dụng theo đường dẫn hoặc tên process (xem App Rules bên dưới).
   4. Bấm "Thêm". Hệ thống lưu Profile vào danh sách cục bộ để sẵn sàng gán cho Task.
 - **URL Rules — Định dạng cho phép:**
   - Chỉ hỗ trợ **exact domain** (VD: `github.com`, `docs.google.com`). Ký tự wildcard (`*`) **không được hỗ trợ** ở giai đoạn MVP để đơn giản hóa engine chặn.
   - Subdomain được tính riêng: `mail.google.com` và `docs.google.com` là 2 mục riêng biệt.
   - URLs có thể có hoặc không có `https://` — hệ thống tự chuẩn hóa về dạng domain trần.
+- **App Rules — Nhận diện ứng dụng:**
+  - Hỗ trợ 2 cách thêm app:
+    - **Theo đường dẫn file thực thi** (VD: `C:\Program Files\Code\code.exe`) — chính xác nhưng phụ thuộc vào nơi cài đặt.
+    - **Theo process name** (VD: `code`) — linh hoạt hơn, không cần biết path. Hệ thống so sánh với tên process đang chạy trong Task Manager.
+  - Người dùng có thể dùng nút **"Browse..."** để chọn file `.exe` — hệ thống tự điền cả path và process name.
+- **Giới hạn entries:**
+  - Mỗi Profile tối đa **50 entries** (website + app cộng lại). Nếu vượt quá, nút "Thêm" bị disable và hiển thị: *"Profile đã đạt giới hạn 50 mục."*
 - **Luồng ngoại lệ — URL không hợp lệ:**
   - Nếu nhập sai format hoặc thiếu TLD, hệ thống highlight đỏ ô input và hiển thị gợi ý cú pháp đúng.
 - **Luồng ngoại lệ — Trùng tên Profile:**
@@ -71,22 +82,27 @@
 - **Luồng ngoại lệ — Sửa/Xóa Profile đang dùng trong phiên Focus:**
   - Hệ thống từ chối và hiển thị: *"Profile này đang được dùng trong phiên Focus. Không thể chỉnh sửa cho đến khi phiên kết thúc."*
   - Mọi thay đổi với Profile chỉ có hiệu lực ở phiên **tiếp theo**.
-- **Luồng ngoại lệ — Xóa Profile đang được gán cho Task `Pending`:**
+- **Luồng ngoại lệ — Xóa Profile đang được gán cho Task `Pending` hoặc `Abandoned`:**
   - Hệ thống hiển thị cảnh báo: *"Profile này đang được gán cho [N] task chưa thực hiện. Nếu xóa, các task đó sẽ tự động fallback về Default Profile. Tiếp tục?"*
   - Nếu xác nhận, hệ thống xóa Profile và tự động cập nhật các task bị ảnh hưởng sang Default Profile.
 - **Khái niệm Profile Mặc định (Default Profile):**
   - Hệ thống luôn duy trì một **"Default Profile"** không thể xóa, chỉ có thể sửa nội dung.
   - Task không gán Profile → tự động dùng Default Profile (chỉ cho phép mở chính app Don't Be Lazy, không có internet).
   - Default Profile hiển thị badge **"Mặc định"** trên UI để nhắc nhở người dùng chưa cấu hình Whitelist.
+- **Luồng thay thế — Import/Export Profile:**
+  - Người dùng vào Settings → **"Whitelist Profiles"** → Bấm **"Export"** để xuất toàn bộ danh sách Profiles ra file `.json`.
+  - Người dùng bấm **"Import"** để nạp lại file `.json` đã export → hệ thống merge với danh sách hiện có (Profile trùng tên sẽ được hỏi: Ghi đè / Bỏ qua).
+  - Dùng cho mục đích backup hoặc khôi phục sau khi cài lại app.
 
 ### UC03: Bắt đầu phiên tập trung (Focus Mode)
 - **Tác nhân:** Người dùng
 - **Mô tả:** Kích hoạt quá trình tính thời gian và hệ thống sẽ tự động bật khiên chắn Block mọi app/web nằm ngoài Whitelist.
-- **Tiền điều kiện:** Phải có ít nhất 1 task trong danh sách công việc chưa hoàn thành.
+- **Tiền điều kiện:** Phải có ít nhất 1 task ở trạng thái `Pending` hoặc `Abandoned` (đã bấm "Thử lại") trong danh sách.
 - **Luồng sự kiện chính:**
   1. Tại màn hình chính, người dùng chọn task cần thực hiện.
   2. Hệ thống áp dụng trick **"Lời hứa chủ động"**: Yêu cầu đặt thời gian đếm ngược và tự tay gõ câu cam kết mục tiêu rồi mới được bấm "Start Focus".
      - **Validation thời gian:** Tối thiểu **1 phút**, tối đa **240 phút** (4 giờ). Nếu nhập ngoài khoảng này, ô input highlight đỏ và hiển thị giới hạn cho phép.
+     - **Hiển thị cấu hình Strict Mode áp dụng:** Ngay trên màn hình này, hệ thống hiển thị rõ: *"Phiên này sẽ chạy với Strict Mode: [BẬT/TẮT]"* (theo thứ tự ưu tiên per-task > global) để người dùng biết trước.
   3. Hệ thống bắt đầu bấm giờ đếm ngược. Task chuyển trạng thái sang `Active`.
   4. Hệ thống gọi kịch bản xử lý ngầm để kích hoạt khiên chặn toàn bộ internet và ứng dụng lạ, sau đó đọc **Whitelist Profile gắn với Task hiện tại** để cấp quyền chạy ngoại lệ.
   5. Khi hết thời gian đếm ngược, hệ thống phát âm thông báo, thả ngắt chặn web/app, hiển thị chúc mừng và cập nhật **cộng dồn điểm Streak**.
@@ -98,20 +114,24 @@
   - Một task `Pending` có thể được focus nhiều lần (VD: 3 phiên Pomodoro). Mỗi phiên tạo ra 1 bản ghi session riêng trong DB.
   - Analytics hiển thị tổng thời gian tập trung của **tất cả các phiên** gộp lại theo task/theo ngày.
   - Streak chỉ cần có ít nhất 1 phiên **hoàn thành** trong ngày, không cần tất cả phiên đều thành công.
-- **Luồng thay thế (Dừng sớm khi Strict Mode Đang Tắt - Kích hoạt Cản Bước Tâm Lý):**
+- **Luồng thay thế — Dừng sớm (Strict Mode Tắt — Kích hoạt Cản Bước Tâm Lý):**
   - Trong quá trình đếm giờ, người dùng nhấp vào nút "Stop/Give up".
   - Chức năng **Guilt-tripping** và **Loss Aversion** kích hoạt: Hệ thống hiện thông báo đỏ *"Bạn thực sự muốn vứt bỏ công sức và mất đi chuỗi Streak [X] ngày sao?"*.
   - Chức năng **Tạo ma sát** kích hoạt: Yêu cầu người dùng tự gõ chính xác dòng chữ *"Tôi là kẻ lười biếng và tôi chấp nhận bỏ cuộc"* mới có thể bấm nút Tắt.
-  - Sau khi gõ xong, hệ thống mới huỷ phiên làm việc, mở khóa ứng dụng và tự động Reset Streak về 0.
-- **Luồng ngoại lệ (Khi Strict Mode đang Bật):** 
-  - Nút Stop sẽ bị Disable, ẩn hoàn toàn hoặc thông báo bị từ chối thoát mọi hình thức.
+  - Sau khi gõ xong: hệ thống hủy phiên, mở khóa ứng dụng, Reset Streak về 0, Task chuyển sang trạng thái **`Abandoned`** (hiển thị badge cam trong danh sách).
+- **Luồng ngoại lệ — Strict Mode Bật:**
+  - Nút "Stop" bị Disable hoặc ẩn hoàn toàn. Mọi cơ chế đóng/kill app bị từ chối.
 - **Luồng ngoại lệ — Máy tính sleep / tắt màn hình giữa phiên:**
-  - Nếu hệ điều hành đưa máy vào trạng thái ngủ (sleep/hibernate) hoặc tắt màn hình (screen lock), timer được **tạm dừng tự động**.
-  - Khi máy thức dậy và người dùng đăng nhập lại, hệ thống hiển thị hộp thoại:
+  - Timer được **tạm dừng tự động** khi máy vào trạng thái sleep/hibernate/screen lock.
+  - Khi máy thức dậy, hệ thống hiển thị hộp thoại:
     > *"Phiên Focus của bạn đã bị gián đoạn. Bạn muốn: **Tiếp tục** (tiếp tục đếm ngược từ chỗ dừng) hay **Đặt lại** (xóa bỏ phiên hiện tại)?"*
-  - Thời gian sleep không được tính vào thời gian tập trung thực tế trong Analytics.
-  - Trong Strict Mode: luôn tự động **Tiếp tục** khi máy thức dậy, không hiển thị hộp thoại chọn.
-- **Hậu điều kiện:** Lưu lại tổng thời gian tập trung vừa qua vào Local DB.
+  - Thời gian sleep không được tính vào Analytics.
+  - Trong Strict Mode: luôn tự động **Tiếp tục**, không hiển thị hộp thoại chọn.
+- **Luồng ngoại lệ — Orphan Session (app bị force-close ngoài Strict Mode):**
+  - Nếu app bị tắt đột ngột (không phải Strict Mode), checkpoint vẫn được ghi trong DB.
+  - Khi app khởi động lại, nếu phát hiện checkpoint chưa kết thúc của phiên **không phải Strict**: hệ thống hiển thị: *"Có một phiên Focus chưa hoàn thành trước đó. Bạn muốn: **Khôi phục** hay **Bỏ qua** (xóa phiên đó)?"*
+  - Nếu "Bỏ qua": phiên bị xóa, task về `Abandoned`. Nếu "Khôi phục": timer tiếp tục từ checkpoint cuối.
+- **Hậu điều kiện:** Lưu lại thời gian tập trung thực tế và trạng thái task cuối cùng vào Local DB.
 
 ### UC04: Quản lý cấu hình Strict Mode
 - **Tác nhân:** Người dùng
@@ -119,8 +139,9 @@
 - **Tiền điều kiện:** Chỉ được tinh chỉnh khi hệ thống **CHƯA** trong trạng thái Focus đang chạy.
 - **Phân cấp Strict Mode:**
   - **Global Strict Mode:** Áp dụng cho tất cả các phiên Focus. Cấu hình trong Settings → Strict Mode.
-  - **Per-Task Strict Mode:** Cho phép bật/tắt Strict Mode riêng cho từng task khi tạo hoặc sửa task (ghi đè Global). VD: Task "Học thi" bật Strict, Task "Đọc email" tắt Strict.
-  - Thứ tự ưu tiên: Per-task setting > Global setting.
+  - **Per-Task Strict Mode:** Cho phép bật/tắt Strict Mode riêng cho từng task khi tạo hoặc sửa task (ghi đè Global).
+  - Thứ tự ưu tiên: **Per-task setting > Global setting**.
+  - **Ví dụ cụ thể:** Global = ON, Task "Đọc email" có Per-Task = OFF → khi Start Focus trên task đó, phiên chạy **không có Strict Mode**. Ngược lại, Global = OFF, Task "Học thi" có Per-Task = ON → phiên chạy **có Strict Mode**. Người dùng được thông báo rõ trên màn hình xác nhận trước khi bắt đầu (UC03 bước 2).
 
 #### Luồng bật Strict Mode (OFF → ON):
   1. Người dùng vào Settings → toggle "Strict Mode" sang ON (hoặc bật trong form tạo/sửa task).
@@ -141,10 +162,11 @@
 #### Luồng ngoại lệ — Máy tắt/restart đột ngột trong Strict Mode (Crash Recovery):
   - Hệ thống ghi một **session checkpoint** vào Local DB mỗi 30 giây trong lúc Focus (lưu: thời gian còn lại, task ID, strict state).
   - Khi ứng dụng khởi động lại sau crash/restart, hệ thống kiểm tra DB xem có checkpoint chưa kết thúc không.
-  - Nếu tìm thấy checkpoint của phiên Strict Mode chưa hoàn thành:
+  - Nếu tìm thấy checkpoint của phiên **Strict Mode** chưa hoàn thành:
     - Hệ thống **tự động kích hoạt lại chế độ chặn** ngay khi app load xong.
     - Hiển thị banner: *"Phiên Strict Mode của bạn đã bị gián đoạn do máy tắt. Hệ thống đã khôi phục lại — còn [X] phút."*
     - Timer tiếp tục đếm ngược từ thời điểm checkpoint cuối cùng.
+  - Nếu tìm thấy checkpoint của phiên **không Strict** chưa hoàn thành → xem UC03 luồng "Orphan Session".
 
 ### UC05: Xem báo cáo & thống kê
 - **Tác nhân:** Người dùng
@@ -155,7 +177,7 @@
   2. Hệ thống mặc định hiển thị dữ liệu của **7 ngày gần nhất**.
   3. Người dùng có thể chọn bộ lọc thời gian: **Hôm nay / 7 ngày / 30 ngày / Tất cả**.
   4. Hệ thống query Local DB theo bộ lọc đã chọn và render các chỉ số:
-     - 📊 **Biểu đồ cột** — Tổng thời gian tập trung thực tế theo từng ngày (chỉ tính thời gian thực sự focus, không tính thời gian sleep).
+     - 📊 **Biểu đồ cột** — Tổng thời gian tập trung thực tế theo từng ngày (không tính thời gian sleep).
      - 🔥 **Streak Counter** — Chuỗi ngày liên tục có ít nhất 1 phiên hoàn thành. Hiển thị nổi bật ở đầu trang.
      - 🚫 **Số lần bị chặn** — Tổng số lần cố truy cập app/web nằm ngoài Whitelist.
      - ✅ **Tỷ lệ hoàn thành** — Số phiên hoàn thành / tổng số phiên đã bắt đầu (%).
@@ -166,11 +188,13 @@
 - **Luồng thay thế — Xóa lịch sử:**
   - Người dùng vào Settings → **"Dữ liệu & Quyền riêng tư"** → Chọn "Xóa lịch sử".
   - Hệ thống cho phép chọn phạm vi xóa: **Hôm nay / 7 ngày / 30 ngày / Tất cả**.
-  - Sau khi xác nhận, hệ thống xóa các bản ghi session tương ứng và **reset Streak về 0**.
-  - *Lưu ý thiết kế: Tính năng này được đặt sâu trong Settings (không phải trực tiếp trên màn hình Analytics) để tránh người dùng bốc đồng xóa nhầm.* 
-- **Luồng thay thế — Export dữ liệu:**
+  - Sau khi xác nhận, hệ thống xóa các bản ghi session tương ứng.
+  - **Logic Streak sau khi xóa một phần:** Hệ thống **tính lại Streak từ dữ liệu còn lại** (không reset về 0 nếu còn ngày hoàn thành liên tiếp trước phạm vi bị xóa). VD: Xóa "7 ngày gần nhất" nhưng trước đó đã có 14 ngày streak → Streak được cập nhật thành 7 (từ ngày trước phạm vi xóa).
+  - *Lưu ý thiết kế: Tính năng đặt sâu trong Settings để tránh người dùng bốc đồng xóa nhầm.*
+- **Luồng thay thế — Export dữ liệu (Session Export):**
   - Người dùng vào Settings → **"Xuất dữ liệu"** → Chọn định dạng **CSV** hoặc **JSON**.
-  - Hệ thống xuất toàn bộ lịch sử phiên Focus (task name, thời gian bắt đầu, thời gian thực tế, trạng thái hoàn thành) ra file và mở hộp thoại Save As của hệ điều hành.
+  - **Scope của export:** Chỉ xuất **session history** (task name, thời gian bắt đầu, thời gian thực tế, trạng thái hoàn thành). Không bao gồm Tasks và Whitelist Profiles (dùng tính năng Import/Export Profile trong UC02 cho mục đích đó).
+  - Hệ thống mở hộp thoại Save As của hệ điều hành để người dùng chọn nơi lưu.
 - **Luồng ngoại lệ — Empty State (Lần đầu sử dụng, chưa có dữ liệu):**
   - Nếu Local DB chưa có phiên nào, hệ thống hiển thị màn hình **Empty State** với:
     - Icon minh họa (đồng hồ cát hoặc rocket chưa phóng).
@@ -180,11 +204,11 @@
 ### UC06: Hiển thị Motivation Quote
 - **Tác nhân:** Hệ thống (kích hoạt tự động theo sự kiện), Người dùng (có thể quản lý kho quote).
 - **Mô tả:** Hệ thống tự động hiển thị các câu quote truyền cảm hứng tại các **thời điểm chiến lược** trong hành trình làm việc nhằm duy trì động lực và củng cố thói quen tốt.
-- **Tiền điều kiện:** Ứng dụng đang mở.
+- **Tiền điều kiện:** Ứng dụng đang mở **và** tính năng Quote chưa bị tắt trong Settings.
 - **Luồng sự kiện chính (Tự động theo sự kiện):**
-  - **Sự kiện 1 — Trước khi bắt đầu:** Ngay sau khi người dùng gõ xong câu cam kết mục tiêu (Implementation Intention), hệ thống hiển thị 1 quote ngắn tiếp thêm fuel: VD: *"The secret of getting ahead is getting started." — Mark Twain*.
-  - **Sự kiện 2 — Trong lúc tập trung (giữa phiên):** Khi đã trôi qua khoảng 50% thời gian, hệ thống hiện một toast nhỏ góc màn hình, không cản giao diện, để cổ vũ tiếp: VD: *"You're halfway there. Don't stop now."*.
-  - **Sự kiện 3 — Khi hoàn thành phiên:** Sau khi đồng hồ về 0, cùng màn hình chúc mừng xuất hiện một câu quote ăn mừng chiến thắng: VD: *"Well done is better than well said." — Benjamin Franklin*.
+  - **Sự kiện 1 — Trước khi bắt đầu:** Ngay sau khi người dùng gõ xong câu cam kết mục tiêu, hệ thống hiển thị 1 quote ngắn tiếp thêm fuel: VD: *"The secret of getting ahead is getting started." — Mark Twain*.
+  - **Sự kiện 2 — Trong lúc tập trung (giữa phiên):** Khi đã trôi qua khoảng 50% thời gian **và** thời gian còn lại ≥ 2 phút, hệ thống hiện một toast nhỏ góc màn hình. Nếu user "Mark Done Early" trước mốc 50%, sự kiện 2 bị bỏ qua hoàn toàn — không fallback.
+  - **Sự kiện 3 — Khi hoàn thành phiên:** Sau khi đồng hồ về 0 (hoặc Mark Done Early), cùng màn hình chúc mừng xuất hiện một câu quote ăn mừng chiến thắng: VD: *"Well done is better than well said." — Benjamin Franklin*.
   - **Sự kiện 4 — Khi người dùng định bỏ cuộc (Stop sớm):** Trong luồng "Tạo ma sát", trước khi hiện ô gõ tự nhận thua, hệ thống flash một quote đánh thẳng vào sự tự ái: VD: *"Push yourself, because no one else is going to do it for you."*.
 - **Luồng thay thế — Người dùng tự quản lý kho Quote:**
   1. Người dùng vào Settings → **"Motivation Quotes"**.
@@ -192,9 +216,10 @@
   3. Người dùng có thể **thêm quote cá nhân**, **sửa**, hoặc **xóa** bất kỳ quote nào.
   4. Người dùng có thể assign quote vào từng **sự kiện cụ thể** (trước phiên / giữa phiên / khi hoàn thành / khi bỏ cuộc) hoặc để chế độ **ngẫu nhiên (random)**.
   5. Người dùng có thể chọn **ngôn ngữ hiển thị quote mặc định**: Tiếng Việt / Tiếng Anh. Bundle sẵn có quote cho cả 2 ngôn ngữ.
-  6. Hệ thống lưu danh sách và cài đặt ngôn ngữ vào Local DB.
+  6. Người dùng có thể **tắt toàn bộ hệ thống Quote** bằng toggle "Hiển thị Motivation Quotes" (OFF). Khi tắt, không có quote nào được hiển thị ở bất kỳ sự kiện nào.
+  7. Hệ thống lưu danh sách, cài đặt ngôn ngữ và trạng thái bật/tắt vào Local DB.
 - **Luồng ngoại lệ — Kho quote của một sự kiện bị rỗng:**
-  - Nếu người dùng xóa hết toàn bộ quote của một sự kiện cụ thể (VD: xóa hết quote "khi bỏ cuộc"), hệ thống **không hiển thị lỗi và không crash**.
+  - Nếu người dùng xóa hết toàn bộ quote của một sự kiện cụ thể, hệ thống **không hiển thị lỗi và không crash**.
   - Thay vào đó hệ thống tự động **fallback về 1 quote hard-coded mặc định** cho sự kiện đó (không thể xóa). VD: *"Keep going."*
   - UI hiển thị gợi ý: *"Kho quote của mục này đang trống. Thêm quote hoặc bật lại quote mặc định."*
-- **Hậu điều kiện:** Kho quote và cài đặt ngôn ngữ được lưu cục bộ, sẵn sàng render ở lần tiếp theo.
+- **Hậu điều kiện:** Kho quote, cài đặt ngôn ngữ và trạng thái bật/tắt được lưu cục bộ, sẵn sàng render ở lần tiếp theo.
