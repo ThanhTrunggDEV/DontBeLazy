@@ -187,17 +187,25 @@ public class WindowsStrictEngine : IStrictEnginePort, IDisposable
     {
         if (_pollingCts != null)
         {
-            _pollingCts.Cancel();
-            _pollingCts.Dispose();
-            _pollingCts = null;
+            try 
+            {
+                _pollingCts.Cancel();
+                _pollingCts.Dispose();
+            }
+            catch { }
+            finally { _pollingCts = null; }
         }
 
         if (_processStartWatcher != null)
         {
-            _processStartWatcher.Stop();
-            _processStartWatcher.EventArrived -= ProcessStarted;
-            _processStartWatcher.Dispose();
-            _processStartWatcher = null;
+            try
+            {
+                _processStartWatcher.Stop();
+                _processStartWatcher.EventArrived -= ProcessStarted;
+                _processStartWatcher.Dispose();
+            }
+            catch { }
+            finally { _processStartWatcher = null; }
         }
     }
 
