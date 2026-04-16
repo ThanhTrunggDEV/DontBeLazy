@@ -13,23 +13,33 @@
     <!-- Intention Dialog -->
     <materialDesign:DialogHost IsOpen="{Binding IsIntentionDialogOpen}">
         <materialDesign:DialogHost.DialogContent>
-            <Border Padding="32" MinWidth="440" Background="#1E1E3F" CornerRadius="12">
+            <Border Padding="36" MinWidth="460" Background="#1E1E3F" CornerRadius="16">
                 <StackPanel>
-                    <TextBlock Text="✍️ Cam kết của bạn" FontSize="22" FontWeight="Bold" Margin="0,0,0,8"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <materialDesign:PackIcon Kind="PencilOutline" Width="28" Height="28"
+                                                 Foreground="#7C4DFF" Margin="0,0,12,0"
+                                                 VerticalAlignment="Center"/>
+                        <TextBlock Text="Cam kết của bạn" FontSize="22" FontWeight="Bold"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
                     <TextBlock Text="Hãy tự tay gõ lại cam kết để bắt đầu phiên làm việc"
                                Foreground="#9E9E9E" FontSize="13" Margin="0,0,0,20"/>
                     <TextBox Text="{Binding IntentionText}"
                              Style="{StaticResource MaterialDesignOutlinedTextBox}"
                              TextWrapping="Wrap" AcceptsReturn="False"
                              Height="72" VerticalContentAlignment="Center"
-                             Margin="0,0,0,24"/>
+                             Margin="0,0,0,28"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <Button Content="Huỷ" Style="{StaticResource MaterialDesignFlatButton}"
                                 Command="{Binding OpenIntentionDialogCommand}" Margin="0,0,8,0"/>
-                        <Button Content="🚀 Bắt Đầu!" Style="{StaticResource MaterialDesignRaisedButton}"
-                                Command="{Binding StartSessionCommand}"
-                                Background="#7C4DFF" BorderBrush="#7C4DFF"
-                                materialDesign:ButtonAssist.CornerRadius="8" Padding="24,0"/>
+                        <Button Style="{StaticResource LargePrimaryButton}"
+                                Command="{Binding StartSessionCommand}" Height="40">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="RocketLaunchOutline" Width="18" Height="18"
+                                                         Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Bắt Đầu" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                 </StackPanel>
             </Border>
@@ -39,31 +49,32 @@
             <!-- Guilt-trip overlay -->
             <Grid Visibility="{Binding IsGuiltTripVisible, Converter={StaticResource BoolToVis}}"
                   Background="#EE000000" Panel.ZIndex="99">
-                <Border Background="#1E1E3F" CornerRadius="16" Padding="48"
+                <Border Background="#1E1E3F" CornerRadius="20" Padding="52"
                         MaxWidth="520" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <StackPanel HorizontalAlignment="Center">
-                        <TextBlock Text="😤" FontSize="64" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                        <materialDesign:PackIcon Kind="EmoticonAngryOutline" Width="64" Height="64"
+                                                 HorizontalAlignment="Center" Foreground="#F44336"
+                                                 Margin="0,0,0,16"/>
                         <TextBlock Text="Bỏ cuộc rồi sao?!"
-                                   FontSize="28" FontWeight="Bold"
+                                   FontSize="26" FontWeight="Bold"
                                    HorizontalAlignment="Center" Margin="0,0,0,16"/>
                         <TextBlock Text="{Binding GuiltTripQuote}"
-                                   FontSize="16" TextWrapping="Wrap"
+                                   FontSize="15" TextWrapping="Wrap"
                                    Foreground="#CCBBFF" TextAlignment="Center"
-                                   Margin="0,0,0,32" MaxWidth="400"/>
+                                   Margin="0,0,0,36" MaxWidth="400"/>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <Button Content="💪 Tiếp tục nào!"
-                                    Command="{Binding ContinueSessionCommand}"
-                                    Style="{StaticResource MaterialDesignRaisedButton}"
-                                    Background="#4CAF50" BorderBrush="#4CAF50"
-                                    FontSize="15" Padding="28,12"
-                                    materialDesign:ButtonAssist.CornerRadius="10"
-                                    Margin="0,0,16,0"/>
+                            <Button Command="{Binding ContinueSessionCommand}"
+                                    Style="{StaticResource LargeSuccessButton}"
+                                    Margin="0,0,16,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="ArmFlex" Width="20" Height="20"
+                                                             Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Tiếp tục nào!" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
                             <Button Content="Tôi đã thua..."
                                     Command="{Binding ConfirmAbandonCommand}"
-                                    Style="{StaticResource MaterialDesignOutlinedButton}"
-                                    Foreground="#F44336" BorderBrush="#F44336"
-                                    FontSize="14" Padding="20,12"
-                                    materialDesign:ButtonAssist.CornerRadius="10"/>
+                                    Style="{StaticResource LargeDangerOutlineButton}"/>
                         </StackPanel>
                     </StackPanel>
                 </Border>
@@ -79,7 +90,7 @@
                 <!-- Left: Timer Circle -->
                 <Grid Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <StackPanel HorizontalAlignment="Center">
-                        <!-- Circular progress simulation -->
+                        <!-- Circular progress -->
                         <Grid Width="280" Height="280">
                             <Ellipse Stroke="#2D2D4E" StrokeThickness="18" Fill="Transparent"/>
                             <Ellipse x:Name="ProgressArc" Stroke="#7C4DFF" StrokeThickness="18" Fill="Transparent"
@@ -103,42 +114,32 @@
                         <!-- Controls (session active) -->
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,32,0,0"
                                     Visibility="{Binding IsSessionActive, Converter={StaticResource BoolToVis}}">
-                            <!-- Pause button (shown when NOT paused) -->
+                            <!-- Pause button -->
                             <Button Command="{Binding PauseResumeCommand}"
-                                    Style="{StaticResource MaterialDesignRaisedButton}"
-                                    Width="56" Height="56" Padding="0"
-                                    materialDesign:ButtonAssist.CornerRadius="28"
+                                    Style="{StaticResource TimerControlButton}"
                                     Background="#2D2D4E" Margin="0,0,16,0"
                                     Visibility="{Binding IsPaused, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}">
                                 <materialDesign:PackIcon Kind="Pause" Width="24" Height="24"/>
                             </Button>
-                            <!-- Resume button (shown when paused) -->
+                            <!-- Resume button -->
                             <Button Command="{Binding PauseResumeCommand}"
-                                    Style="{StaticResource MaterialDesignRaisedButton}"
-                                    Width="56" Height="56" Padding="0"
-                                    materialDesign:ButtonAssist.CornerRadius="28"
+                                    Style="{StaticResource TimerControlButton}"
                                     Background="#4CAF50" Margin="0,0,16,0"
                                     Visibility="{Binding IsPaused, Converter={StaticResource BoolToVis}}">
                                 <materialDesign:PackIcon Kind="Play" Width="24" Height="24"/>
                             </Button>
                             <Button Command="{Binding AttemptStopCommand}"
-                                    Style="{StaticResource MaterialDesignRaisedButton}"
-                                    Width="56" Height="56" Padding="0"
-                                    materialDesign:ButtonAssist.CornerRadius="28"
+                                    Style="{StaticResource TimerControlButton}"
                                     Background="#F44336">
                                 <materialDesign:PackIcon Kind="Stop" Width="24" Height="24"/>
                             </Button>
                         </StackPanel>
 
                         <!-- Start button (session inactive) -->
-                        <Button Content="🎯 Bắt đầu phiên"
-                                Command="{Binding OpenIntentionDialogCommand}"
-                                Background="#7C4DFF" BorderBrush="#7C4DFF"
-                                FontSize="16" Padding="40,14"
-                                materialDesign:ButtonAssist.CornerRadius="12"
+                        <Button Command="{Binding OpenIntentionDialogCommand}"
                                 HorizontalAlignment="Center" Margin="0,32,0,0">
                             <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+                                <Style TargetType="Button" BasedOn="{StaticResource LargePrimaryButton}">
                                     <Setter Property="Visibility" Value="Visible"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsSessionActive}" Value="True">
@@ -147,6 +148,11 @@
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="TargetAccount" Width="20" Height="20"
+                                                         Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Bắt đầu phiên" VerticalAlignment="Center"/>
+                            </StackPanel>
                         </Button>
                     </StackPanel>
                 </Grid>
@@ -155,7 +161,13 @@
                 <Border Grid.Column="1" Background="#1E1E3F" CornerRadius="16" Padding="28"
                         VerticalAlignment="Center">
                     <StackPanel>
-                        <TextBlock Text="⚙️ Cấu hình phiên" FontSize="18" FontWeight="Bold" Margin="0,0,0,20"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                            <materialDesign:PackIcon Kind="CogOutline" Width="22" Height="22"
+                                                     Foreground="#7C4DFF" Margin="0,0,10,0"
+                                                     VerticalAlignment="Center"/>
+                            <TextBlock Text="Cấu hình phiên" FontSize="18" FontWeight="Bold"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
 
                         <TextBlock Text="Thời lượng (phút)" Foreground="#9E9E9E" FontSize="12" Margin="0,0,0,4"/>
                         <Slider Value="{Binding DurationMinutes}" Minimum="5" Maximum="120" TickFrequency="5"
@@ -182,11 +194,16 @@
                         <Border Background="#7C4DFF22" CornerRadius="10" Padding="16"
                                 Visibility="{Binding IsSessionActive, Converter={StaticResource BoolToVis}}">
                             <StackPanel>
-                                <TextBlock Text="🔒 STRICT MODE ACTIVE" FontSize="13" FontWeight="Bold"
-                                           Foreground="#BCC0FF" HorizontalAlignment="Center"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,4">
+                                    <materialDesign:PackIcon Kind="LockOutline" Width="16" Height="16"
+                                                             Foreground="#BCC0FF" Margin="0,0,6,0"
+                                                             VerticalAlignment="Center"/>
+                                    <TextBlock Text="STRICT MODE ACTIVE" FontSize="13" FontWeight="Bold"
+                                               Foreground="#BCC0FF"/>
+                                </StackPanel>
                                 <TextBlock Text="Các app và web ngoài Whitelist đã bị chặn"
                                            FontSize="11" Foreground="#9E9E9E"
-                                           HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                                           HorizontalAlignment="Center"/>
                             </StackPanel>
                         </Border>
                     </StackPanel>

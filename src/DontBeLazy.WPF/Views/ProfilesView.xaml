@@ -12,34 +12,56 @@
 
     <materialDesign:DialogHost IsOpen="{Binding IsAddProfileDialogOpen}">
         <materialDesign:DialogHost.DialogContent>
-            <Border Padding="32" MinWidth="380" Background="#1E1E3F" CornerRadius="12">
+            <Border Padding="36" MinWidth="400" Background="#1E1E3F" CornerRadius="16">
                 <StackPanel>
-                    <TextBlock Text="Tạo Profile mới" FontSize="20" FontWeight="Bold" Margin="0,0,0,20"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,24">
+                        <materialDesign:PackIcon Kind="ShieldPlusOutline" Width="28" Height="28"
+                                                 Foreground="#7C4DFF" Margin="0,0,12,0"
+                                                 VerticalAlignment="Center"/>
+                        <TextBlock Text="Tạo Profile mới" FontSize="20" FontWeight="Bold"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
                     <TextBox materialDesign:HintAssist.Hint="Tên Profile *"
-                             Text="{Binding NewProfileName}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,12"/>
-                    <CheckBox Content="Đặt làm mặc định" IsChecked="{Binding NewProfileIsDefault}" Margin="0,0,0,20"/>
+                             Text="{Binding NewProfileName}"
+                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                             Margin="0,0,0,16"/>
+                    <CheckBox Content="Đặt làm mặc định" IsChecked="{Binding NewProfileIsDefault}" Margin="0,0,0,24"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Content="Huỷ" Style="{StaticResource MaterialDesignFlatButton}" Command="{Binding OpenAddProfileDialogCommand}" Margin="0,0,8,0"/>
-                        <Button Content="Tạo" Style="{StaticResource MaterialDesignRaisedButton}" Command="{Binding CreateProfileCommand}" materialDesign:ButtonAssist.CornerRadius="8"/>
+                        <Button Content="Huỷ" Style="{StaticResource MaterialDesignFlatButton}"
+                                Command="{Binding OpenAddProfileDialogCommand}" Margin="0,0,8,0"/>
+                        <Button Content="Tạo" Style="{StaticResource LargePrimaryButton}"
+                                Command="{Binding CreateProfileCommand}" Height="40"/>
                     </StackPanel>
                 </StackPanel>
             </Border>
         </materialDesign:DialogHost.DialogContent>
 
-        <Grid Margin="32">
+        <Grid Margin="40,36,40,36">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="260"/>
+                <ColumnDefinition Width="280"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
             <!-- Left: Profile List -->
-            <DockPanel Grid.Column="0" Margin="0,0,24,0">
-                <StackPanel DockPanel.Dock="Top" Margin="0,0,0,16">
-                    <TextBlock Text="🛡️ Profiles" FontSize="22" FontWeight="Bold"/>
-                    <Button Content="+ Tạo Profile" Command="{Binding OpenAddProfileDialogCommand}"
+            <DockPanel Grid.Column="0" Margin="0,0,28,0">
+                <StackPanel DockPanel.Dock="Top" Margin="0,0,0,20">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                        <materialDesign:PackIcon Kind="ShieldCheckOutline" Width="28" Height="28"
+                                                 Foreground="#7C4DFF" Margin="0,0,12,0"
+                                                 VerticalAlignment="Center"/>
+                        <TextBlock Text="Profiles" FontSize="24" FontWeight="Bold"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <Button Command="{Binding OpenAddProfileDialogCommand}"
                             Style="{StaticResource MaterialDesignOutlinedButton}"
-                            HorizontalAlignment="Stretch" Margin="0,12,0,0"
-                            materialDesign:ButtonAssist.CornerRadius="8"/>
+                            HorizontalAlignment="Stretch"
+                            materialDesign:ButtonAssist.CornerRadius="10">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Plus" Width="18" Height="18" Margin="0,0,8,0"
+                                                     VerticalAlignment="Center"/>
+                            <TextBlock Text="Tạo Profile" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
 
                 <ListBox ItemsSource="{Binding Profiles}"
@@ -70,54 +92,79 @@
 
             <!-- Right: Entry Detail -->
             <Grid Grid.Column="1">
-                <TextBlock Text="← Chọn một Profile để xem danh sách"
-                           Foreground="#9E9E9E" FontSize="16"
-                           VerticalAlignment="Center" HorizontalAlignment="Center"
-                           Visibility="{Binding SelectedProfile, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}"/>
+                <!-- Empty state -->
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
+                            Visibility="{Binding SelectedProfile, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}">
+                    <materialDesign:PackIcon Kind="ArrowLeftBoldOutline" Width="48" Height="48"
+                                             Foreground="#333" HorizontalAlignment="Center"
+                                             Margin="0,0,0,12"/>
+                    <TextBlock Text="Chọn một Profile để xem danh sách"
+                               Foreground="#9E9E9E" FontSize="15" HorizontalAlignment="Center"/>
+                </StackPanel>
 
                 <materialDesign:DialogHost IsOpen="{Binding IsAddEntryDialogOpen}"
                                            Visibility="{Binding SelectedProfile, Converter={StaticResource BoolToVis}}">
                     <materialDesign:DialogHost.DialogContent>
-                        <Border Padding="28" MinWidth="360" Background="#1E1E3F" CornerRadius="12">
+                        <Border Padding="32" MinWidth="380" Background="#1E1E3F" CornerRadius="16">
                             <StackPanel>
-                                <TextBlock Text="Thêm Website / App" FontSize="18" FontWeight="Bold" Margin="0,0,0,16"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                                    <materialDesign:PackIcon Kind="WebPlus" Width="24" Height="24"
+                                                             Foreground="#7C4DFF" Margin="0,0,10,0"
+                                                             VerticalAlignment="Center"/>
+                                    <TextBlock Text="Thêm Website / App" FontSize="18" FontWeight="Bold"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
                                 <ComboBox materialDesign:HintAssist.Hint="Loại"
                                           ItemsSource="{Binding EntryTypes}"
                                           SelectedItem="{Binding NewEntryType}"
-                                          Style="{StaticResource MaterialDesignFloatingHintComboBox}" Margin="0,0,0,12"/>
+                                          Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                                          Margin="0,0,0,12"/>
                                 <TextBox materialDesign:HintAssist.Hint="URL hoặc tên app"
-                                         Text="{Binding NewEntryValue}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,20"/>
+                                         Text="{Binding NewEntryValue}"
+                                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                         Margin="0,0,0,24"/>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <Button Content="Huỷ" Style="{StaticResource MaterialDesignFlatButton}" Command="{Binding OpenAddEntryDialogCommand}" Margin="0,0,8,0"/>
-                                    <Button Content="Thêm" Style="{StaticResource MaterialDesignRaisedButton}" Command="{Binding AddEntryCommand}" materialDesign:ButtonAssist.CornerRadius="8"/>
+                                    <Button Content="Huỷ" Style="{StaticResource MaterialDesignFlatButton}"
+                                            Command="{Binding OpenAddEntryDialogCommand}" Margin="0,0,8,0"/>
+                                    <Button Content="Thêm" Style="{StaticResource LargePrimaryButton}"
+                                            Command="{Binding AddEntryCommand}" Height="40"/>
                                 </StackPanel>
                             </StackPanel>
                         </Border>
                     </materialDesign:DialogHost.DialogContent>
 
                     <DockPanel>
-                        <StackPanel DockPanel.Dock="Top" Margin="0,0,0,16">
-                            <TextBlock Text="{Binding SelectedProfile.Name, StringFormat='Entries — {0}'}"
+                        <StackPanel DockPanel.Dock="Top" Margin="0,0,0,20">
+                            <TextBlock Text="{Binding SelectedProfile.Name, StringFormat='Whitelist — {0}'}"
                                        FontSize="20" FontWeight="Bold"/>
-                            <Button Content="+ Thêm Website / App" Command="{Binding OpenAddEntryDialogCommand}"
+                            <Button Command="{Binding OpenAddEntryDialogCommand}"
                                     Style="{StaticResource MaterialDesignOutlinedButton}"
                                     HorizontalAlignment="Left" Margin="0,12,0,0"
-                                    materialDesign:ButtonAssist.CornerRadius="8"/>
+                                    materialDesign:ButtonAssist.CornerRadius="10">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="Plus" Width="18" Height="18" Margin="0,0,8,0"
+                                                             VerticalAlignment="Center"/>
+                                    <TextBlock Text="Thêm Website / App" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
                         </StackPanel>
 
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <ItemsControl ItemsSource="{Binding SelectedProfile.Entries}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <materialDesign:Card Margin="0,0,0,8" Padding="16,12" UniformCornerRadius="10" Background="#1E1E3F">
+                                        <materialDesign:Card Margin="0,0,0,8" Padding="16,12"
+                                                             UniformCornerRadius="10" Background="#1E1E3F">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <Border Grid.Column="0" Background="#7C4DFF22" CornerRadius="8" Padding="8" Margin="0,0,12,0">
-                                                    <materialDesign:PackIcon Kind="{Binding Type, Converter={StaticResource TypeToIcon}}" Width="20" Height="20" Foreground="#7C4DFF"/>
+                                                <Border Grid.Column="0" Background="#7C4DFF22"
+                                                        CornerRadius="8" Padding="8" Margin="0,0,14,0">
+                                                    <materialDesign:PackIcon Kind="{Binding Type, Converter={StaticResource TypeToIcon}}"
+                                                                             Width="20" Height="20" Foreground="#7C4DFF"/>
                                                 </Border>
                                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                                     <TextBlock Text="{Binding Value}" FontSize="14" FontWeight="SemiBold"/>

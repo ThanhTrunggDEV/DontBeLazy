@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DontBeLazy.Domain.Entities;
 using DontBeLazy.Ports.Inbound;
+using MaterialDesignThemes.Wpf;
 
 namespace DontBeLazy.WPF.ViewModels;
 
@@ -47,7 +48,17 @@ public partial class SettingsViewModel : ObservableObject
         await _settingsUseCase.UpdateSettingsAsync(GlobalStrictMode, EnableGuiltTrip, QuoteLanguage, DarkTheme);
     }
 
-    partial void OnGlobalStrictModeChanged(bool value) => _ = SaveAsync();
-    partial void OnEnableGuiltTripChanged(bool value) => _ = SaveAsync();
-    partial void OnDarkThemeChanged(bool value) => _ = SaveAsync();
+    partial void OnGlobalStrictModeChanged(bool value) { if (IsLoaded) _ = SaveAsync(); }
+    partial void OnEnableGuiltTripChanged(bool value) { if (IsLoaded) _ = SaveAsync(); }
+    partial void OnQuoteLanguageChanged(string value) { if (IsLoaded) _ = SaveAsync(); }
+    
+    partial void OnDarkThemeChanged(bool value) 
+    {
+        if (IsLoaded) _ = SaveAsync();
+        
+        var helper = new MaterialDesignThemes.Wpf.PaletteHelper();
+        var theme = helper.GetTheme();
+        theme.SetBaseTheme(value ? MaterialDesignThemes.Wpf.BaseTheme.Dark : MaterialDesignThemes.Wpf.BaseTheme.Light);
+        helper.SetTheme(theme);
+    }
 }

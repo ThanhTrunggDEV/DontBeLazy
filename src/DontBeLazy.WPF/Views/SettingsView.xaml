@@ -6,30 +6,43 @@
              Background="{DynamicResource MaterialDesign.Brush.Background}">
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="40" MaxWidth="620">
+        <StackPanel Margin="40,36,40,36" MaxWidth="620">
 
             <!-- Header -->
-            <TextBlock Text="⚙️ Cài đặt" FontSize="28" FontWeight="Bold" Margin="0,0,0,8"/>
-            <TextBlock Text="Tuỳ chỉnh hành vi của ứng dụng" Foreground="#9E9E9E" FontSize="14" Margin="0,0,0,32"/>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                <materialDesign:PackIcon Kind="CogOutline" Width="32" Height="32"
+                                         Foreground="#7C4DFF" Margin="0,0,14,0"
+                                         VerticalAlignment="Center"/>
+                <TextBlock Text="Cài đặt" FontSize="26" FontWeight="Bold"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+            <TextBlock Text="Tuỳ chỉnh hành vi của ứng dụng" Foreground="#9E9E9E"
+                       FontSize="14" Margin="0,0,0,32"/>
 
             <!-- Focus Behaviour Section -->
             <TextBlock Text="KỶ LUẬT" FontSize="11" FontWeight="Bold" Foreground="#7C4DFF"
                        Margin="0,0,0,12"/>
 
-            <materialDesign:Card Padding="0" UniformCornerRadius="16" Background="#1E1E3F" Margin="0,0,0,24">
+            <materialDesign:Card Padding="0" UniformCornerRadius="16" Background="#1E1E3F" Margin="0,0,0,28">
                 <StackPanel>
                     <!-- Strict Mode -->
                     <Grid Margin="24,20">
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="🔒 Strict Mode toàn cục" FontSize="15" FontWeight="SemiBold"/>
-                            <TextBlock Text="Không cho phép tắt phiên khi đang chạy. Cẩn thận khi bật!"
-                                       Foreground="#9E9E9E" FontSize="12" Margin="0,4,0,0"/>
+                        <Border Grid.Column="0" Background="#7C4DFF22" CornerRadius="10"
+                                Padding="10" Margin="0,0,16,0" VerticalAlignment="Center">
+                            <materialDesign:PackIcon Kind="LockOutline" Width="20" Height="20"
+                                                     Foreground="#7C4DFF"/>
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="Strict Mode toàn cục" FontSize="15" FontWeight="SemiBold"/>
+                            <TextBlock Text="Không cho phép tắt phiên khi đang chạy"
+                                       Foreground="#9E9E9E" FontSize="12" Margin="0,3,0,0"/>
                         </StackPanel>
-                        <ToggleButton Grid.Column="1" IsChecked="{Binding GlobalStrictMode}"
+                        <ToggleButton Grid.Column="2" IsChecked="{Binding GlobalStrictMode}"
                                       Style="{StaticResource MaterialDesignSwitchToggleButton}"
                                       VerticalAlignment="Center"/>
                     </Grid>
@@ -39,15 +52,21 @@
                     <!-- Guilt Trip -->
                     <Grid Margin="24,20">
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="😤 Kích hoạt Guilt-Trip" FontSize="15" FontWeight="SemiBold"/>
-                            <TextBlock Text="Hiện quote châm biếm và lay động tâm lý khi bạn cố bỏ cuộc"
-                                       Foreground="#9E9E9E" FontSize="12" Margin="0,4,0,0"/>
+                        <Border Grid.Column="0" Background="#F4433622" CornerRadius="10"
+                                Padding="10" Margin="0,0,16,0" VerticalAlignment="Center">
+                            <materialDesign:PackIcon Kind="EmoticonAngryOutline" Width="20" Height="20"
+                                                     Foreground="#F44336"/>
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="Kích hoạt Guilt-Trip" FontSize="15" FontWeight="SemiBold"/>
+                            <TextBlock Text="Hiện quote châm biếm khi bạn cố bỏ cuộc"
+                                       Foreground="#9E9E9E" FontSize="12" Margin="0,3,0,0"/>
                         </StackPanel>
-                        <ToggleButton Grid.Column="1" IsChecked="{Binding EnableGuiltTrip}"
+                        <ToggleButton Grid.Column="2" IsChecked="{Binding EnableGuiltTrip}"
                                       Style="{StaticResource MaterialDesignSwitchToggleButton}"
                                       VerticalAlignment="Center"/>
                     </Grid>
@@ -58,49 +77,61 @@
             <TextBlock Text="GIAO DIỆN" FontSize="11" FontWeight="Bold" Foreground="#7C4DFF"
                        Margin="0,0,0,12"/>
 
-            <materialDesign:Card Padding="0" UniformCornerRadius="16" Background="#1E1E3F" Margin="0,0,0,24">
-                <StackPanel>
-                    <!-- Dark Theme -->
-                    <Grid Margin="24,20">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="🌙 Dark Mode" FontSize="15" FontWeight="SemiBold"/>
-                            <TextBlock Text="Sử dụng giao diện tối để bảo vệ mắt"
-                                       Foreground="#9E9E9E" FontSize="12" Margin="0,4,0,0"/>
-                        </StackPanel>
-                        <ToggleButton Grid.Column="1" IsChecked="{Binding DarkTheme}"
-                                      Style="{StaticResource MaterialDesignSwitchToggleButton}"
-                                      VerticalAlignment="Center"/>
-                    </Grid>
-                </StackPanel>
+            <materialDesign:Card Padding="0" UniformCornerRadius="16" Background="#1E1E3F" Margin="0,0,0,28">
+                <Grid Margin="24,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Border Grid.Column="0" Background="#FFB30022" CornerRadius="10"
+                            Padding="10" Margin="0,0,16,0" VerticalAlignment="Center">
+                        <materialDesign:PackIcon Kind="WeatherNight" Width="20" Height="20"
+                                                 Foreground="#FFB300"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="Dark Mode" FontSize="15" FontWeight="SemiBold"/>
+                        <TextBlock Text="Sử dụng giao diện tối để bảo vệ mắt"
+                                   Foreground="#9E9E9E" FontSize="12" Margin="0,3,0,0"/>
+                    </StackPanel>
+                    <ToggleButton Grid.Column="2" IsChecked="{Binding DarkTheme}"
+                                  Style="{StaticResource MaterialDesignSwitchToggleButton}"
+                                  VerticalAlignment="Center"/>
+                </Grid>
             </materialDesign:Card>
 
             <!-- Language Section -->
             <TextBlock Text="NGÔN NGỮ AI" FontSize="11" FontWeight="Bold" Foreground="#7C4DFF"
                        Margin="0,0,0,12"/>
 
-            <materialDesign:Card Padding="24" UniformCornerRadius="16" Background="#1E1E3F" Margin="0,0,0,24">
+            <materialDesign:Card Padding="24" UniformCornerRadius="16" Background="#1E1E3F" Margin="0,0,0,28">
                 <StackPanel>
-                    <TextBlock Text="Ngôn ngữ cho AI Quotes" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                        <materialDesign:PackIcon Kind="Translate" Width="20" Height="20"
+                                                 Foreground="#7C4DFF" Margin="0,0,10,0"
+                                                 VerticalAlignment="Center"/>
+                        <TextBlock Text="Ngôn ngữ cho AI Quotes" FontSize="15"
+                                   FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
                     <TextBlock Text="Gemini AI sẽ tạo câu quote bằng ngôn ngữ này"
                                Foreground="#9E9E9E" FontSize="12" Margin="0,0,0,16"/>
-                    <ComboBox SelectedValue="{Binding QuoteLanguage}" Width="200" HorizontalAlignment="Left">
-                        <ComboBoxItem Content="🇻🇳 Tiếng Việt" Tag="vi"/>
-                        <ComboBoxItem Content="🇺🇸 English" Tag="en"/>
+                    <ComboBox SelectedValue="{Binding QuoteLanguage}" SelectedValuePath="Tag"
+                              Width="220" HorizontalAlignment="Left">
+                        <ComboBoxItem Content="Tiếng Việt" Tag="vi"/>
+                        <ComboBoxItem Content="English" Tag="en"/>
                     </ComboBox>
                 </StackPanel>
             </materialDesign:Card>
 
             <!-- App Info -->
-            <materialDesign:Card Padding="20" UniformCornerRadius="12" Background="#0D0D1F" Margin="0,8,0,0">
+            <materialDesign:Card Padding="20" UniformCornerRadius="12" Background="#0D0D1F">
                 <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="InformationOutline" Foreground="#9E9E9E" Margin="0,0,12,0"/>
+                    <materialDesign:PackIcon Kind="InformationOutline" Width="18" Height="18"
+                                             Foreground="#555" Margin="0,0,12,0"
+                                             VerticalAlignment="Center"/>
                     <StackPanel>
                         <TextBlock Text="Don't Be Lazy v1.0" Foreground="#9E9E9E" FontSize="12"/>
-                        <TextBlock Text="Built with ❤️ — Clean Architecture + WPF + Material Design"
+                        <TextBlock Text="Clean Architecture + WPF + Material Design"
                                    Foreground="#555" FontSize="11" Margin="0,2,0,0"/>
                     </StackPanel>
                 </StackPanel>

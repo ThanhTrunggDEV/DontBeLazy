@@ -26,7 +26,7 @@
             <DockPanel>
                 <!-- Logo -->
                 <StackPanel DockPanel.Dock="Top" Margin="24,32,24,24">
-                    <materialDesign:PackIcon Kind="BrainOutline"
+                    <materialDesign:PackIcon Kind="Meditation"
                                             Width="40" Height="40"
                                             Foreground="#7C4DFF"
                                             HorizontalAlignment="Left"/>
