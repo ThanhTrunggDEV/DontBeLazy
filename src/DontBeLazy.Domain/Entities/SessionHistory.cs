@@ -1,0 +1,64 @@
+using System;
+using DontBeLazy.Domain.Enums;
+
+namespace DontBeLazy.Domain.Entities;
+
+public class SessionHistory
+{
+    public int Id { get; private set; }
+    public int? TaskId { get; private set; }
+    public string SnapshotTaskName { get; private set; }
+    public string? SnapshotProfileName { get; private set; }
+    
+    public DateTime FocusStartDate { get; private set; }
+    public DateTime? FocusEndDate { get; private set; }
+    
+    public int ExpectedSeconds { get; private set; }
+    public int ActualSeconds { get; private set; }
+    
+    public CompletionStatus? CompletionStatus { get; private set; }
+    public int BlockedCount { get; private set; }
+    public bool WasStrictMode { get; private set; }
+
+    public SessionHistory(int? taskId, string taskName, string? profileName, int expectedSeconds, bool wasStrictMode)
+    {
+        TaskId = taskId;
+        SnapshotTaskName = taskName;
+        SnapshotProfileName = profileName;
+        ExpectedSeconds = expectedSeconds;
+        WasStrictMode = wasStrictMode;
+        FocusStartDate = DateTime.Now;
+        ActualSeconds = 0;
+        BlockedCount = 0;
+    }
+
+    public void IncrementActualSeconds(int seconds)
+    {
+        if (CompletionStatus != null)
+            throw new InvalidOperationException("Cannot update time for a completed or abandoned session.");
+            
+        ActualSeconds += seconds;
+    }
+
+    public void CompleteSession(CompletionStatus status)
+    {
+        if (status == Enums.CompletionStatus.CompletedEarly)
+        {
+            // The actual logic of completing early should update ActualSeconds accurately up to that point
+            // This is just a state change.
+        }
+        
+        CompletionStatus = status;
+        FocusEndDate = DateTime.Now;
+    }
+
+    public void IncrementBlockedCount()
+    {
+        BlockedCount++;
+    }
+
+    public int GetRemainingSeconds()
+    {
+        return Math.Max(0, ExpectedSeconds - ActualSeconds);
+    }
+}
