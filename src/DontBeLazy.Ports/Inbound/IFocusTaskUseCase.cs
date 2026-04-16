@@ -1,19 +1,17 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DontBeLazy.Domain.Entities;
-using DontBeLazy.Domain.Enums;
-using DontBeLazy.Domain.ValueObjects;
+using DontBeLazy.Ports.DTOs;
 
 namespace DontBeLazy.Ports.Inbound;
 
 public interface IFocusTaskUseCase
 {
-    Task<IReadOnlyCollection<FocusTask>> GetAllTasksAsync();
-    Task<FocusTask> CreateTaskAsync(string name, int expectedMinutes, ProfileId? profileId = null, bool? perTaskStrictMode = null);
-    Task UpdateTaskAsync(TaskId taskId, string name, int expectedMinutes, ProfileId? profileId, bool? perTaskStrictMode);
-    Task DeleteTaskAsync(TaskId taskId);
-    Task ChangeTaskStatusAsync(TaskId taskId, DontBeLazy.Domain.Enums.TaskStatus newStatus);
-    Task SetTaskRecurringAsync(TaskId taskId, RecurringType type, string config);
-    Task UpdateTaskSortOrderAsync(TaskId taskId, int newSortOrder);
-    Task PauseTaskAsync(TaskId taskId, bool isPaused);
+    Task<IReadOnlyCollection<FocusTaskDto>> GetAllTasksAsync();
+    Task<FocusTaskDto> CreateTaskAsync(string name, int expectedMinutes, Guid? profileId = null, bool? perTaskStrictMode = null);
+    Task UpdateTaskAsync(Guid taskId, string name, int expectedMinutes, Guid? profileId, bool? perTaskStrictMode);
+    Task DeleteTaskAsync(Guid taskId);
+    Task ChangeTaskStatusAsync(Guid taskId, TaskStatusDto newStatus);
+    Task SetTaskRecurringAsync(Guid taskId, string recurringType, string config);
+    Task UpdateTaskSortOrderAsync(Guid taskId, int newSortOrder);
+    Task PauseTaskAsync(Guid taskId, bool isPaused);
 }

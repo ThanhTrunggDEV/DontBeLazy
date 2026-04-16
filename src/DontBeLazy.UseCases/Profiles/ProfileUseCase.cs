@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using DontBeLazy.Domain.Entities;
 using DontBeLazy.Domain.ValueObjects;
+using DontBeLazy.Ports.DTOs;
 using DontBeLazy.Ports.Inbound;
 using DontBeLazy.Ports.Outbound.Repositories;
+using DontBeLazy.UseCases.Mappers;
 
 namespace DontBeLazy.UseCases.Profiles;
 
@@ -18,55 +20,48 @@ public class ProfileUseCase : IProfileUseCase
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<IReadOnlyCollection<Profile>> GetAllProfilesAsync()
+    public async Task<IReadOnlyCollection<ProfileDto>> GetAllProfilesAsync()
     {
-        return await _profileRepository.GetAllAsync();
+        var profiles = await _profileRepository.GetAllAsync();
+        return profiles.Select(DtoMapper.ToDto).ToList();
     }
 
-    public async Task<Profile> GetProfileByIdAsync(ProfileId profileId)
+    public async Task<ProfileDto> GetProfileByIdAsync(Guid profileId)
     {
-        var profile = await _profileRepository.GetByIdAsync(profileId);
-        if (profile == null)
-            throw new System.Collections.Generic.KeyNotFoundException($"Profile {profileId} not found.");
-            
-        return profile;
+        var profile = await _profileRepository.GetByIdAsync(new ProfileId(profileId));
+        if (profile == null) throw new KeyNotFoundException($"Profile {profileId} not found.");
+        return DtoMapper.ToDto(profile);
     }
 
-    public async Task<Profile> GetDefaultProfileAsync()
+    public async Task<ProfileDto> GetDefaultProfileAsync()
     {
         var profile = await _profileRepository.GetDefaultProfileAsync();
-        if (profile == null)
-            throw new System.InvalidOperationException("Default Profile has not been initialized. Call EnsureDefaultProfileAsync() at application startup.");
-            
-        return profile;
+        if (profile == null) throw new InvalidOperationException("Default Profile has not been initialized.");
+        return DtoMapper.ToDto(profile);
     }
 
-    public async Task<Profile> CreateProfileAsync(string name, bool isDefault)
+    public async Task<ProfileDto> CreateProfileAsync(string name, bool isDefault)
     {
         var profile = new Profile(name, isDefault);
         await _profileRepository.AddAsync(profile);
         await _unitOfWork.SaveChangesAsync();
-        return profile;
+        return DtoMapper.ToDto(profile);
     }
 
-    public async Task UpdateProfileNameAsync(ProfileId profileId, string newName)
+    public async Task UpdateProfileNameAsync(Guid profileId, string newName)
     {
-        var profile = await _profileRepository.GetByIdAsync(profileId);
-        if (profile == null)
-            throw new System.Collections.Generic.KeyNotFoundException($"Profile {profileId} not found.");
-
+        var profile = await _profileRepository.GetByIdAsync(new ProfileId(profileId));
+        if (profile == null) throw new KeyNotFoundException($"Profile {profileId} not found.");
         profile.UpdateName(newName);
         await _profileRepository.UpdateAsync(profile);
         await _unitOfWork.SaveChangesAsync();
     }
 
-    public async Task DeleteProfileAsync(ProfileId profileId)
+    public async Task DeleteProfileAsync(Guid profileId)
     {
-        var profile = await _profileRepository.GetByIdAsync(profileId);
-        if (profile == null)
-            throw new System.Collections.Generic.KeyNotFoundException($"Profile {profileId} not found.");
-
-        await _profileRepository.DeleteAsync(profileId);
+        var profile = await _profileRepository.GetByIdAsync(new ProfileId(profileId));
+        if (profile == null) throw new KeyNotFoundException($"Profile {profileId} not found.");
+        await _profileRepository.DeleteAsync(new ProfileId(profileId));
         await _unitOfWork.SaveChangesAsync();
     }
 }

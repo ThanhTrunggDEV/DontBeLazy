@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DontBeLazy.Domain.Entities;
+using DontBeLazy.Ports.DTOs;
 
 namespace DontBeLazy.Ports.Inbound;
 
 public interface IQuoteUseCase
 {
-    Task<IReadOnlyCollection<Quote>> GetAllQuotesAsync();
-    Task<Quote> GetQuoteForEventAsync(DontBeLazy.Domain.Enums.QuoteEventType eventType, string language);
-    Task<Quote> AddQuoteAsync(string content, string author, DontBeLazy.Domain.Enums.QuoteEventType type, string lang);
-    Task UpdateQuoteAsync(DontBeLazy.Domain.ValueObjects.QuoteId quoteId, string newContent, string newAuthor);
-    Task DeleteQuoteAsync(DontBeLazy.Domain.ValueObjects.QuoteId quoteId);
+    Task<IReadOnlyCollection<QuoteDto>> GetAllQuotesAsync();
+    Task<QuoteDto?> GetQuoteForEventAsync(QuoteEventTypeDto eventType, string language);
+    Task<QuoteDto> AddQuoteAsync(string content, string author, QuoteEventTypeDto type, string lang);
+    Task UpdateQuoteAsync(Guid quoteId, string newContent, string newAuthor);
+    Task DeleteQuoteAsync(Guid quoteId);
 }

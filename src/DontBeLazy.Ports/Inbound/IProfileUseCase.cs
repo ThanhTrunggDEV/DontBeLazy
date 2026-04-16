@@ -1,17 +1,15 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DontBeLazy.Domain.Entities;
-using DontBeLazy.Domain.Enums;
-using DontBeLazy.Domain.ValueObjects;
+using DontBeLazy.Ports.DTOs;
 
 namespace DontBeLazy.Ports.Inbound;
 
 public interface IProfileUseCase
 {
-    Task<IReadOnlyCollection<Profile>> GetAllProfilesAsync();
-    Task<Profile> GetProfileByIdAsync(ProfileId profileId);
-    Task<Profile> GetDefaultProfileAsync();
-    Task<Profile> CreateProfileAsync(string name, bool isDefault);
-    Task UpdateProfileNameAsync(ProfileId profileId, string newName);
-    Task DeleteProfileAsync(ProfileId profileId);
+    Task<IReadOnlyCollection<ProfileDto>> GetAllProfilesAsync();
+    Task<ProfileDto> GetProfileByIdAsync(Guid profileId);
+    Task<ProfileDto> GetDefaultProfileAsync();
+    Task<ProfileDto> CreateProfileAsync(string name, bool isDefault);
+    Task UpdateProfileNameAsync(Guid profileId, string newName);
+    Task DeleteProfileAsync(Guid profileId);
 }

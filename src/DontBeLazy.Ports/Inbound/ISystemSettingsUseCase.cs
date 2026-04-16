@@ -1,11 +1,10 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using DontBeLazy.Domain.Entities;
+using DontBeLazy.Ports.DTOs;
 
 namespace DontBeLazy.Ports.Inbound;
 
 public interface ISystemSettingsUseCase
 {
-    Task<SystemSettings> GetSettingsAsync();
+    Task<SystemSettingsDto> GetSettingsAsync();
     Task UpdateSettingsAsync(bool globalStrictMode, bool enableQuotes, string quoteLanguage, bool darkTheme);
 }

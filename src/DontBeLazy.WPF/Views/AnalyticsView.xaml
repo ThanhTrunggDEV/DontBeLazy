@@ -21,10 +21,11 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- Streak Card -->
-                <materialDesign:Card Grid.Column="0" Margin="0,0,12,0" Padding="24" UniformCornerRadius="16" Background="#1E1E3F">
+                <materialDesign:Card Grid.Column="0" Margin="0,0,12,0" Padding="24"
+                                     UniformCornerRadius="16" Background="#1E1E3F">
                     <StackPanel HorizontalAlignment="Center">
                         <TextBlock Text="🔥" FontSize="42" HorizontalAlignment="Center"/>
-                        <TextBlock Text="{Binding StreakLabel}" FontSize="22" FontWeight="Bold"
+                        <TextBlock Text="{Binding StreakLabel}" FontSize="20" FontWeight="Bold"
                                    HorizontalAlignment="Center" TextAlignment="Center" Margin="0,8,0,0"/>
                         <TextBlock Text="Streak hiện tại" Foreground="#9E9E9E" FontSize="12"
                                    HorizontalAlignment="Center" Margin="0,4,0,0"/>
@@ -32,24 +33,28 @@
                 </materialDesign:Card>
 
                 <!-- Hours Card -->
-                <materialDesign:Card Grid.Column="1" Margin="6,0,6,0" Padding="24" UniformCornerRadius="16" Background="#1E1E3F">
+                <materialDesign:Card Grid.Column="1" Margin="6,0,6,0" Padding="24"
+                                     UniformCornerRadius="16" Background="#1E1E3F">
                     <StackPanel HorizontalAlignment="Center">
-                        <materialDesign:PackIcon Kind="ClockOutline" Width="42" Height="42"
+                        <materialDesign:PackIcon Kind="ClockOutline" Width="40" Height="40"
                                                  HorizontalAlignment="Center" Foreground="#7C4DFF"/>
                         <TextBlock Text="{Binding TotalFocusHoursThisWeek, StringFormat='{}{0:F1}h'}"
-                                   FontSize="32" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                                   FontSize="32" FontWeight="Bold"
+                                   HorizontalAlignment="Center" Margin="0,8,0,0"/>
                         <TextBlock Text="Tập trung tuần này" Foreground="#9E9E9E" FontSize="12"
                                    HorizontalAlignment="Center" Margin="0,4,0,0"/>
                     </StackPanel>
                 </materialDesign:Card>
 
                 <!-- Sessions Card -->
-                <materialDesign:Card Grid.Column="2" Margin="12,0,0,0" Padding="24" UniformCornerRadius="16" Background="#1E1E3F">
+                <materialDesign:Card Grid.Column="2" Margin="12,0,0,0" Padding="24"
+                                     UniformCornerRadius="16" Background="#1E1E3F">
                     <StackPanel HorizontalAlignment="Center">
-                        <materialDesign:PackIcon Kind="PlayCircleOutline" Width="42" Height="42"
+                        <materialDesign:PackIcon Kind="PlayCircleOutline" Width="40" Height="40"
                                                  HorizontalAlignment="Center" Foreground="#FFB300"/>
                         <TextBlock Text="{Binding TotalSessionsThisWeek}"
-                                   FontSize="32" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                                   FontSize="32" FontWeight="Bold"
+                                   HorizontalAlignment="Center" Margin="0,8,0,0"/>
                         <TextBlock Text="Phiên làm việc" Foreground="#9E9E9E" FontSize="12"
                                    HorizontalAlignment="Center" Margin="0,4,0,0"/>
                     </StackPanel>
@@ -57,55 +62,58 @@
             </Grid>
 
             <!-- Weekly Bar Chart -->
-            <materialDesign:Card Padding="28" UniformCornerRadius="16" Background="#1E1E3F" Margin="0,0,0,24">
+            <materialDesign:Card Padding="28" UniformCornerRadius="16"
+                                 Background="#1E1E3F" Margin="0,0,0,24">
                 <StackPanel>
-                    <TextBlock Text="Biểu đồ tuần này" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,24"/>
-                    <Grid Height="160">
-                        <!-- Y-axis Labels -->
-                        <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Left" Margin="0,0,8,0" Width="28">
-                            <TextBlock Text="4h" Foreground="#9E9E9E" FontSize="11" VerticalAlignment="Top"/>
-                            <TextBlock Text="2h" Foreground="#9E9E9E" FontSize="11" VerticalAlignment="Center"/>
-                            <TextBlock Text="0h" Foreground="#9E9E9E" FontSize="11" VerticalAlignment="Bottom"/>
-                        </StackPanel>
+                    <TextBlock Text="Biểu đồ tuần này" FontSize="18"
+                               FontWeight="SemiBold" Margin="0,0,0,24"/>
 
-                        <!-- Bars -->
-                        <ItemsControl ItemsSource="{Binding WeekBars}" Margin="36,0,0,0">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <UniformGrid Rows="1"/>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Bottom">
-                                        <!-- Bar -->
-                                        <Grid VerticalAlignment="Bottom" HorizontalAlignment="Center">
-                                            <Rectangle Width="32" RadiusX="6" RadiusY="6"
-                                                       VerticalAlignment="Bottom">
-                                                <Rectangle.Height>
-                                                    <Binding Path="BarHeight"/>
-                                                </Rectangle.Height>
-                                                <Rectangle.Fill>
-                                                    <SolidColorBrush>
-                                                        <SolidColorBrush.Color>
-                                                            <MultiBinding>
-                                                                <MultiBinding.Converter>
-                                                                    <x:Static Member="SystemColors.ControlColor" />
-                                                                </MultiBinding.Converter>
-                                                            </MultiBinding>
-                                                        </SolidColorBrush.Color>
-                                                    </SolidColorBrush>
-                                                </Rectangle.Fill>
-                                            </Rectangle>
-                                        </Grid>
-                                        <!-- Day label -->
-                                        <TextBlock Text="{Binding DayLabel}" FontSize="12"
-                                                   HorizontalAlignment="Center" Margin="0,8,0,0"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </Grid>
+                    <!-- Bar chart using ItemsControl bound to DayStatDto -->
+                    <ItemsControl ItemsSource="{Binding WeekBars}" Height="160">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Rows="1"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="4,0">
+                                    <!-- Hours label -->
+                                    <TextBlock Text="{Binding Hours, StringFormat='{}{0:F1}h'}"
+                                               FontSize="10" Foreground="#9E9E9E"
+                                               HorizontalAlignment="Center" Margin="0,0,0,4"/>
+                                    <!-- Bar -->
+                                    <Border CornerRadius="4" Width="32" HorizontalAlignment="Center"
+                                            VerticalAlignment="Bottom">
+                                        <Border.Height>
+                                            <Binding Path="Hours">
+                                                <Binding.Converter>
+                                                    <x:NullExtension/>
+                                                </Binding.Converter>
+                                            </Binding>
+                                        </Border.Height>
+                                        <Border.Background>
+                                            <SolidColorBrush Color="#7C4DFF"/>
+                                        </Border.Background>
+                                    </Border>
+                                    <!-- Day label -->
+                                    <TextBlock Text="{Binding DayLabel}" FontSize="12"
+                                               HorizontalAlignment="Center" Margin="0,6,0,0">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsToday}" Value="True">
+                                                        <Setter Property="FontWeight" Value="Bold"/>
+                                                        <Setter Property="Foreground" Value="#7C4DFF"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </StackPanel>
             </materialDesign:Card>
 

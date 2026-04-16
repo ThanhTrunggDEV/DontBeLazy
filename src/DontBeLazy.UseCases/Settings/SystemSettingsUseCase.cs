@@ -1,7 +1,8 @@
 using System.Threading.Tasks;
-using DontBeLazy.Domain.Entities;
+using DontBeLazy.Ports.DTOs;
 using DontBeLazy.Ports.Inbound;
 using DontBeLazy.Ports.Outbound.Repositories;
+using DontBeLazy.UseCases.Mappers;
 
 namespace DontBeLazy.UseCases.Settings;
 
@@ -16,9 +17,10 @@ public class SystemSettingsUseCase : ISystemSettingsUseCase
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<SystemSettings> GetSettingsAsync()
+    public async Task<SystemSettingsDto> GetSettingsAsync()
     {
-        return await _settingsRepository.GetSettingsAsync();
+        var settings = await _settingsRepository.GetSettingsAsync();
+        return DtoMapper.ToDto(settings);
     }
 
     public async Task UpdateSettingsAsync(bool globalStrictMode, bool enableQuotes, string quoteLanguage, bool darkTheme)

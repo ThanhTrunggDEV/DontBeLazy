@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DontBeLazy.Domain.Entities;
-using DontBeLazy.Domain.Enums;
 using DontBeLazy.Domain.ValueObjects;
+using DontBeLazy.Ports.DTOs;
 using DontBeLazy.Ports.Inbound;
 using DontBeLazy.Ports.Outbound.Repositories;
+using DontBeLazy.UseCases.Mappers;
 
 namespace DontBeLazy.UseCases.Settings;
 
@@ -21,53 +22,43 @@ public class QuoteUseCase : IQuoteUseCase
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<IReadOnlyCollection<Quote>> GetAllQuotesAsync()
+    public async Task<IReadOnlyCollection<QuoteDto>> GetAllQuotesAsync()
     {
-        return await _quoteRepository.GetAllAsync();
+        var quotes = await _quoteRepository.GetAllAsync();
+        return quotes.Select(DtoMapper.ToDto).ToList();
     }
 
-    public async Task<Quote> GetQuoteForEventAsync(QuoteEventType eventType, string language)
+    public async Task<QuoteDto?> GetQuoteForEventAsync(QuoteEventTypeDto eventType, string language)
     {
-        var quotes = await _quoteRepository.GetByEventTypeAsync(eventType, language);
-        if (!quotes.Any())
-            throw new KeyNotFoundException($"No quotes found for event {eventType} in language '{language}'.");
-
-        // Pick a random quote
-        var rand = new Random();
-        var selected = quotes.ElementAt(rand.Next(quotes.Count));
-        return selected;
+        var quotes = await _quoteRepository.GetByEventTypeAsync(DtoMapper.ToDomain(eventType), language);
+        if (!quotes.Any()) return null;
+        var selected = quotes.ElementAt(new Random().Next(quotes.Count));
+        return DtoMapper.ToDto(selected);
     }
 
-    public async Task<Quote> AddQuoteAsync(string content, string author, QuoteEventType type, string lang)
+    public async Task<QuoteDto> AddQuoteAsync(string content, string author, QuoteEventTypeDto type, string lang)
     {
-        var quote = new Quote(content, author, type, lang, isBundled: false);
+        var quote = new Quote(content, author, DtoMapper.ToDomain(type), lang, isBundled: false);
         await _quoteRepository.AddAsync(quote);
         await _unitOfWork.SaveChangesAsync();
-        return quote;
+        return DtoMapper.ToDto(quote);
     }
 
-    public async Task UpdateQuoteAsync(QuoteId quoteId, string newContent, string newAuthor)
+    public async Task UpdateQuoteAsync(Guid quoteId, string newContent, string newAuthor)
     {
-        var quote = await _quoteRepository.GetByIdAsync(quoteId);
-        if (quote == null)
-            throw new KeyNotFoundException($"Quote {quoteId} not found.");
-
+        var quote = await _quoteRepository.GetByIdAsync(new QuoteId(quoteId));
+        if (quote == null) throw new KeyNotFoundException($"Quote {quoteId} not found.");
         quote.UpdateContent(newContent, newAuthor);
         await _quoteRepository.UpdateAsync(quote);
         await _unitOfWork.SaveChangesAsync();
     }
 
-    public async Task DeleteQuoteAsync(QuoteId quoteId)
+    public async Task DeleteQuoteAsync(Guid quoteId)
     {
-        var quote = await _quoteRepository.GetByIdAsync(quoteId);
-        if (quote == null)
-            throw new KeyNotFoundException($"Quote {quoteId} not found.");
-            
-        // Can throw error if quote is bundled, but Repository doesn't enforce, we can do it here:
-        if (quote.IsBundled)
-            throw new InvalidOperationException("Cannot delete a bundled quote.");
-
-        await _quoteRepository.DeleteAsync(quoteId);
+        var quote = await _quoteRepository.GetByIdAsync(new QuoteId(quoteId));
+        if (quote == null) throw new KeyNotFoundException($"Quote {quoteId} not found.");
+        if (quote.IsBundled) throw new InvalidOperationException("Cannot delete a bundled quote.");
+        await _quoteRepository.DeleteAsync(new QuoteId(quoteId));
         await _unitOfWork.SaveChangesAsync();
     }
 }

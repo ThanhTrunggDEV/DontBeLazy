@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
-using DomainEnums = DontBeLazy.Domain.Enums;
+using DontBeLazy.Ports.DTOs;
 
 namespace DontBeLazy.WPF.Converters;
 
@@ -27,14 +27,14 @@ public class TaskStatusToColorConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value is DomainEnums.TaskStatus status)
+        if (value is TaskStatusDto status)
         {
             return status switch
             {
-                DomainEnums.TaskStatus.Done => "#4CAF50",
-                DomainEnums.TaskStatus.Active => "#7C4DFF",
-                DomainEnums.TaskStatus.Abandoned => "#F44336",
-                _ => "#9E9E9E"
+                TaskStatusDto.Done      => "#4CAF50",
+                TaskStatusDto.Active    => "#7C4DFF",
+                TaskStatusDto.Abandoned => "#F44336",
+                _                       => "#9E9E9E"
             };
         }
         return "#9E9E9E";
@@ -48,14 +48,14 @@ public class TaskStatusToLabelConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value is DomainEnums.TaskStatus status)
+        if (value is TaskStatusDto status)
         {
             return status switch
             {
-                DomainEnums.TaskStatus.Done => "Hoàn thành",
-                DomainEnums.TaskStatus.Active => "Đang làm",
-                DomainEnums.TaskStatus.Abandoned => "Bỏ cuộc",
-                _ => "Chờ"
+                TaskStatusDto.Done      => "Hoàn thành",
+                TaskStatusDto.Active    => "Đang làm",
+                TaskStatusDto.Abandoned => "Bỏ cuộc",
+                _                       => "Chờ"
             };
         }
         return "Chờ";
@@ -69,13 +69,13 @@ public class ProfileEntryTypeToIconConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value is DomainEnums.ProfileEntryType type)
+        if (value is ProfileEntryTypeDto type)
         {
             return type switch
             {
-                DomainEnums.ProfileEntryType.Website => "Web",
-                DomainEnums.ProfileEntryType.App => "DesktopWindows",
-                _ => "Help"
+                ProfileEntryTypeDto.Website => "Web",
+                ProfileEntryTypeDto.App     => "DesktopWindows",
+                _                           => "Help"
             };
         }
         return "Help";

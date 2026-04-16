@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DontBeLazy.Domain\DontBeLazy.Domain.csproj" />
     <ProjectReference Include="..\DontBeLazy.Ports\DontBeLazy.Ports.csproj" />
     <ProjectReference Include="..\DontBeLazy.UseCases\DontBeLazy.UseCases.csproj" />
     <ProjectReference Include="..\DontBeLazy.Infrastructure\DontBeLazy.Infrastructure.csproj" />

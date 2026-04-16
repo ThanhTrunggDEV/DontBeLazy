@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using DontBeLazy.Domain.Enums;
+using DontBeLazy.Ports.DTOs;
 using DontBeLazy.Ports.Inbound;
 using DontBeLazy.Ports.Outbound.Repositories;
 
@@ -15,53 +17,59 @@ public class AnalyticsUseCase : IAnalyticsUseCase
         _sessionRepository = sessionRepository;
     }
 
-    public async Task<object> GetDashboardStatsAsync(DateTime startDate, DateTime endDate)
+    public async Task<DashboardStatsDto> GetDashboardStatsAsync(DateTime startDate, DateTime endDate)
     {
         var sessions = await _sessionRepository.GetSessionsByDateRangeAsync(startDate, endDate);
-        
-        var completedSessions = sessions.Where(s => s.CompletionStatus == DontBeLazy.Domain.Enums.CompletionStatus.Completed).ToList();
-        
-        return new 
+        var completed = sessions.Where(s => s.CompletionStatus == CompletionStatus.Completed).ToList();
+
+        // Build daily stats for the range
+        var days = Enumerable.Range(0, (endDate.Date - startDate.Date).Days)
+            .Select(i => startDate.Date.AddDays(i))
+            .ToList();
+
+        var dailyStats = days.Select(day =>
         {
-            TotalFocusTimeSeconds = completedSessions.Sum(s => s.ActualSeconds),
-            TotalSessions = sessions.Count,
-            CompletedSessions = completedSessions.Count,
-            AbandonedSessions = sessions.Count(s => s.CompletionStatus == DontBeLazy.Domain.Enums.CompletionStatus.Abandoned),
-            TotalBlockedAttempts = sessions.Sum(s => s.BlockedCount)
-        };
+            var daySessions = completed.Where(s => s.FocusStartDate.Date == day).ToList();
+            var hours = daySessions.Sum(s => s.ActualSeconds) / 3600.0;
+            return new DayStatDto(
+                day.ToString("ddd"),
+                hours,
+                day == DateTime.Today
+            );
+        }).ToList();
+
+        return new DashboardStatsDto(
+            TotalFocusHoursThisWeek: completed.Sum(s => s.ActualSeconds) / 3600.0,
+            TotalSessionsThisWeek: sessions.Count,
+            CurrentStreak: await GetCurrentStreakAsync(),
+            DailyStats: dailyStats
+        );
     }
 
     public async Task<int> GetCurrentStreakAsync()
     {
         var recentSessions = await _sessionRepository.GetRecentSessionsAsync(100);
-        
-        int streak = 0;
-        var checkDate = DateTime.Now.Date;
-        
+
         var sessionDates = recentSessions
-            .Where(s => s.CompletionStatus == DontBeLazy.Domain.Enums.CompletionStatus.Completed)
+            .Where(s => s.CompletionStatus == CompletionStatus.Completed)
             .Select(s => s.FocusStartDate.Date)
             .Distinct()
             .OrderByDescending(d => d)
             .ToList();
 
-        // Very basic streak logic
-        var expectedDate = checkDate;
-        
+        int streak = 0;
+        var expectedDate = DateTime.Today;
+
         foreach (var date in sessionDates)
         {
-            // If date is today, or date is yesterday and we haven't found today yet (streak=0)
-            if (date == expectedDate || (date == checkDate.AddDays(-1) && streak == 0))
+            if (date == expectedDate || (date == DateTime.Today.AddDays(-1) && streak == 0))
             {
                 streak++;
-                expectedDate = date.AddDays(-1); // next expected date is the day before the matched date
+                expectedDate = date.AddDays(-1);
             }
-            else
-            {
-                break;
-            }
+            else break;
         }
-        
+
         return streak;
     }
 
@@ -75,12 +83,10 @@ public class AnalyticsUseCase : IAnalyticsUseCase
         var sessions = await _sessionRepository.GetRecentSessionsAsync(1000);
         var sb = new System.Text.StringBuilder();
         sb.AppendLine("SessionId,TaskName,StartDate,ActualSeconds,Status,BlockedCount");
-        
-        foreach(var s in sessions)
-        {
+
+        foreach (var s in sessions)
             sb.AppendLine($"{s.Id.Value},{s.SnapshotTaskName},{s.FocusStartDate:yyyy-MM-dd HH:mm:ss},{s.ActualSeconds},{s.CompletionStatus},{s.BlockedCount}");
-        }
-        
+
         return sb.ToString();
     }
 }

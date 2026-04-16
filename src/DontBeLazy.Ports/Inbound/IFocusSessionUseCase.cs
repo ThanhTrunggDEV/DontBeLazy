@@ -1,17 +1,15 @@
 using System.Threading.Tasks;
-using DontBeLazy.Domain.Entities;
-using DontBeLazy.Domain.Enums;
-using DontBeLazy.Domain.ValueObjects;
+using DontBeLazy.Ports.DTOs;
 
 namespace DontBeLazy.Ports.Inbound;
 
 public interface IFocusSessionUseCase
 {
-    Task<SessionHistory> StartSessionAsync(TaskId? taskId, string taskName, ProfileId? profileId, int expectedSeconds);
-    Task SyncSessionTimeAsync(SessionId sessionId, int tickSeconds);
-    Task PauseSessionAsync(SessionId sessionId);
-    Task ResumeSessionAsync(SessionId sessionId);
-    Task CompleteSessionAsync(SessionId sessionId, CompletionStatus status);
-    Task LogBlockedAttemptAsync(SessionId sessionId);
-    Task<SessionHistory> GetCurrentSessionAsync();
+    Task<SessionHistoryDto> StartSessionAsync(Guid? taskId, string taskName, Guid? profileId, int expectedSeconds);
+    Task SyncSessionTimeAsync(Guid sessionId, int tickSeconds);
+    Task PauseSessionAsync(Guid sessionId);
+    Task ResumeSessionAsync(Guid sessionId);
+    Task CompleteSessionAsync(Guid sessionId, CompletionStatusDto status);
+    Task LogBlockedAttemptAsync(Guid sessionId);
+    Task<SessionHistoryDto?> GetCurrentSessionAsync();
 }

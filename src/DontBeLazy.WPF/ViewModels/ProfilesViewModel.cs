@@ -2,9 +2,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DontBeLazy.Domain.Entities;
-using DontBeLazy.Domain.Enums;
-using DontBeLazy.Domain.ValueObjects;
+using DontBeLazy.Ports.DTOs;
 using DontBeLazy.Ports.Inbound;
 
 namespace DontBeLazy.WPF.ViewModels;
@@ -14,32 +12,17 @@ public partial class ProfilesViewModel : ObservableObject
     private readonly IProfileUseCase _profileUseCase;
     private readonly IProfileEntryUseCase _profileEntryUseCase;
 
-    [ObservableProperty]
-    private ObservableCollection<Profile> _profiles = new();
+    [ObservableProperty] private ObservableCollection<ProfileDto> _profiles = new();
+    [ObservableProperty] private ProfileDto? _selectedProfile;
+    [ObservableProperty] private bool _isAddProfileDialogOpen;
+    [ObservableProperty] private string _newProfileName = string.Empty;
+    [ObservableProperty] private bool _newProfileIsDefault;
+    [ObservableProperty] private string _newEntryValue = string.Empty;
+    [ObservableProperty] private ProfileEntryTypeDto _newEntryType = ProfileEntryTypeDto.Website;
+    [ObservableProperty] private bool _isAddEntryDialogOpen;
 
-    [ObservableProperty]
-    private Profile? _selectedProfile;
-
-    [ObservableProperty]
-    private bool _isAddProfileDialogOpen;
-
-    [ObservableProperty]
-    private string _newProfileName = string.Empty;
-
-    [ObservableProperty]
-    private bool _newProfileIsDefault;
-
-    [ObservableProperty]
-    private string _newEntryValue = string.Empty;
-
-    [ObservableProperty]
-    private ProfileEntryType _newEntryType = ProfileEntryType.Website;
-
-    [ObservableProperty]
-    private bool _isAddEntryDialogOpen;
-
-    public IReadOnlyList<ProfileEntryType> EntryTypes { get; } =
-        Enum.GetValues<ProfileEntryType>().ToList();
+    public IReadOnlyList<ProfileEntryTypeDto> EntryTypes { get; } =
+        Enum.GetValues<ProfileEntryTypeDto>().ToList();
 
     public ProfilesViewModel(IProfileUseCase profileUseCase, IProfileEntryUseCase profileEntryUseCase)
     {
@@ -51,7 +34,7 @@ public partial class ProfilesViewModel : ObservableObject
     private async Task LoadDataAsync()
     {
         var profiles = await _profileUseCase.GetAllProfilesAsync();
-        Profiles = new ObservableCollection<Profile>(profiles);
+        Profiles = new ObservableCollection<ProfileDto>(profiles);
         if (SelectedProfile != null)
             SelectedProfile = Profiles.FirstOrDefault(p => p.Id == SelectedProfile.Id);
     }
@@ -74,7 +57,7 @@ public partial class ProfilesViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task DeleteProfileAsync(Profile profile)
+    private async Task DeleteProfileAsync(ProfileDto profile)
     {
         await _profileUseCase.DeleteProfileAsync(profile.Id);
         if (SelectedProfile?.Id == profile.Id) SelectedProfile = null;
@@ -86,7 +69,7 @@ public partial class ProfilesViewModel : ObservableObject
     {
         if (SelectedProfile == null) return;
         NewEntryValue = string.Empty;
-        NewEntryType = ProfileEntryType.Website;
+        NewEntryType = ProfileEntryTypeDto.Website;
         IsAddEntryDialogOpen = true;
     }
 
@@ -100,7 +83,7 @@ public partial class ProfilesViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task RemoveEntryAsync(ProfileEntry entry)
+    private async Task RemoveEntryAsync(ProfileEntryDto entry)
     {
         if (SelectedProfile == null) return;
         await _profileEntryUseCase.RemoveProfileEntryAsync(SelectedProfile.Id, entry.Id);
