@@ -63,6 +63,23 @@ public partial class SettingsViewModel : ObservableObject
     private bool _darkTheme = true;
 
     [ObservableProperty]
+    private string _geminiApiKey = string.Empty;
+
+    public IReadOnlyList<string> GeminiModels { get; } = [
+        // --- Stable (recommended) ---
+        "gemini-2.5-flash",           // Best price/performance, reasoning
+        "gemini-2.5-flash-lite",      // Fastest & cheapest in 2.5 family
+        "gemini-2.5-pro",             // Most advanced, complex tasks
+        // --- Preview (mới nhất, có billing) ---
+        "gemini-3.1-pro-preview",     // Advanced intelligence, agentic coding
+        "gemini-3-flash-preview",     // Frontier-class, low cost
+        "gemini-3.1-flash-lite-preview", // Budget frontier
+    ];
+
+    [ObservableProperty]
+    private string _geminiModel = "gemini-2.5-flash";
+
+    [ObservableProperty]
     private bool _isLoaded;
 
     public SettingsViewModel(ISystemSettingsUseCase settingsUseCase)
@@ -80,18 +97,23 @@ public partial class SettingsViewModel : ObservableObject
         EnableGuiltTrip = settings.EnableQuotes;
         QuoteLanguage = settings.QuoteLanguage ?? "vi";
         DarkTheme = settings.DarkTheme;
+        GeminiApiKey = settings.GeminiApiKey ?? string.Empty;
+        GeminiModel = settings.GeminiModel ?? "gemini-2.5-flash";
         IsLoaded = true;
     }
 
     [RelayCommand]
     private async Task SaveAsync()
     {
-        await _settingsUseCase.UpdateSettingsAsync(GlobalStrictMode, EnableGuiltTrip, QuoteLanguage, DarkTheme);
+        await _settingsUseCase.UpdateSettingsAsync(GlobalStrictMode, EnableGuiltTrip, QuoteLanguage, DarkTheme,
+            string.IsNullOrWhiteSpace(GeminiApiKey) ? null : GeminiApiKey.Trim(), GeminiModel);
     }
 
 
-    partial void OnEnableGuiltTripChanged(bool value) { if (IsLoaded) _ = SaveAsync(); }
-    partial void OnQuoteLanguageChanged(string value) { if (IsLoaded) _ = SaveAsync(); }
+    partial void OnEnableGuiltTripChanged(bool value)   { if (IsLoaded) _ = SaveAsync(); }
+    partial void OnQuoteLanguageChanged(string value)    { if (IsLoaded) _ = SaveAsync(); }
+    partial void OnGeminiApiKeyChanged(string value)     { if (IsLoaded) _ = SaveAsync(); }
+    partial void OnGeminiModelChanged(string value)      { if (IsLoaded) _ = SaveAsync(); }
     
     partial void OnDarkThemeChanged(bool value) 
     {

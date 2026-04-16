@@ -1,5 +1,6 @@
 using System.IO;
 using System.Windows;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using DontBeLazy.Infrastructure;
 using DontBeLazy.SqliteDataAccess;
@@ -27,7 +28,7 @@ public partial class App : Application
         using (var scope = Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            dbContext.Database.EnsureCreated();
+            dbContext.Database.Migrate(); // auto-applies all pending migrations
 
             var settingsRepo = scope.ServiceProvider.GetRequiredService<DontBeLazy.Ports.Outbound.Repositories.ISystemSettingsRepository>();
             settingsRepo.EnsureDefaultSettingsAsync().GetAwaiter().GetResult();

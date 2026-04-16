@@ -48,7 +48,9 @@ internal static class DtoMapper
         settings.GlobalStrictMode,
         settings.EnableQuotes,
         settings.QuoteLanguage,
-        settings.DarkTheme
+        settings.DarkTheme,
+        settings.GeminiApiKey,
+        settings.GeminiModel
     );
 
     public static QuoteDto ToDto(Quote quote) => new(

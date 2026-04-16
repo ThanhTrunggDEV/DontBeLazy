@@ -39,7 +39,9 @@ public record SystemSettingsDto(
     bool GlobalStrictMode,
     bool EnableQuotes,
     string QuoteLanguage,
-    bool DarkTheme
+    bool DarkTheme,
+    string? GeminiApiKey,
+    string GeminiModel
 );
 
 public record QuoteDto(
