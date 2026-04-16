@@ -233,6 +233,8 @@
                         <TextBlock x:Name="AppInfoText" Foreground="#9E9E9E" FontSize="12"/>
                         <TextBlock Text="Clean Architecture + WPF + Material Design"
                                    Foreground="#555" FontSize="11" Margin="0,2,0,0"/>
+                        <TextBlock Text="Made with ❤️ by ThanhTrunggDEV"
+                                   Foreground="#555" FontSize="11" Margin="0,2,0,0" FontWeight="SemiBold"/>
                     </StackPanel>
                 </StackPanel>
             </materialDesign:Card>
