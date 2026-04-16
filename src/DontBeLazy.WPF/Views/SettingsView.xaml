@@ -9,29 +9,29 @@
 
     <materialDesign:DialogHost IsOpen="{Binding IsStrictConfirmDialogOpen}">
         <materialDesign:DialogHost.DialogContent>
-            <Border Padding="36" MinWidth="420" Background="#1E1E3F" CornerRadius="16">
+            <Border Padding="36" MinWidth="420" Background="{DynamicResource MaterialDesignPaper}" CornerRadius="16">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
                         <materialDesign:PackIcon Kind="AlertOutline" Width="32" Height="32"
-                                                 Foreground="#FF9800" Margin="0,0,12,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="Cảnh báo Kỷ luật" FontSize="20" FontWeight="Bold" Foreground="#FF9800" VerticalAlignment="Center"/>
+                                                 Foreground="{DynamicResource SecondaryHueMidBrush}" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Cảnh báo Kỷ luật" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource SecondaryHueMidBrush}" VerticalAlignment="Center"/>
                     </StackPanel>
                     
                     <TextBlock Text="Bạn đang muốn giảm mức độ kỷ luật."
-                               Foreground="#E0E0E0" FontSize="14" Margin="0,0,0,8" TextWrapping="Wrap"/>
+                               Opacity="0.85" FontSize="14" Margin="0,0,0,8" TextWrapping="Wrap"/>
                     <TextBlock Text="Bạn sẽ có thể tắt ép buộc và thoát phần mềm giữa chừng."
-                               Foreground="#9E9E9E" FontSize="13" Margin="0,0,0,24" TextWrapping="Wrap"/>
+                               Opacity="0.7" FontSize="13" Margin="0,0,0,24" TextWrapping="Wrap"/>
                     
                     <TextBlock Text="Hãy tự tay gõ vào dòng chữ sau để xác nhận:"
-                               Foreground="#9E9E9E" FontSize="13" Margin="0,0,0,8"/>
-                    <TextBlock Text="Tôi chấp nhận giảm mức độ kỷ luật" Foreground="#FF9800" FontWeight="Bold"
+                               Opacity="0.7" FontSize="13" Margin="0,0,0,8"/>
+                    <TextBlock Text="Tôi chấp nhận giảm mức độ kỷ luật" Foreground="{DynamicResource SecondaryHueMidBrush}" FontWeight="Bold"
                                FontSize="16" Margin="0,0,0,16" FontFamily="Consolas"
                                HorizontalAlignment="Center"/>
                     
                     <TextBox Text="{Binding FrictionInput, UpdateSourceTrigger=PropertyChanged}"
                              materialDesign:HintAssist.Hint="Nhập chính xác chuỗi ký tự trên"
                              Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                             Margin="0,0,0,32" Foreground="White" CaretBrush="White"/>
+                             Margin="0,0,0,32"/>
                     
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <Button Content="Giữ Kỷ Luật" Style="{StaticResource MaterialDesignFlatButton}"
@@ -46,16 +46,16 @@
 
     <materialDesign:DialogHost IsOpen="{Binding IsClearHistoryDialogOpen}">
         <materialDesign:DialogHost.DialogContent>
-            <Border Padding="36" MinWidth="400" Background="#1E1E3F" CornerRadius="16">
+            <Border Padding="36" MinWidth="400" Background="{DynamicResource MaterialDesignPaper}" CornerRadius="16">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
                         <materialDesign:PackIcon Kind="DeleteSweepOutline" Width="28" Height="28"
-                                                 Foreground="#F44336" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                                 Foreground="{DynamicResource SecondaryHueMidBrush}" Margin="0,0,12,0" VerticalAlignment="Center"/>
                         <TextBlock Text="Xoá Lịch Sử" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
                     </StackPanel>
                     
                     <TextBlock Text="Chọn khoảng thời gian muốn xoá lịch sử:"
-                               Foreground="#9E9E9E" FontSize="13" Margin="0,0,0,24"/>
+                               Opacity="0.7" FontSize="13" Margin="0,0,0,24"/>
                     
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,32">
                         <DatePicker materialDesign:HintAssist.Hint="Từ ngày"
@@ -71,7 +71,7 @@
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <Button Content="Huỷ" Style="{StaticResource MaterialDesignFlatButton}"
                                 Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="0,0,12,0"/>
-                        <Button Content="Xoá dữ liệu" Style="{StaticResource LargePrimaryButton}" Background="#F44336" BorderBrush="#F44336"
+                        <Button Content="Xoá dữ liệu" Style="{StaticResource LargePrimaryButton}" Background="{DynamicResource SecondaryHueMidBrush}" BorderBrush="{DynamicResource SecondaryHueMidBrush}"
                                 Command="{Binding ClearHistoryCommand}" Height="40"/>
                     </StackPanel>
                 </StackPanel>
@@ -84,19 +84,19 @@
             <!-- Header -->
             <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
                 <materialDesign:PackIcon Kind="CogOutline" Width="32" Height="32"
-                                         Foreground="#7C4DFF" Margin="0,0,14,0"
+                                         Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="0,0,14,0"
                                          VerticalAlignment="Center"/>
                 <TextBlock Text="Cài đặt" FontSize="26" FontWeight="Bold"
                            VerticalAlignment="Center"/>
             </StackPanel>
-            <TextBlock Text="Tuỳ chỉnh hành vi của ứng dụng" Foreground="#9E9E9E"
+            <TextBlock Text="Tuỳ chỉnh hành vi của ứng dụng" Opacity="0.7"
                        FontSize="14" Margin="0,0,0,32"/>
 
             <!-- Focus Behaviour Section -->
-            <TextBlock Text="KỶ LUẬT" FontSize="11" FontWeight="Bold" Foreground="#7C4DFF"
+            <TextBlock Text="KỶ LUẬT" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}"
                        Margin="0,0,0,12"/>
 
-            <materialDesign:Card Padding="0" UniformCornerRadius="16" Background="#1E1E3F" Margin="0,0,0,28">
+            <materialDesign:Card Padding="0" UniformCornerRadius="16" Background="{DynamicResource MaterialDesignCardBackground}" Margin="0,0,0,28">
                 <StackPanel>
                     <!-- Strict Mode -->
                     <Grid Margin="24,20">
@@ -105,22 +105,22 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0" Background="#7C4DFF22" CornerRadius="10"
+                        <Border Grid.Column="0" Background="#227C4DFF" CornerRadius="10"
                                 Padding="10" Margin="0,0,16,0" VerticalAlignment="Center">
                             <materialDesign:PackIcon Kind="LockOutline" Width="20" Height="20"
-                                                     Foreground="#7C4DFF"/>
+                                                     Foreground="{DynamicResource PrimaryHueMidBrush}"/>
                         </Border>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                             <TextBlock Text="Strict Mode toàn cục" FontSize="15" FontWeight="SemiBold"/>
                             <TextBlock Text="Không cho phép tắt phiên khi đang chạy"
-                                       Foreground="#9E9E9E" FontSize="12" Margin="0,3,0,0"/>
+                                       Opacity="0.7" FontSize="12" Margin="0,3,0,0"/>
                         </StackPanel>
                         <ToggleButton Grid.Column="2" IsChecked="{Binding GlobalStrictMode}"
                                       Style="{StaticResource MaterialDesignSwitchToggleButton}"
                                       VerticalAlignment="Center"/>
                     </Grid>
 
-                    <Separator Background="#2D2D4E" Margin="24,0"/>
+                    <Separator Background="{DynamicResource MaterialDesignDivider}" Margin="24,0"/>
 
                     <!-- Guilt Trip -->
                     <Grid Margin="24,20">
@@ -129,15 +129,15 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0" Background="#F4433622" CornerRadius="10"
+                        <Border Grid.Column="0" Background="#22F44336" CornerRadius="10"
                                 Padding="10" Margin="0,0,16,0" VerticalAlignment="Center">
                             <materialDesign:PackIcon Kind="EmoticonAngryOutline" Width="20" Height="20"
-                                                     Foreground="#F44336"/>
+                                                     Foreground="{DynamicResource SecondaryHueMidBrush}"/>
                         </Border>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                             <TextBlock Text="Kích hoạt Guilt-Trip" FontSize="15" FontWeight="SemiBold"/>
                             <TextBlock Text="Hiện quote châm biếm khi bạn cố bỏ cuộc"
-                                       Foreground="#9E9E9E" FontSize="12" Margin="0,3,0,0"/>
+                                       Opacity="0.7" FontSize="12" Margin="0,3,0,0"/>
                         </StackPanel>
                         <ToggleButton Grid.Column="2" IsChecked="{Binding EnableGuiltTrip}"
                                       Style="{StaticResource MaterialDesignSwitchToggleButton}"
@@ -147,17 +147,17 @@
             </materialDesign:Card>
 
             <!-- Appearance Section -->
-            <TextBlock Text="GIAO DIỆN" FontSize="11" FontWeight="Bold" Foreground="#7C4DFF"
+            <TextBlock Text="GIAO DIỆN" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}"
                        Margin="0,0,0,12"/>
 
-            <materialDesign:Card Padding="0" UniformCornerRadius="16" Background="#1E1E3F" Margin="0,0,0,28">
+            <materialDesign:Card Padding="0" UniformCornerRadius="16" Background="{DynamicResource MaterialDesignCardBackground}" Margin="0,0,0,28">
                 <Grid Margin="24,20">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <Border Grid.Column="0" Background="#FFB30022" CornerRadius="10"
+                    <Border Grid.Column="0" Background="#22FFB300" CornerRadius="10"
                             Padding="10" Margin="0,0,16,0" VerticalAlignment="Center">
                         <materialDesign:PackIcon Kind="WeatherNight" Width="20" Height="20"
                                                  Foreground="#FFB300"/>
@@ -165,7 +165,7 @@
                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
                         <TextBlock Text="Dark Mode" FontSize="15" FontWeight="SemiBold"/>
                         <TextBlock Text="Sử dụng giao diện tối để bảo vệ mắt"
-                                   Foreground="#9E9E9E" FontSize="12" Margin="0,3,0,0"/>
+                                   Opacity="0.7" FontSize="12" Margin="0,3,0,0"/>
                     </StackPanel>
                     <ToggleButton Grid.Column="2" IsChecked="{Binding DarkTheme}"
                                   Style="{StaticResource MaterialDesignSwitchToggleButton}"
@@ -174,20 +174,20 @@
             </materialDesign:Card>
 
             <!-- Language Section -->
-            <TextBlock Text="NGÔN NGỮ AI" FontSize="11" FontWeight="Bold" Foreground="#7C4DFF"
+            <TextBlock Text="NGÔN NGỮ AI" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}"
                        Margin="0,0,0,12"/>
 
-            <materialDesign:Card Padding="24" UniformCornerRadius="16" Background="#1E1E3F" Margin="0,0,0,28">
+            <materialDesign:Card Padding="24" UniformCornerRadius="16" Background="{DynamicResource MaterialDesignCardBackground}" Margin="0,0,0,28">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
                         <materialDesign:PackIcon Kind="Translate" Width="20" Height="20"
-                                                 Foreground="#7C4DFF" Margin="0,0,10,0"
+                                                 Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="0,0,10,0"
                                                  VerticalAlignment="Center"/>
                         <TextBlock Text="Ngôn ngữ cho AI Quotes" FontSize="15"
                                    FontWeight="SemiBold" VerticalAlignment="Center"/>
                     </StackPanel>
                     <TextBlock Text="Gemini AI sẽ tạo câu quote bằng ngôn ngữ này"
-                               Foreground="#9E9E9E" FontSize="12" Margin="0,0,0,16"/>
+                               Opacity="0.7" FontSize="12" Margin="0,0,0,16"/>
                     <ComboBox SelectedValue="{Binding QuoteLanguage}" SelectedValuePath="Tag"
                               Width="220" HorizontalAlignment="Left">
                         <ComboBoxItem Content="Tiếng Việt" Tag="vi"/>
@@ -197,21 +197,21 @@
             </materialDesign:Card>
 
             <!-- AI Config Section -->
-            <TextBlock Text="AI (GEMINI)" FontSize="11" FontWeight="Bold" Foreground="#7C4DFF"
+            <TextBlock Text="AI (GEMINI)" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}"
                        Margin="0,0,0,12"/>
 
-            <materialDesign:Card Padding="24" UniformCornerRadius="16" Background="#1E1E3F" Margin="0,0,0,28">
+            <materialDesign:Card Padding="24" UniformCornerRadius="16" Background="{DynamicResource MaterialDesignCardBackground}" Margin="0,0,0,28">
                 <StackPanel>
                     <!-- API Key -->
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
                         <materialDesign:PackIcon Kind="KeyOutline" Width="20" Height="20"
-                                                 Foreground="#7C4DFF" Margin="0,0,10,0"
+                                                 Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="0,0,10,0"
                                                  VerticalAlignment="Center"/>
                         <TextBlock Text="Gemini API Key" FontSize="15"
                                    FontWeight="SemiBold" VerticalAlignment="Center"/>
                     </StackPanel>
                     <TextBlock Text="Lấy API key miễn phí tại aistudio.google.com"
-                               Foreground="#9E9E9E" FontSize="12" Margin="0,0,0,12"/>
+                               Opacity="0.7" FontSize="12" Margin="0,0,0,12"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
@@ -232,18 +232,18 @@
                         </Button>
                     </Grid>
 
-                    <Separator Background="#2D2D4E" Margin="0,20"/>
+                    <Separator Background="{DynamicResource MaterialDesignDivider}" Margin="0,20"/>
 
                     <!-- Model Selection -->
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
                         <materialDesign:PackIcon Kind="RobotOutline" Width="20" Height="20"
-                                                 Foreground="#7C4DFF" Margin="0,0,10,0"
+                                                 Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="0,0,10,0"
                                                  VerticalAlignment="Center"/>
                         <TextBlock Text="Chọn Model" FontSize="15"
                                    FontWeight="SemiBold" VerticalAlignment="Center"/>
                     </StackPanel>
                     <TextBlock Text="Chọn model phù hợp với nhu cầu và quota của bạn"
-                               Foreground="#9E9E9E" FontSize="12" Margin="0,0,0,12"/>
+                               Opacity="0.7" FontSize="12" Margin="0,0,0,12"/>
                     <ComboBox ItemsSource="{Binding GeminiModels}"
                               SelectedItem="{Binding GeminiModel}"
                               Width="280" HorizontalAlignment="Left"
@@ -251,10 +251,10 @@
                 </StackPanel>
             </materialDesign:Card>
             <!-- Data Management Section -->
-            <TextBlock Text="QUẢN LÝ DỮ LIỆU" FontSize="11" FontWeight="Bold" Foreground="#7C4DFF"
+            <TextBlock Text="QUẢN LÝ DỮ LIỆU" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}"
                        Margin="0,0,0,12"/>
 
-            <materialDesign:Card Padding="0" UniformCornerRadius="16" Background="#1E1E3F" Margin="0,0,0,28">
+            <materialDesign:Card Padding="0" UniformCornerRadius="16" Background="{DynamicResource MaterialDesignCardBackground}" Margin="0,0,0,28">
                 <StackPanel>
                     <!-- Clear History Row -->
                     <Grid Margin="24,20">
@@ -263,15 +263,15 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0" Background="#F4433622" CornerRadius="10"
+                        <Border Grid.Column="0" Background="#22F44336" CornerRadius="10"
                                 Padding="10" Margin="0,0,16,0" VerticalAlignment="Center">
                             <materialDesign:PackIcon Kind="History" Width="20" Height="20"
-                                                     Foreground="#F44336"/>
+                                                     Foreground="{DynamicResource SecondaryHueMidBrush}"/>
                         </Border>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                             <TextBlock Text="Xoá lịch sử tập trung" FontSize="15" FontWeight="SemiBold"/>
                             <TextBlock Text="Dọn dẹp dữ liệu cũ để giải phóng bộ nhớ"
-                                       Foreground="#9E9E9E" FontSize="12" Margin="0,3,0,0"/>
+                                       Opacity="0.7" FontSize="12" Margin="0,3,0,0"/>
                         </StackPanel>
                         <Button Grid.Column="2" Content="Xoá lịch sử"
                                 Command="{Binding OpenClearHistoryDialogCommand}"
@@ -282,7 +282,7 @@
                     </Grid>
 
                     <!-- Separator -->
-                    <Separator Background="#2D2D4E" Margin="24,0"/>
+                    <Separator Background="{DynamicResource MaterialDesignDivider}" Margin="24,0"/>
 
                     <!-- Open Log File Row -->
                     <Grid Margin="24,16,24,20">
@@ -291,15 +291,15 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0" Background="#7C4DFF22" CornerRadius="10"
+                        <Border Grid.Column="0" Background="#227C4DFF" CornerRadius="10"
                                 Padding="10" Margin="0,0,16,0" VerticalAlignment="Center">
                             <materialDesign:PackIcon Kind="FileFindOutline" Width="20" Height="20"
-                                                     Foreground="#7C4DFF"/>
+                                                     Foreground="{DynamicResource PrimaryHueMidBrush}"/>
                         </Border>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                             <TextBlock Text="Nhật ký hoạt động" FontSize="15" FontWeight="SemiBold"/>
                             <TextBlock Text="Xem file log hôm nay để kiểm tra lỗi"
-                                       Foreground="#9E9E9E" FontSize="12" Margin="0,3,0,0"/>
+                                       Opacity="0.7" FontSize="12" Margin="0,3,0,0"/>
                         </StackPanel>
                         <Button Grid.Column="2" Content="Mở file log"
                                 Command="{Binding OpenLogFileCommand}"
@@ -311,21 +311,21 @@
             </materialDesign:Card>
 
             <!-- Update Section -->
-            <TextBlock Text="CẬP NHẬT" FontSize="11" FontWeight="Bold" Foreground="#7C4DFF"
+            <TextBlock Text="CẬP NHẬT" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}"
                        Margin="0,8,0,12" x:Name="UpdateSectionLabel"/>
 
-            <materialDesign:Card Padding="0" UniformCornerRadius="16" Background="#1E1E3F" Margin="0,0,0,28"
+            <materialDesign:Card Padding="0" UniformCornerRadius="16" Background="{DynamicResource MaterialDesignCardBackground}" Margin="0,0,0,28"
                                  x:Name="UpdateCard">
                 <StackPanel Margin="24,20">
                     <!-- Version row -->
                     <Grid Margin="0,0,0,16">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <materialDesign:PackIcon Kind="CloudSync" Width="22" Height="22"
-                                                     Foreground="#7C4DFF" Margin="0,0,10,0"
+                                                     Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="0,0,10,0"
                                                      VerticalAlignment="Center"/>
                             <StackPanel>
                                 <TextBlock FontSize="15" FontWeight="SemiBold">Phiên bản ứng dụng</TextBlock>
-                                <TextBlock x:Name="CurrentVersionText" Foreground="#9E9E9E" FontSize="12"
+                                <TextBlock x:Name="CurrentVersionText" Opacity="0.7" FontSize="12"
                                            Margin="0,2,0,0"/>
                             </StackPanel>
                         </StackPanel>
@@ -342,20 +342,20 @@
                     </Grid>
 
                     <!-- Status / loading -->
-                    <TextBlock x:Name="UpdateStatusText" Foreground="#9E9E9E" FontSize="13"
+                    <TextBlock x:Name="UpdateStatusText" Opacity="0.7" FontSize="13"
                                Margin="0,0,0,12" TextWrapping="Wrap"/>
 
                     <!-- Download progress -->
                     <ProgressBar x:Name="DownloadProgress" Height="6"
                                  Minimum="0" Maximum="100" Margin="0,0,0,12"
                                  Visibility="Collapsed"
-                                 Foreground="#7C4DFF" Background="#2D2D4E"/>
+                                 Foreground="{DynamicResource PrimaryHueMidBrush}" Background="{DynamicResource MaterialDesignDivider}"/>
 
                     <!-- Release notes (shown when update available) -->
-                    <Border x:Name="ReleaseNotesBorder" Background="#12121F" CornerRadius="8"
+                    <Border x:Name="ReleaseNotesBorder" Background="{DynamicResource MaterialDesignTextFieldBoxBackground}" CornerRadius="8"
                             Padding="14" Margin="0,0,0,16" Visibility="Collapsed">
                         <md:MarkdownScrollViewer x:Name="ReleaseNotesMd"
-                                                 MaxHeight="200" Foreground="#CCCCCC" />
+                                                 MaxHeight="200" />
                     </Border>
 
                     <!-- Install button -->
@@ -372,17 +372,17 @@
             </materialDesign:Card>
 
             <!-- App Info -->
-            <materialDesign:Card Padding="20" UniformCornerRadius="12" Background="#0D0D1F">
+            <materialDesign:Card Padding="20" UniformCornerRadius="12" Background="{DynamicResource MaterialDesignTextFieldBoxBackground}">
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="InformationOutline" Width="18" Height="18"
-                                             Foreground="#555" Margin="0,0,12,0"
+                                             Opacity="0.5" Margin="0,0,12,0"
                                              VerticalAlignment="Center"/>
                     <StackPanel>
-                        <TextBlock x:Name="AppInfoText" Foreground="#9E9E9E" FontSize="12"/>
+                        <TextBlock x:Name="AppInfoText" Opacity="0.7" FontSize="12"/>
                         <TextBlock Text="Clean Architecture + WPF + Material Design"
-                                   Foreground="#555" FontSize="11" Margin="0,2,0,0"/>
+                                   Opacity="0.5" FontSize="11" Margin="0,2,0,0"/>
                         <TextBlock Text="Made with ❤️ by ThanhTrunggDEV"
-                                   Foreground="#555" FontSize="11" Margin="0,2,0,0" FontWeight="SemiBold"/>
+                                   Opacity="0.5" FontSize="11" Margin="0,2,0,0" FontWeight="SemiBold"/>
                     </StackPanel>
                 </StackPanel>
             </materialDesign:Card>

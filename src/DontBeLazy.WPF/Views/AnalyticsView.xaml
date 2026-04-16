@@ -22,7 +22,7 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="ChartBarStacked" Width="32" Height="32"
-                                             Foreground="#7C4DFF" Margin="0,0,14,0"
+                                             Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="0,0,14,0"
                                              VerticalAlignment="Center"/>
                     <TextBlock Text="Thống kê tập trung" FontSize="26" FontWeight="Bold"
                                VerticalAlignment="Center"/>
@@ -30,7 +30,6 @@
                 
                 <Button Grid.Column="1" Command="{Binding ExportCsvCommand}"
                         Style="{StaticResource MaterialDesignOutlinedButton}"
-                        Foreground="#7C4DFF" BorderBrush="#7C4DFF"
                         materialDesign:ButtonAssist.CornerRadius="10"
                         VerticalAlignment="Center">
                     <StackPanel Orientation="Horizontal">
@@ -40,7 +39,7 @@
                 </Button>
             </Grid>
             <TextBlock Text="Theo dõi hành trình kỷ luật của bạn"
-                       Foreground="#9E9E9E" FontSize="14" Margin="0,0,0,32"/>
+                       Opacity="0.7" FontSize="14" Margin="0,0,0,32"/>
 
             <!-- Top Stats Row -->
             <Grid Margin="0,0,0,28">
@@ -52,7 +51,7 @@
 
                 <!-- Streak Card -->
                 <materialDesign:Card Grid.Column="0" Margin="0,0,10,0" Padding="28"
-                                     UniformCornerRadius="16" Background="#1E1E3F">
+                                     UniformCornerRadius="16" Background="{DynamicResource MaterialDesignCardBackground}">
                     <StackPanel HorizontalAlignment="Center">
                         <materialDesign:PackIcon Kind="FireCircle" Width="44" Height="44"
                                                  HorizontalAlignment="Center"
@@ -60,35 +59,35 @@
                         <TextBlock Text="{Binding StreakLabel}" FontSize="22" FontWeight="Bold"
                                    HorizontalAlignment="Center" TextAlignment="Center"
                                    TextWrapping="Wrap" Margin="0,10,0,0"/>
-                        <TextBlock Text="Streak hiện tại" Foreground="#9E9E9E" FontSize="12"
+                        <TextBlock Text="Streak hiện tại" Opacity="0.7" FontSize="12"
                                    HorizontalAlignment="Center" Margin="0,4,0,0"/>
                     </StackPanel>
                 </materialDesign:Card>
 
                 <!-- Hours Card -->
                 <materialDesign:Card Grid.Column="1" Margin="5,0,5,0" Padding="28"
-                                     UniformCornerRadius="16" Background="#1E1E3F">
+                                     UniformCornerRadius="16" Background="{DynamicResource MaterialDesignCardBackground}">
                     <StackPanel HorizontalAlignment="Center">
                         <materialDesign:PackIcon Kind="ClockOutline" Width="44" Height="44"
-                                                 HorizontalAlignment="Center" Foreground="#7C4DFF"/>
+                                                 HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
                         <TextBlock Text="{Binding TotalFocusHoursThisWeek, StringFormat='{}{0:F1}h'}"
                                    FontSize="30" FontWeight="Bold"
                                    HorizontalAlignment="Center" Margin="0,10,0,0"/>
-                        <TextBlock Text="Tập trung tuần này" Foreground="#9E9E9E" FontSize="12"
+                        <TextBlock Text="Tập trung tuần này" Opacity="0.7" FontSize="12"
                                    HorizontalAlignment="Center" Margin="0,4,0,0"/>
                     </StackPanel>
                 </materialDesign:Card>
 
                 <!-- Sessions Card -->
                 <materialDesign:Card Grid.Column="2" Margin="10,0,0,0" Padding="28"
-                                     UniformCornerRadius="16" Background="#1E1E3F">
+                                     UniformCornerRadius="16" Background="{DynamicResource MaterialDesignCardBackground}">
                     <StackPanel HorizontalAlignment="Center">
                         <materialDesign:PackIcon Kind="PlayCircleOutline" Width="44" Height="44"
                                                  HorizontalAlignment="Center" Foreground="#FFB300"/>
                         <TextBlock Text="{Binding TotalSessionsThisWeek}"
                                    FontSize="30" FontWeight="Bold"
                                    HorizontalAlignment="Center" Margin="0,10,0,0"/>
-                        <TextBlock Text="Phiên làm việc" Foreground="#9E9E9E" FontSize="12"
+                        <TextBlock Text="Phiên làm việc" Opacity="0.7" FontSize="12"
                                    HorizontalAlignment="Center" Margin="0,4,0,0"/>
                     </StackPanel>
                 </materialDesign:Card>
@@ -96,17 +95,17 @@
 
             <!-- Weekly Bar Chart -->
             <materialDesign:Card Padding="32" UniformCornerRadius="16"
-                                 Background="#1E1E3F" Margin="0,0,0,24">
+                                 Background="{DynamicResource MaterialDesignCardBackground}" Margin="0,0,0,24">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
                         <materialDesign:PackIcon Kind="CalendarWeek" Width="20" Height="20"
-                                                 Foreground="#7C4DFF" Margin="0,0,8,0"
+                                                 Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="0,0,8,0"
                                                  VerticalAlignment="Center"/>
                         <TextBlock Text="Biểu đồ tuần này" FontSize="17"
                                    FontWeight="SemiBold" VerticalAlignment="Center"/>
                     </StackPanel>
                     <TextBlock Text="Giờ tập trung mỗi ngày"
-                               Foreground="#9E9E9E" FontSize="12" Margin="0,0,0,20"/>
+                               Opacity="0.7" FontSize="12" Margin="0,0,0,20"/>
 
                     <ItemsControl ItemsSource="{Binding WeekBars}">
                         <ItemsControl.ItemsPanel>
@@ -119,27 +118,23 @@
                                 <Grid>
                                     <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="4,0">
                                         <TextBlock Text="{Binding Hours, StringFormat='{}{0:F1}h'}"
-                                                   FontSize="10" Foreground="#9E9E9E"
+                                                   FontSize="10" Opacity="0.7"
                                                    HorizontalAlignment="Center" Margin="0,0,0,4"/>
                                         <Border Width="36" CornerRadius="6"
                                                 Height="{Binding Hours, Converter={StaticResource HoursToHeight}}"
-                                                HorizontalAlignment="Center">
-                                            <Border.Background>
-                                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                                    <GradientStop Color="#B388FF" Offset="0"/>
-                                                    <GradientStop Color="#7C4DFF" Offset="1"/>
-                                                </LinearGradientBrush>
-                                            </Border.Background>
+                                                HorizontalAlignment="Center"
+                                                Background="{DynamicResource PrimaryHueMidBrush}">
                                         </Border>
                                         <TextBlock Text="{Binding DayLabel}" FontSize="12"
                                                    HorizontalAlignment="Center" Margin="0,6,0,0">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
-                                                    <Setter Property="Foreground" Value="#9E9E9E"/>
+                                                    <Setter Property="Opacity" Value="0.7"/>
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding IsToday}" Value="True">
                                                             <Setter Property="FontWeight" Value="Bold"/>
-                                                            <Setter Property="Foreground" Value="#BCC0FF"/>
+                                                            <Setter Property="Opacity" Value="1"/>
+                                                            <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidBrush}"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>

@@ -19,25 +19,25 @@
         <materialDesign:DialogHost IsOpen="{Binding IsAiDialogOpen}" OverlayBackground="#CC000000"
                                    DialogClosing="OnAiDialogClosing">
             <materialDesign:DialogHost.DialogContent>
-                <Border Padding="36" MinWidth="480" MaxWidth="640" Background="#1E1E3F" CornerRadius="16">
+                <Border Padding="36" MinWidth="480" MaxWidth="640" Background="{DynamicResource MaterialDesignPaper}" CornerRadius="16">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
                             <materialDesign:PackIcon Kind="RobotOutline" Width="28" Height="28"
-                                                     Foreground="#7C4DFF" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                                     Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="0,0,12,0" VerticalAlignment="Center"/>
                             <TextBlock Text="{Binding AiDialogTitle}" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
                         </StackPanel>
                         <StackPanel HorizontalAlignment="Center" Margin="0,16,0,24"
                                     Visibility="{Binding IsAiLoading, Converter={StaticResource BoolToVis}}">
                             <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
                                          Value="0" IsIndeterminate="True" Width="40" Height="40"/>
-                            <TextBlock Text="Gemini AI đang phân tích..." Foreground="#9E9E9E"
+                            <TextBlock Text="Gemini AI đang phân tích..." Opacity="0.7"
                                        FontSize="13" HorizontalAlignment="Center" Margin="0,12,0,0"/>
                         </StackPanel>
-                        <Border Background="#12121F" CornerRadius="10" Padding="16"
+                        <Border Background="{DynamicResource MaterialDesignTextFieldBoxBackground}" CornerRadius="10" Padding="16"
                                 Visibility="{Binding IsAiLoading, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}">
                             <ScrollViewer MaxHeight="320" VerticalScrollBarVisibility="Auto">
                                 <TextBlock Text="{Binding AiResultText}" TextWrapping="Wrap"
-                                           FontSize="13" Foreground="#E0E0E0" FontFamily="Consolas"/>
+                                           FontSize="13" FontFamily="Consolas"/>
                             </ScrollViewer>
                         </Border>
                         <Button Content="Đóng" Style="{StaticResource MaterialDesignFlatButton}"
@@ -51,11 +51,11 @@
             <materialDesign:DialogHost IsOpen="{Binding IsEditDialogOpen}" OverlayBackground="#CC000000"
                                        DialogClosing="OnEditTaskDialogClosing">
                 <materialDesign:DialogHost.DialogContent>
-                    <Border Padding="36" MinWidth="460" Background="#1E1E3F" CornerRadius="16">
+                    <Border Padding="36" MinWidth="460" Background="{DynamicResource MaterialDesignPaper}" CornerRadius="16">
                         <StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,24">
                                 <materialDesign:PackIcon Kind="PencilOutline" Width="28" Height="28"
-                                                         Foreground="#7C4DFF" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                                         Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="0,0,12,0" VerticalAlignment="Center"/>
                                 <TextBlock Text="Chỉnh sửa công việc" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
                             </StackPanel>
                             <TextBox materialDesign:HintAssist.Hint="Tên công việc *"
@@ -101,11 +101,11 @@
                 <materialDesign:DialogHost IsOpen="{Binding IsAddDialogOpen}" OverlayBackground="#CC000000"
                                            DialogClosing="OnAddTaskDialogClosing">
                     <materialDesign:DialogHost.DialogContent>
-                        <Border Padding="36" MinWidth="460" Background="#1E1E3F" CornerRadius="16">
+                        <Border Padding="36" MinWidth="460" Background="{DynamicResource MaterialDesignPaper}" CornerRadius="16">
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,24">
                                     <materialDesign:PackIcon Kind="PlaylistPlus" Width="28" Height="28"
-                                                             Foreground="#7C4DFF" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                                             Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="0,0,12,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Thêm công việc mới" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
                                 </StackPanel>
                                 <TextBox materialDesign:HintAssist.Hint="Tên công việc *"
@@ -158,11 +158,11 @@
                         <Grid Grid.Row="0" Margin="0,0,0,24">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                 <materialDesign:PackIcon Kind="ClipboardTextOutline" Width="32" Height="32"
-                                                         Foreground="#7C4DFF" Margin="0,0,14,0" VerticalAlignment="Center"/>
+                                                         Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="0,0,14,0" VerticalAlignment="Center"/>
                                 <StackPanel>
                                     <TextBlock Text="Công việc hôm nay" FontSize="26" FontWeight="Bold"/>
                                     <TextBlock Text="{Binding Tasks.Count, StringFormat='{}{0} việc cần làm'}"
-                                               Foreground="#9E9E9E" FontSize="13" Margin="0,2,0,0"/>
+                                               Opacity="0.7" FontSize="13" Margin="0,2,0,0"/>
                                 </StackPanel>
                             </StackPanel>
                             <Button Command="{Binding AiSuggestPriorityCommand}" HorizontalAlignment="Right"
@@ -182,7 +182,7 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <materialDesign:Card Margin="0,0,0,10" Padding="0"
-                                                             UniformCornerRadius="12" Background="#1E1E3F">
+                                                             UniformCornerRadius="12" Background="{DynamicResource MaterialDesignCardBackground}">
                                             <Grid Margin="20,16">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="8"/>
@@ -202,17 +202,17 @@
                                                     <TextBlock Text="{Binding Name}" FontSize="15" FontWeight="SemiBold"/>
                                                     <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
                                                         <materialDesign:PackIcon Kind="ClockOutline" Width="14" Height="14"
-                                                                                 Foreground="#9E9E9E" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                                                                 Opacity="0.7" Margin="0,0,4,0" VerticalAlignment="Center"/>
                                                         <TextBlock Text="{Binding ExpectedMinutes, StringFormat='{}{0} phút'}"
-                                                                   Foreground="#9E9E9E" FontSize="12" VerticalAlignment="Center"/>
-                                                        <Border Background="#7C4DFF22" CornerRadius="4" Padding="8,2" Margin="12,0,0,0">
+                                                                   Opacity="0.7" FontSize="12" VerticalAlignment="Center"/>
+                                                        <Border Background="#227C4DFF" CornerRadius="4" Padding="8,2" Margin="12,0,0,0">
                                                             <TextBlock Text="{Binding Status, Converter={StaticResource StatusToLabel}}"
-                                                                       FontSize="11" Foreground="#BCC0FF"/>
+                                                                       FontSize="11" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
                                                         </Border>
                                                         <!-- Paused badge -->
-                                                        <Border Background="#FF980022" CornerRadius="4" Padding="8,2" Margin="6,0,0,0"
+                                                        <Border Background="#22FF9800" CornerRadius="4" Padding="8,2" Margin="6,0,0,0"
                                                                 Visibility="{Binding IsPaused, Converter={StaticResource BoolToVis}}">
-                                                            <TextBlock Text="Tạm dừng" FontSize="11" Foreground="#FFCC80"/>
+                                                            <TextBlock Text="Tạm dừng" FontSize="11" Foreground="#FF9800"/>
                                                         </Border>
                                                     </StackPanel>
                                                 </StackPanel>
@@ -223,7 +223,7 @@
                                                     <Button Style="{StaticResource MaterialDesignIconButton}"
                                                             Command="{Binding DataContext.AiBreakdownTaskCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                             CommandParameter="{Binding}" ToolTip="AI Breakdown Task">
-                                                        <materialDesign:PackIcon Kind="RobotOutline" Width="18" Height="18" Foreground="#7C4DFF"/>
+                                                        <materialDesign:PackIcon Kind="RobotOutline" Width="18" Height="18" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
                                                     </Button>
 
                                                     <!-- Retry (Abandoned only) -->
@@ -271,7 +271,7 @@
                                 Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
                                 Command="{Binding OpenAddDialogCommand}"
                                 HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                                Margin="0,0,8,8" Width="56" Height="56" Background="#7C4DFF">
+                                Margin="0,0,8,8" Width="56" Height="56" Background="{DynamicResource PrimaryHueMidBrush}">
                             <materialDesign:PackIcon Kind="Plus" Width="28" Height="28"/>
                         </Button>
                     </Grid>
