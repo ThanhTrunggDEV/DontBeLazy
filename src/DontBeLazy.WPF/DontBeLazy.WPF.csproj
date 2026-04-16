@@ -15,8 +15,10 @@
     <Copyright>Copyright © 2025 ThanhTrunggDEV</Copyright>
     <!-- App icon shown in taskbar, alt-tab, and exe file -->
     <ApplicationIcon>app.ico</ApplicationIcon>
-    <!-- Manifest: requireAdministrator for DNS flush + process management -->
-    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- Debug: asInvoker → dotnet run works without elevation -->
+    <!-- Release: requireAdministrator → UAC auto-prompt on launch -->
+    <ApplicationManifest Condition="'$(Configuration)' == 'Debug'">app.debug.manifest</ApplicationManifest>
+    <ApplicationManifest Condition="'$(Configuration)' != 'Debug'">app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <ItemGroup>
