@@ -9,7 +9,10 @@ public static class UseCaseServiceCollectionExtensions
 {
     public static IServiceCollection AddUseCases(this IServiceCollection services)
     {
-        services.AddScoped<IFocusTaskUseCase, FocusTaskUseCase>();
+        // State engine
+        services.AddSingleton<ActiveSessionState>();
+
+        // Use Cases
         services.AddScoped<IFocusSessionUseCase, FocusSessionUseCase>();
         services.AddScoped<IProfileUseCase, ProfileUseCase>();
         services.AddScoped<IProfileEntryUseCase, ProfileEntryUseCase>();
