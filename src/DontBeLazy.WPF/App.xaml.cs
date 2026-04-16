@@ -100,6 +100,10 @@ public partial class App : Application
 
         mainWindow.Show();
 
+        // Log successful startup
+        var logger = Services.GetRequiredService<DontBeLazy.Ports.Outbound.Services.IAppLogger>();
+        logger.Info("====== DontBeLazy started ======");
+
         // Background update check — non-blocking, silent on failure
         _ = Services.GetRequiredService<UpdateViewModel>().CheckForUpdateAsync();
     }
@@ -139,6 +143,12 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        try
+        {
+            Services?.GetService<DontBeLazy.Ports.Outbound.Services.IAppLogger>()
+                    ?.Info("====== DontBeLazy exited ======");
+        }
+        catch { /* best effort */ }
         Services?.Dispose();
         _mutex?.ReleaseMutex();
         _mutex?.Dispose();
@@ -147,14 +157,25 @@ public partial class App : Application
 
     private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
     {
-        // Prevent application from crashing due to unhandled UI exceptions
+        // Log before swallowing so we have a trace
+        try
+        {
+            Services?.GetService<DontBeLazy.Ports.Outbound.Services.IAppLogger>()
+                    ?.Error("[UI] Unhandled Dispatcher exception caught.", e.Exception);
+        }
+        catch { }
         e.Handled = true;
-        // Optionally log the exception to a file here
     }
 
     private void TaskScheduler_UnobservedTaskException(object? sender, System.Threading.Tasks.UnobservedTaskExceptionEventArgs e)
     {
-        // Prevent background task exceptions (like file IO in Strict Engine) from crashing the GC thread
+        // Log background task exceptions so they're visible in the log file
+        try
+        {
+            Services?.GetService<DontBeLazy.Ports.Outbound.Services.IAppLogger>()
+                    ?.Error("[BG] Unobserved task exception caught.", e.Exception);
+        }
+        catch { }
         e.SetObserved();
     }
 }
