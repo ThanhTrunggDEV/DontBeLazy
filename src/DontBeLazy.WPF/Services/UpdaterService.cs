@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Reflection;
@@ -12,13 +13,14 @@ namespace DontBeLazy.WPF.Services;
 
 /// <summary>
 /// Checks the GitHub Releases API for updates and applies them.
-/// Asset naming convention: DontBeLazy-{version}-win-x64.zip
+/// Supports pre-release builds (e.g. v0.2.0-beta).
 /// </summary>
 public class UpdaterService
 {
-    private const string Owner   = "ThanhTrunggDEV";
-    private const string Repo    = "DontBeLazy";
-    private const string ApiUrl  = $"https://api.github.com/repos/{Owner}/{Repo}/releases/latest";
+    private const string Owner  = "ThanhTrunggDEV";
+    private const string Repo   = "DontBeLazy";
+    // /releases (not /releases/latest) to include pre-releases
+    private const string ApiUrl = $"https://api.github.com/repos/{Owner}/{Repo}/releases";
 
     private readonly HttpClient _http;
 
@@ -28,7 +30,7 @@ public class UpdaterService
         _http.DefaultRequestHeaders.UserAgent.ParseAdd($"DontBeLazy/{CurrentVersion}");
     }
 
-    /// <summary>Current assembly version (e.g. "1.2.3").</summary>
+    /// <summary>Current assembly version (e.g. "0.1.0").</summary>
     public static string CurrentVersion
     {
         get
@@ -39,22 +41,37 @@ public class UpdaterService
     }
 
     /// <summary>
-    /// Checks GitHub for the latest release.
-    /// Returns null if the current version is already up to date or the check fails.
+    /// Strips pre-release suffix from a version string so Version.TryParse works.
+    /// "0.2.0-beta" → "0.2.0"
+    /// </summary>
+    private static string StripPreRelease(string tag)
+    {
+        tag = tag.TrimStart('v');
+        var dash = tag.IndexOf('-');
+        return dash >= 0 ? tag[..dash] : tag;
+    }
+
+    /// <summary>
+    /// Checks GitHub for the most recent release (including pre-releases).
+    /// Returns null if already up to date or the check fails.
     /// </summary>
     public async Task<ReleaseInfo?> CheckForUpdateAsync()
     {
         try
         {
-            var release = await _http.GetFromJsonAsync<GitHubRelease>(ApiUrl);
-            if (release == null) return null;
+            var releases = await _http.GetFromJsonAsync<GitHubRelease[]>(ApiUrl);
+            if (releases == null || releases.Length == 0) return null;
 
-            // tag_name = "v1.2.3" → "1.2.3"
-            var latestStr = release.TagName.TrimStart('v');
-            if (!Version.TryParse(latestStr, out var latest)) return null;
-            if (!Version.TryParse(CurrentVersion, out var current)) return null;
+            // Pick the most recent release (first in list = newest) — includes pre-releases
+            var release = releases[0];
 
-            if (latest <= current) return null;   // already up to date
+            var latestNumeric = StripPreRelease(release.TagName);
+            if (!Version.TryParse(latestNumeric, out var latest)) return null;
+
+            var currentNumeric = StripPreRelease(CurrentVersion);
+            if (!Version.TryParse(currentNumeric, out var current)) return null;
+
+            if (latest <= current) return null;  // already up to date
 
             // Prefer MSI, fall back to portable zip
             var asset = Array.Find(release.Assets,
@@ -63,7 +80,7 @@ public class UpdaterService
                             a => a.Name.Contains("win-x64") && a.Name.EndsWith(".zip"));
             if (asset == null) return null;
 
-            return new ReleaseInfo(latestStr, release.TagName, release.Body ?? string.Empty,
+            return new ReleaseInfo(latestNumeric, release.TagName, release.Body ?? string.Empty,
                                    asset.BrowserDownloadUrl, asset.Size);
         }
         catch

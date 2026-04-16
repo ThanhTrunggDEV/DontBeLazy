@@ -11,6 +11,15 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [0.3.0-beta] - 2026-04-16
+
+### Fixed
+- **Auto Update**: Sửa lỗi tính năng tự động cập nhật không nhận các bản phát hành có hậu tố (ví dụ: `v0.x-beta`). Đã chuyển sang dùng endpoint `/releases` (hỗ trợ hiển thị mọi tag kể cả pre-releases) và chuẩn hoá version chuỗi trước khi so sánh.
+- **Icon Crash**: Sửa lỗi ứng dụng không khởi động được (throw `XamlParseException` / `Cannot locate resource 'app.ico'`). Ứng dụng hiện sử dụng đường dẫn vật lý cục bộ của `app.ico` để nạp programmatically vào runtime để chống lỗi nạp từ Pack URI.
+- **dotnet run (Debug)**: Cho phép build và debug cục bộ `dotnet run` từ bất kì terminal nào mà không cần Admin privileges. Lệnh khởi chạy của build Release dưới file `DontBeLazy.exe` (hay `.msi`) sẽ vẫn yêu cầu quyền Admin thông qua UAC prompt (bảo vệ chức năng chỉnh sửa hệ thống).
+
+---
+
 ## [0.2.0-beta] - 2026-04-16
 
 ### Added

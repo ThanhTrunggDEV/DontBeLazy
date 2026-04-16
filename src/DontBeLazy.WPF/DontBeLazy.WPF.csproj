@@ -15,8 +15,10 @@
     <Copyright>Copyright © 2025 ThanhTrunggDEV</Copyright>
     <!-- App icon shown in taskbar, alt-tab, and exe file -->
     <ApplicationIcon>app.ico</ApplicationIcon>
-    <!-- Manifest: requireAdministrator for DNS flush + process management -->
-    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- Debug: asInvoker → dotnet run works without elevation -->
+    <!-- Release: requireAdministrator → UAC auto-prompt on launch -->
+    <ApplicationManifest Condition="'$(Configuration)' == 'Debug'">app.debug.manifest</ApplicationManifest>
+    <ApplicationManifest Condition="'$(Configuration)' != 'Debug'">app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,6 +26,13 @@
     <PackageReference Include="MaterialDesignColors" Version="5.3.1" />
     <PackageReference Include="MaterialDesignThemes" Version="5.3.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Copy ico to output dir so App.xaml.cs can load it at runtime -->
+    <Content Include="app.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
