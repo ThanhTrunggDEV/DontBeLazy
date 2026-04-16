@@ -1,8 +1,8 @@
-﻿using System.Configuration;
+using System.Configuration;
 using System.Data;
 using System.Windows;
 
-namespace DontBeLazy.App;
+namespace DontBeLazy.WPF;
 
 /// <summary>
 /// Interaction logic for App.xaml
