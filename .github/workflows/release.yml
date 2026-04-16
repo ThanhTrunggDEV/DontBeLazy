@@ -67,8 +67,8 @@ jobs:
           $env:PATH = [System.Environment]::GetEnvironmentVariable("PATH", "Machine") + ";" +
                       [System.Environment]::GetEnvironmentVariable("PATH", "User")
 
-          # Add UI extension
-          wix extension add --global WixToolset.UI.wixext
+          # Add UI extension — pin to 4.x to match WiX 4.0.6
+          wix extension add --global WixToolset.UI.wixext/4.0.6
 
           $ver    = "${{ steps.ver.outputs.version }}"
           $semver = "${{ steps.ver.outputs.semver }}"
