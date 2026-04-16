@@ -6,7 +6,7 @@ on:
       - "v*.*.*"
 
 permissions:
-  contents: write   # needed to create GitHub Release
+  contents: write
 
 jobs:
   build-and-release:
@@ -31,16 +31,16 @@ jobs:
         id: ver
         shell: bash
         run: |
-          TAG="${GITHUB_REF_NAME}"        # e.g. v1.2.3
-          VER="${TAG#v}"                  # e.g. 1.2.3
+          TAG="${GITHUB_REF_NAME}"
+          VER="${TAG#v}"
           echo "tag=$TAG"     >> "$GITHUB_OUTPUT"
           echo "version=$VER" >> "$GITHUB_OUTPUT"
 
-      # ── 4. Restore ────────────────────────────────────────────
+      # ── 4. Restore ─────────────────────────────────────────────
       - name: Restore
         run: dotnet restore DontBeLazy.slnx
 
-      # ── 5. Publish — win-x64 self-contained single file ───────
+      # ── 5. Publish — win-x64 self-contained single file ────────
       - name: Publish
         shell: pwsh
         run: |
@@ -54,15 +54,15 @@ jobs:
             -p:Version="${{ steps.ver.outputs.version }}" `
             --output publish/
 
-      # ── 6. Install WiX v4 toolset ─────────────────────────────
+      # ── 6. Install WiX v4 ──────────────────────────────────────
       - name: Install WiX
         run: dotnet tool install --global wix --version 4.*
 
-      # ── 7. Add WiX UI extension ───────────────────────────────
+      # ── 7. Add WiX UI extension ────────────────────────────────
       - name: Add WiX UI extension
         run: wix extension add --global WixToolset.UI.wixext
 
-      # ── 8. Build MSI ──────────────────────────────────────────
+      # ── 8. Build MSI ───────────────────────────────────────────
       - name: Build MSI
         shell: pwsh
         run: |
@@ -74,7 +74,7 @@ jobs:
             -o "DontBeLazy-$ver-win-x64.msi" `
             -arch x64
 
-      # ── 9. Package portable zip ───────────────────────────────
+      # ── 9. Package portable zip ────────────────────────────────
       - name: Create portable zip
         shell: pwsh
         run: |
@@ -84,7 +84,7 @@ jobs:
             -DestinationPath "DontBeLazy-$ver-win-x64-portable.zip" `
             -Force
 
-      # ── 10. Generate release notes ────────────────────────────
+      # ── 10. Generate release notes ─────────────────────────────
       - name: Extract changelog section
         id: notes
         shell: pwsh
@@ -98,7 +98,7 @@ jobs:
           }
           $notes | Out-File -FilePath release_notes.md -Encoding utf8
 
-      # ── 11. Create GitHub Release ─────────────────────────────
+      # ── 11. Create GitHub Release ──────────────────────────────
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
