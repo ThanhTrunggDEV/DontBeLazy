@@ -21,22 +21,22 @@
 
         <!-- ===== SIDEBAR ===== -->
         <Border Grid.Column="0"
-                Background="#1A1A2E"
+                Background="{DynamicResource MaterialDesignPaper}"
                 CornerRadius="0,0,0,0">
             <DockPanel>
                 <!-- Logo -->
                 <StackPanel DockPanel.Dock="Top" Margin="24,32,24,24">
                     <materialDesign:PackIcon Kind="Meditation"
                                             Width="40" Height="40"
-                                            Foreground="#7C4DFF"
+                                            Foreground="{DynamicResource PrimaryHueMidBrush}"
                                             HorizontalAlignment="Left"/>
                     <TextBlock Text="Don't Be Lazy"
                                FontSize="18" FontWeight="Bold"
-                               Foreground="White"
+                               Foreground="{DynamicResource MaterialDesignBody}"
                                Margin="0,8,0,4"/>
                     <TextBlock Text="Kỷ luật tạo nên thành công"
                                FontSize="11"
-                               Foreground="#9E9E9E"/>
+                               Opacity="0.7"/>
                 </StackPanel>
 
                 <!-- Nav Items -->
@@ -89,7 +89,7 @@
 
                 <!-- Bottom: Settings -->
                 <StackPanel DockPanel.Dock="Bottom" Margin="0,0,0,24">
-                    <Separator Background="#2D2D4E" Margin="24,0"/>
+                    <Separator Background="{DynamicResource MaterialDesignDivider}" Margin="24,0"/>
                     <Button Style="{StaticResource MaterialDesignFlatButton}"
                             Command="{Binding NavigateToCommand}"
                             CommandParameter="Settings"

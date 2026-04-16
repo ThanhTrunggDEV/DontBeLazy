@@ -14,17 +14,17 @@
     <materialDesign:DialogHost IsOpen="{Binding IsIntentionDialogOpen}"
                                DialogClosing="OnIntentionDialogClosing">
         <materialDesign:DialogHost.DialogContent>
-            <Border Padding="36" MinWidth="460" Background="#1E1E3F" CornerRadius="16">
+            <Border Padding="36" MinWidth="460" Background="{DynamicResource MaterialDesignPaper}" CornerRadius="16">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
                         <materialDesign:PackIcon Kind="PencilOutline" Width="28" Height="28"
-                                                 Foreground="#7C4DFF" Margin="0,0,12,0"
+                                                 Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="0,0,12,0"
                                                  VerticalAlignment="Center"/>
                         <TextBlock Text="Cam kết của bạn" FontSize="22" FontWeight="Bold"
                                    VerticalAlignment="Center"/>
                     </StackPanel>
                     <TextBlock Text="Hãy tự tay gõ lại cam kết để bắt đầu phiên làm việc"
-                               Foreground="#9E9E9E" FontSize="13" Margin="0,0,0,20"/>
+                               Opacity="0.7" FontSize="13" Margin="0,0,0,20"/>
                     <TextBox Text="{Binding IntentionText}"
                              Style="{StaticResource MaterialDesignOutlinedTextBox}"
                              TextWrapping="Wrap" AcceptsReturn="False"
@@ -50,7 +50,7 @@
             <!-- Guilt-trip overlay -->
             <Grid Visibility="{Binding IsGuiltTripVisible, Converter={StaticResource BoolToVis}}"
                   Background="#EE000000" Panel.ZIndex="99">
-                <Border Background="#1E1E3F" CornerRadius="20" Padding="52"
+                <Border Background="{DynamicResource MaterialDesignPaper}" CornerRadius="20" Padding="52"
                         MaxWidth="520" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <StackPanel HorizontalAlignment="Center">
                         <!-- Loading state -->
@@ -59,7 +59,7 @@
                             <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
                                          Value="0" IsIndeterminate="True"
                                          Width="56" Height="56" HorizontalAlignment="Center"/>
-                            <TextBlock Text="Gemini AI đang soạn..." Foreground="#9E9E9E"
+                            <TextBlock Text="Gemini AI đang soạn..." Opacity="0.7"
                                        FontSize="14" HorizontalAlignment="Center" Margin="0,16,0,0"/>
                         </StackPanel>
 
@@ -74,10 +74,10 @@
                                        HorizontalAlignment="Center" Margin="0,0,0,16"/>
                             <TextBlock Text="{Binding GuiltTripQuote}"
                                        FontSize="15" TextWrapping="Wrap"
-                                       Foreground="#CCBBFF" TextAlignment="Center"
+                                       Foreground="{DynamicResource MaterialDesignBodyLightBrush}" TextAlignment="Center"
                                        Margin="0,0,0,24" MaxWidth="400"/>
                             <!-- Friction gate -->
-                            <Border Background="#1A0A0A" CornerRadius="10" Padding="16" Margin="0,0,0,20" MaxWidth="420">
+                            <Border Background="{DynamicResource MaterialDesignTextFieldBoxBackground}" CornerRadius="10" Padding="16" Margin="0,0,0,20" MaxWidth="420">
                                 <StackPanel>
                                     <TextBlock FontSize="12" Foreground="#FF6666" TextWrapping="Wrap" TextAlignment="Center" Margin="0,0,0,10">
                                         <Run Text="Để tôi đi bỏ cuộc, hãy tự tay gõ cụm từ sau:"/>
@@ -122,8 +122,8 @@
                     <StackPanel HorizontalAlignment="Center">
                         <!-- Circular progress -->
                         <Grid Width="280" Height="280">
-                            <Ellipse Stroke="#2D2D4E" StrokeThickness="18" Fill="Transparent"/>
-                            <Ellipse x:Name="ProgressArc" Stroke="#7C4DFF" StrokeThickness="18" Fill="Transparent"
+                            <Ellipse Stroke="{DynamicResource MaterialDesignDivider}" StrokeThickness="18" Fill="Transparent"/>
+                            <Ellipse x:Name="ProgressArc" Stroke="{DynamicResource PrimaryHueMidBrush}" StrokeThickness="18" Fill="Transparent"
                                      StrokeDashArray="879" StrokeDashOffset="879"
                                      RenderTransformOrigin="0.5,0.5">
                                 <Ellipse.RenderTransform>
@@ -134,16 +134,16 @@
                                 <TextBlock Text="{Binding TimerDisplay}"
                                            FontSize="56" FontWeight="Bold"
                                            HorizontalAlignment="Center"
-                                           Foreground="White"/>
+                                           Foreground="{DynamicResource MaterialDesignBody}"/>
                                 <TextBlock Text="remaining"
                                            FontSize="14" HorizontalAlignment="Center"
-                                           Foreground="#9E9E9E"/>
+                                           Opacity="0.7"/>
                             </StackPanel>
                         </Grid>
 
                         <!-- Motivation Quote (Pre, Mid, Post focus) -->
                         <TextBlock Text="{Binding CurrentMotivationQuote}" 
-                                   FontSize="15" Foreground="#CCBBFF" Opacity="0.85" 
+                                   FontSize="15" Foreground="{DynamicResource PrimaryHueMidBrush}" Opacity="0.85" 
                                    TextWrapping="Wrap" TextAlignment="Center" 
                                    FontStyle="Italic"
                                    MaxWidth="280" Margin="0,24,0,0"
@@ -155,7 +155,7 @@
                             <!-- Pause button -->
                             <Button Command="{Binding PauseResumeCommand}"
                                     Style="{StaticResource TimerControlButton}"
-                                    Background="#2D2D4E" Margin="0,0,16,0"
+                                    Background="{DynamicResource MaterialDesignDivider}" Margin="0,0,16,0"
                                     Visibility="{Binding IsPaused, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}">
                                 <materialDesign:PackIcon Kind="Pause" Width="24" Height="24"/>
                             </Button>
@@ -196,32 +196,32 @@
                 </Grid>
 
                 <!-- Right: Config Panel -->
-                <Border Grid.Column="1" Background="#1E1E3F" CornerRadius="16" Padding="28"
+                <Border Grid.Column="1" Background="{DynamicResource MaterialDesignCardBackground}" CornerRadius="16" Padding="28"
                         VerticalAlignment="Center">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
                             <materialDesign:PackIcon Kind="CogOutline" Width="22" Height="22"
-                                                     Foreground="#7C4DFF" Margin="0,0,10,0"
+                                                     Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="0,0,10,0"
                                                      VerticalAlignment="Center"/>
                             <TextBlock Text="Cấu hình phiên" FontSize="18" FontWeight="Bold"
                                        VerticalAlignment="Center"/>
                         </StackPanel>
 
-                        <TextBlock Text="Thời lượng (phút)" Foreground="#9E9E9E" FontSize="12" Margin="0,0,0,4"/>
+                        <TextBlock Text="Thời lượng (phút)" Opacity="0.7" FontSize="12" Margin="0,0,0,4"/>
                         <Slider Value="{Binding DurationMinutes}" Minimum="5" Maximum="120" TickFrequency="5"
                                 IsSnapToTickEnabled="True" Margin="0,0,0,4"
                                 IsEnabled="{Binding IsSessionActive, Converter={StaticResource InverseBool}}"/>
                         <TextBlock Text="{Binding DurationMinutes, StringFormat='{}{0} phút'}"
                                    HorizontalAlignment="Center" FontWeight="SemiBold" Margin="0,0,0,20"/>
 
-                        <TextBlock Text="Chọn Task (bắt buộc)" Foreground="#9E9E9E" FontSize="12" Margin="0,0,0,4"/>
+                        <TextBlock Text="Chọn Task (bắt buộc)" Opacity="0.7" FontSize="12" Margin="0,0,0,4"/>
                         <ComboBox ItemsSource="{Binding AvailableTasks}"
                                   SelectedItem="{Binding SelectedTask}"
                                   DisplayMemberPath="Name"
                                   IsEnabled="{Binding IsSessionActive, Converter={StaticResource InverseBool}}"
                                   Margin="0,0,0,16"/>
 
-                        <TextBlock Text="Profile (bắt buộc)" Foreground="#9E9E9E" FontSize="12" Margin="0,0,0,4"/>
+                        <TextBlock Text="Profile (bắt buộc)" Opacity="0.7" FontSize="12" Margin="0,0,0,4"/>
                         <ComboBox ItemsSource="{Binding AvailableProfiles}"
                                   SelectedItem="{Binding SelectedProfile}"
                                   DisplayMemberPath="Name"
@@ -234,13 +234,13 @@
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,4">
                                     <materialDesign:PackIcon Kind="LockOutline" Width="16" Height="16"
-                                                             Foreground="#BCC0FF" Margin="0,0,6,0"
+                                                             Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="0,0,6,0"
                                                              VerticalAlignment="Center"/>
                                     <TextBlock Text="STRICT MODE ACTIVE" FontSize="13" FontWeight="Bold"
-                                               Foreground="#BCC0FF"/>
+                                               Foreground="{DynamicResource PrimaryHueMidBrush}"/>
                                 </StackPanel>
                                 <TextBlock Text="Các app và web ngoài Whitelist đã bị chặn"
-                                           FontSize="11" Foreground="#9E9E9E"
+                                           FontSize="11" Opacity="0.7"
                                            HorizontalAlignment="Center"/>
                             </StackPanel>
                         </Border>

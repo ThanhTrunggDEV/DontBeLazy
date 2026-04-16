@@ -15,17 +15,17 @@
     <materialDesign:DialogHost IsOpen="{Binding IsAiProfileDialogOpen}" OverlayBackground="#CC000000"
                                DialogClosing="OnAiProfileDialogClosing">
         <materialDesign:DialogHost.DialogContent>
-            <Border Padding="36" MinWidth="500" MaxWidth="660" Background="#1E1E3F" CornerRadius="16">
+            <Border Padding="36" MinWidth="500" MaxWidth="660" Background="{DynamicResource MaterialDesignPaper}" CornerRadius="16">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
                         <materialDesign:PackIcon Kind="RobotOutline" Width="28" Height="28"
-                                                 Foreground="#7C4DFF" Margin="0,0,12,0"
+                                                 Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="0,0,12,0"
                                                  VerticalAlignment="Center"/>
                         <TextBlock Text="AI Smart Profile" FontSize="20" FontWeight="Bold"
                                    VerticalAlignment="Center"/>
                     </StackPanel>
                     <TextBlock Text="Mô tả mục đích làm việc, Gemini sẽ gợi ý app/web cần chặn"
-                               Foreground="#9E9E9E" FontSize="13" Margin="0,0,0,20"/>
+                               Opacity="0.7" FontSize="13" Margin="0,0,0,20"/>
 
                     <TextBox materialDesign:HintAssist.Hint="VD: Học lập trình, không vào mạng xã hội"
                              Text="{Binding AiProfileIntent}"
@@ -49,16 +49,16 @@
                                 Visibility="{Binding IsAiProfileLoading, Converter={StaticResource BoolToVis}}">
                         <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
                                      Value="0" IsIndeterminate="True" Width="36" Height="36"/>
-                        <TextBlock Text="Gemini AI đang phân tích..." Foreground="#9E9E9E"
+                        <TextBlock Text="Gemini AI đang phân tích..." Opacity="0.7"
                                    FontSize="12" HorizontalAlignment="Center" Margin="0,10,0,0"/>
                     </StackPanel>
 
                     <!-- Result -->
-                    <Border Background="#12121F" CornerRadius="10" Padding="16" Margin="0,0,0,20"
+                    <Border Background="{DynamicResource MaterialDesignTextFieldBoxBackground}" CornerRadius="10" Padding="16" Margin="0,0,0,20"
                             Visibility="{Binding IsAiProfileLoading, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}">
                         <ScrollViewer MaxHeight="240" VerticalScrollBarVisibility="Auto">
                             <TextBlock Text="{Binding AiProfileResult}" TextWrapping="Wrap"
-                                       FontSize="12" Foreground="#E0E0E0" FontFamily="Consolas"/>
+                                       FontSize="12" FontFamily="Consolas"/>
                         </ScrollViewer>
                     </Border>
 
@@ -73,11 +73,11 @@
         <materialDesign:DialogHost IsOpen="{Binding IsRenameProfileDialogOpen}"
                                    DialogClosing="OnRenameProfileDialogClosing">
             <materialDesign:DialogHost.DialogContent>
-                <Border Padding="36" MinWidth="360" Background="#1E1E3F" CornerRadius="16">
+                <Border Padding="36" MinWidth="360" Background="{DynamicResource MaterialDesignPaper}" CornerRadius="16">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,24">
                             <materialDesign:PackIcon Kind="PencilOutline" Width="28" Height="28"
-                                                     Foreground="#7C4DFF" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                                     Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="0,0,12,0" VerticalAlignment="Center"/>
                             <TextBlock Text="Đổi tên Profile" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
                         </StackPanel>
                         <TextBox materialDesign:HintAssist.Hint="Tên mới *"
@@ -97,11 +97,11 @@
             <materialDesign:DialogHost IsOpen="{Binding IsAddProfileDialogOpen}"
                                        DialogClosing="OnAddProfileDialogClosing">
             <materialDesign:DialogHost.DialogContent>
-                <Border Padding="36" MinWidth="400" Background="#1E1E3F" CornerRadius="16">
+                <Border Padding="36" MinWidth="400" Background="{DynamicResource MaterialDesignPaper}" CornerRadius="16">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,24">
                             <materialDesign:PackIcon Kind="ShieldPlusOutline" Width="28" Height="28"
-                                                     Foreground="#7C4DFF" Margin="0,0,12,0"
+                                                     Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="0,0,12,0"
                                                      VerticalAlignment="Center"/>
                             <TextBlock Text="Tạo Profile mới" FontSize="20" FontWeight="Bold"
                                        VerticalAlignment="Center"/>
@@ -133,7 +133,7 @@
                     <StackPanel DockPanel.Dock="Top" Margin="0,0,0,20">
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
                             <materialDesign:PackIcon Kind="ShieldCheckOutline" Width="28" Height="28"
-                                                     Foreground="#7C4DFF" Margin="0,0,12,0"
+                                                     Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="0,0,12,0"
                                                      VerticalAlignment="Center"/>
                             <TextBlock Text="Profiles" FontSize="24" FontWeight="Bold"
                                        VerticalAlignment="Center"/>
@@ -181,14 +181,14 @@
                                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
                                             <TextBlock Text="{Binding Name}" FontSize="15" FontWeight="SemiBold"/>
                                             <TextBlock Text="{Binding Entries.Count, StringFormat='{}{0} apps / websites'}"
-                                                       Foreground="#9E9E9E" FontSize="12" Margin="0,4,0,0"/>
+                                                       Opacity="0.7" FontSize="12" Margin="0,4,0,0"/>
                                         </StackPanel>
                                         <!-- Rename -->
                                         <Button Grid.Column="1" Style="{StaticResource MaterialDesignIconButton}"
                                                 Width="32" Height="32" Padding="4"
                                                 Command="{Binding DataContext.OpenRenameProfileDialogCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
                                                 CommandParameter="{Binding}" ToolTip="Đổi tên" Margin="0,0,4,0">
-                                            <materialDesign:PackIcon Kind="PencilOutline" Width="18" Height="18" Foreground="#7C4DFF"/>
+                                            <materialDesign:PackIcon Kind="PencilOutline" Width="18" Height="18" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
                                         </Button>
                                         <!-- Delete -->
                                         <Button Grid.Column="2" Style="{StaticResource MaterialDesignIconButton}"
@@ -210,20 +210,20 @@
                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
                                 Visibility="{Binding SelectedProfile, Converter={StaticResource NullToVis}, ConverterParameter=Inverse}">
                         <materialDesign:PackIcon Kind="ArrowLeftBoldOutline" Width="48" Height="48"
-                                                 Foreground="#333" HorizontalAlignment="Center"
+                                                 Opacity="0.5" HorizontalAlignment="Center"
                                                  Margin="0,0,0,12"/>
                         <TextBlock Text="Chọn một Profile để xem danh sách"
-                                   Foreground="#9E9E9E" FontSize="15" HorizontalAlignment="Center"/>
+                                   Opacity="0.7" FontSize="15" HorizontalAlignment="Center"/>
                     </StackPanel>
 
                     <materialDesign:DialogHost IsOpen="{Binding IsAddEntryDialogOpen}"
                                                DialogClosing="OnAddEntryDialogClosing">
                         <materialDesign:DialogHost.DialogContent>
-                            <Border Padding="32" MinWidth="380" Background="#1E1E3F" CornerRadius="16">
+                            <Border Padding="32" MinWidth="380" Background="{DynamicResource MaterialDesignPaper}" CornerRadius="16">
                                 <StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
                                         <materialDesign:PackIcon Kind="WebPlus" Width="24" Height="24"
-                                                                 Foreground="#7C4DFF" Margin="0,0,10,0"
+                                                                 Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="0,0,10,0"
                                                                  VerticalAlignment="Center"/>
                                         <TextBlock Text="Thêm Website / App" FontSize="18" FontWeight="Bold"
                                                    VerticalAlignment="Center"/>
@@ -251,11 +251,11 @@
                         <materialDesign:DialogHost IsOpen="{Binding IsEditEntryDialogOpen}"
                                                    DialogClosing="OnEditEntryDialogClosing">
                             <materialDesign:DialogHost.DialogContent>
-                                <Border Padding="32" MinWidth="380" Background="#1E1E3F" CornerRadius="16">
+                                <Border Padding="32" MinWidth="380" Background="{DynamicResource MaterialDesignPaper}" CornerRadius="16">
                                     <StackPanel>
                                         <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
                                             <materialDesign:PackIcon Kind="PencilOutline" Width="24" Height="24"
-                                                                     Foreground="#7C4DFF" Margin="0,0,10,0"
+                                                                     Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="0,0,10,0"
                                                                      VerticalAlignment="Center"/>
                                             <TextBlock Text="Sửa Website / App" FontSize="18" FontWeight="Bold"
                                                        VerticalAlignment="Center"/>
@@ -285,7 +285,7 @@
                                 <TextBlock Text="{Binding SelectedProfile.Name, StringFormat='Whitelist — {0}'}"
                                            FontSize="20" FontWeight="Bold" Margin="0,0,0,4"/>
                                 <TextBlock Text="Ghi chú: Các website và ứng dụng được liệt kê dưới đây đóng vai trò là danh sách ngoại lệ (Whitelist). Chúng sẽ không bị hệ thống chặn khi bạn đang trong phiên tập trung."
-                                           FontSize="13" Foreground="#9E9E9E" TextWrapping="Wrap" Margin="0,0,0,12"/>
+                                           FontSize="13" Opacity="0.7" TextWrapping="Wrap" Margin="0,0,0,12"/>
                                 <Button Command="{Binding OpenAddEntryDialogCommand}"
                                         Style="{StaticResource MaterialDesignOutlinedButton}"
                                         HorizontalAlignment="Left" Margin="0,12,0,0"
@@ -303,7 +303,7 @@
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <materialDesign:Card Margin="0,0,0,8" Padding="16,12"
-                                                                 UniformCornerRadius="10" Background="#1E1E3F">
+                                                                 UniformCornerRadius="10" Background="{DynamicResource MaterialDesignCardBackground}">
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="Auto"/>
@@ -311,14 +311,14 @@
                                                         <ColumnDefinition Width="Auto"/>
                                                         <ColumnDefinition Width="Auto"/>
                                                     </Grid.ColumnDefinitions>
-                                                    <Border Grid.Column="0" Background="#7C4DFF22"
+                                                    <Border Grid.Column="0" Background="#227C4DFF"
                                                             CornerRadius="8" Padding="8" Margin="0,0,14,0">
                                                         <materialDesign:PackIcon Kind="{Binding Type, Converter={StaticResource TypeToIcon}}"
-                                                                                 Width="20" Height="20" Foreground="#7C4DFF"/>
+                                                                                 Width="20" Height="20" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
                                                     </Border>
                                                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                                         <TextBlock Text="{Binding Value}" FontSize="14" FontWeight="SemiBold"/>
-                                                        <TextBlock Text="{Binding Type}" Foreground="#9E9E9E" FontSize="11"/>
+                                                        <TextBlock Text="{Binding Type}" Opacity="0.7" FontSize="11"/>
                                                     </StackPanel>
                                                     <Button Grid.Column="2" Style="{StaticResource MaterialDesignIconButton}"
                                                             Command="{Binding DataContext.OpenEditEntryDialogCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
