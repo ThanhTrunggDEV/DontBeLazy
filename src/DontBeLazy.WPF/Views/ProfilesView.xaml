@@ -7,6 +7,7 @@
              Background="{DynamicResource MaterialDesign.Brush.Background}">
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVis"/>
+        <converters:NullToVisibilityConverter x:Key="NullToVis"/>
         <converters:ProfileEntryTypeToIconConverter x:Key="TypeToIcon"/>
     </UserControl.Resources>
 
@@ -200,7 +201,7 @@
                 <Grid Grid.Column="1">
                     <!-- Empty state -->
                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
-                                Visibility="{Binding SelectedProfile, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}">
+                                Visibility="{Binding SelectedProfile, Converter={StaticResource NullToVis}, ConverterParameter=Inverse}">
                         <materialDesign:PackIcon Kind="ArrowLeftBoldOutline" Width="48" Height="48"
                                                  Foreground="#333" HorizontalAlignment="Center"
                                                  Margin="0,0,0,12"/>
@@ -210,7 +211,7 @@
 
                     <materialDesign:DialogHost IsOpen="{Binding IsAddEntryDialogOpen}"
                                                DialogClosing="OnAddEntryDialogClosing"
-                                               Visibility="{Binding SelectedProfile, Converter={StaticResource BoolToVis}}">
+                                               Visibility="{Binding SelectedProfile, Converter={StaticResource NullToVis}}">
                         <materialDesign:DialogHost.DialogContent>
                             <Border Padding="32" MinWidth="380" Background="#1E1E3F" CornerRadius="16">
                                 <StackPanel>

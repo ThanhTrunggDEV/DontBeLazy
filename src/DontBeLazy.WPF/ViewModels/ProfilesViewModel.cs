@@ -68,9 +68,11 @@ public partial class ProfilesViewModel : ObservableObject
     private async Task CreateProfileAsync()
     {
         if (string.IsNullOrWhiteSpace(NewProfileName)) return;
+        var newName = NewProfileName;
         await _profileUseCase.CreateProfileAsync(NewProfileName, NewProfileIsDefault);
         IsAddProfileDialogOpen = false;
         await LoadDataAsync();
+        SelectedProfile = Profiles.FirstOrDefault(p => p.Name == newName);
     }
 
     [RelayCommand]
