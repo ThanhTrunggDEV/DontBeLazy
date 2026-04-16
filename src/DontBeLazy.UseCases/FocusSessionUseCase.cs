@@ -80,9 +80,16 @@ public class FocusSessionUseCase : IFocusSessionUseCase
 
         if (validSeconds > 0)
         {
-            _sessionState.CurrentSession.IncrementActualSeconds(validSeconds);
-            await _sessionRepository.UpdateAsync(_sessionState.CurrentSession);
-            await _unitOfWork.SaveChangesAsync();
+            try 
+            {
+                _sessionState.CurrentSession.IncrementActualSeconds(validSeconds);
+                await _sessionRepository.UpdateAsync(_sessionState.CurrentSession);
+                await _unitOfWork.SaveChangesAsync();
+            }
+            catch 
+            {
+                // Silently swallow syncing DB exceptions to prevent crashing the OnTimerTick loop.
+            }
         }
 
         _sessionState.UpdateLastTick(currentTicks);
@@ -101,12 +108,17 @@ public class FocusSessionUseCase : IFocusSessionUseCase
         if (_sessionState.CurrentSession == null || _sessionState.CurrentSession.Id.Value != sessionId)
             throw new InvalidOperationException("Session is not active.");
 
-        _sessionState.CurrentSession.CompleteSession(DtoMapper.ToDomain(status));
-        await _sessionRepository.UpdateAsync(_sessionState.CurrentSession);
-        await _unitOfWork.SaveChangesAsync();
-
-        await _processPort.ClearRestrictionsAsync();
-        _sessionState.Clear();
+        try
+        {
+            _sessionState.CurrentSession.CompleteSession(DtoMapper.ToDomain(status));
+            await _sessionRepository.UpdateAsync(_sessionState.CurrentSession);
+            await _unitOfWork.SaveChangesAsync();
+        }
+        finally
+        {
+            await _processPort.ClearRestrictionsAsync();
+            _sessionState.Clear();
+        }
     }
 
     public async Task LogBlockedAttemptAsync(Guid sessionId)
