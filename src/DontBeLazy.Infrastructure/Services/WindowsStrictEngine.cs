@@ -29,13 +29,19 @@ public class WindowsStrictEngine : IStrictEnginePort, IDisposable
         "instagram.com", "www.instagram.com",
         "tiktok.com", "www.tiktok.com",
         "twitter.com", "www.twitter.com",
-        "x.com", "www.x.com"
+        "x.com", "www.x.com",
+        "reddit.com", "www.reddit.com",
+        "netflix.com", "www.netflix.com",
+        "twitch.tv", "www.twitch.tv",
+        "pinterest.com", "www.pinterest.com"
     };
 
     // Core distracting apps (without .exe)
     private readonly string[] _distractingApps = new[] { 
         "discord", "steam", "riotclient", "leagueoflegends", 
-        "epicgameslauncher", "spotify", "zalo", "telegram", "taskmgr"
+        "epicgameslauncher", "spotify", "zalo", "telegram", "taskmgr",
+        "whatsapp", "messenger", "skype", "viber", "netflix",
+        "xboxapp", "vctray", "steamwebhelper"
     };
 
     private List<string> _allowedAppNames = new();
