@@ -35,7 +35,7 @@ public class WindowsStrictEngine : IStrictEnginePort, IDisposable
     // Core distracting apps (without .exe)
     private readonly string[] _distractingApps = new[] { 
         "discord", "steam", "riotclient", "leagueoflegends", 
-        "epicgameslauncher", "spotify", "zalo", "telegram" 
+        "epicgameslauncher", "spotify", "zalo", "telegram", "taskmgr"
     };
 
     private List<string> _allowedAppNames = new();
