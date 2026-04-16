@@ -11,7 +11,8 @@
     </UserControl.Resources>
 
     <!-- Outer: AI Smart Profile Dialog -->
-    <materialDesign:DialogHost IsOpen="{Binding IsAiProfileDialogOpen}" OverlayBackground="#CC000000">
+    <materialDesign:DialogHost IsOpen="{Binding IsAiProfileDialogOpen}" OverlayBackground="#CC000000"
+                               DialogClosing="OnAiProfileDialogClosing">
         <materialDesign:DialogHost.DialogContent>
             <Border Padding="36" MinWidth="500" MaxWidth="660" Background="#1E1E3F" CornerRadius="16">
                 <StackPanel>
@@ -68,7 +69,8 @@
         </materialDesign:DialogHost.DialogContent>
 
         <!-- Inner: Add Profile Dialog -->
-        <materialDesign:DialogHost IsOpen="{Binding IsAddProfileDialogOpen}">
+        <materialDesign:DialogHost IsOpen="{Binding IsAddProfileDialogOpen}"
+                                   DialogClosing="OnAddProfileDialogClosing">
             <materialDesign:DialogHost.DialogContent>
                 <Border Padding="36" MinWidth="400" Background="#1E1E3F" CornerRadius="16">
                     <StackPanel>
@@ -86,7 +88,8 @@
                         <CheckBox Content="Đặt làm mặc định" IsChecked="{Binding NewProfileIsDefault}" Margin="0,0,0,24"/>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                             <Button Content="Huỷ" Style="{StaticResource MaterialDesignFlatButton}"
-                                    Command="{Binding OpenAddProfileDialogCommand}" Margin="0,0,8,0"/>
+                                    Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                    Margin="0,0,8,0"/>
                             <Button Content="Tạo" Style="{StaticResource LargePrimaryButton}"
                                     Command="{Binding CreateProfileCommand}" Height="40"/>
                         </StackPanel>
@@ -174,6 +177,7 @@
                     </StackPanel>
 
                     <materialDesign:DialogHost IsOpen="{Binding IsAddEntryDialogOpen}"
+                                               DialogClosing="OnAddEntryDialogClosing"
                                                Visibility="{Binding SelectedProfile, Converter={StaticResource BoolToVis}}">
                         <materialDesign:DialogHost.DialogContent>
                             <Border Padding="32" MinWidth="380" Background="#1E1E3F" CornerRadius="16">
@@ -196,7 +200,8 @@
                                              Margin="0,0,0,24"/>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                         <Button Content="Huỷ" Style="{StaticResource MaterialDesignFlatButton}"
-                                                Command="{Binding OpenAddEntryDialogCommand}" Margin="0,0,8,0"/>
+                                                Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                                Margin="0,0,8,0"/>
                                         <Button Content="Thêm" Style="{StaticResource LargePrimaryButton}"
                                                 Command="{Binding AddEntryCommand}" Height="40"/>
                                     </StackPanel>

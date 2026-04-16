@@ -51,7 +51,8 @@
             </materialDesign:DialogHost.DialogContent>
 
             <!-- Add Task Dialog -->
-            <materialDesign:DialogHost IsOpen="{Binding IsAddDialogOpen}" OverlayBackground="#CC000000">
+            <materialDesign:DialogHost IsOpen="{Binding IsAddDialogOpen}" OverlayBackground="#CC000000"
+                                       DialogClosing="OnAddTaskDialogClosing">
                 <materialDesign:DialogHost.DialogContent>
                     <Border Padding="36" MinWidth="440" Background="#1E1E3F" CornerRadius="16">
                         <StackPanel>
@@ -78,7 +79,8 @@
                                       Margin="0,0,0,28"/>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                 <Button Content="Huỷ" Style="{StaticResource MaterialDesignFlatButton}"
-                                        Command="{Binding OpenAddDialogCommand}" Margin="0,0,8,0"/>
+                                        Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                        Margin="0,0,8,0"/>
                                 <Button Content="Thêm" Style="{StaticResource LargePrimaryButton}"
                                         Command="{Binding AddTaskCommand}" Height="40"/>
                             </StackPanel>

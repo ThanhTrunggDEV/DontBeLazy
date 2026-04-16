@@ -1,3 +1,4 @@
+using MaterialDesignThemes.Wpf;
 using System.Windows.Controls;
 using DontBeLazy.WPF.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,5 +17,11 @@ public partial class FocusSessionView : UserControl
     {
         if (DataContext is FocusSessionViewModel vm)
             await vm.LoadDataCommand.ExecuteAsync(null);
+    }
+
+    private void OnIntentionDialogClosing(object sender, DialogClosingEventArgs e)
+    {
+        if (DataContext is FocusSessionViewModel vm)
+            vm.IsIntentionDialogOpen = false;
     }
 }

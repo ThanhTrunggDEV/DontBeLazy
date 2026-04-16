@@ -1,3 +1,4 @@
+using MaterialDesignThemes.Wpf;
 using System.Windows.Controls;
 using DontBeLazy.WPF.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,5 +17,23 @@ public partial class ProfilesView : UserControl
     {
         if (DataContext is ProfilesViewModel vm)
             await vm.LoadDataCommand.ExecuteAsync(null);
+    }
+
+    private void OnAiProfileDialogClosing(object sender, DialogClosingEventArgs e)
+    {
+        if (DataContext is ProfilesViewModel vm)
+            vm.IsAiProfileDialogOpen = false;
+    }
+
+    private void OnAddProfileDialogClosing(object sender, DialogClosingEventArgs e)
+    {
+        if (DataContext is ProfilesViewModel vm)
+            vm.IsAddProfileDialogOpen = false;
+    }
+
+    private void OnAddEntryDialogClosing(object sender, DialogClosingEventArgs e)
+    {
+        if (DataContext is ProfilesViewModel vm)
+            vm.IsAddEntryDialogOpen = false;
     }
 }

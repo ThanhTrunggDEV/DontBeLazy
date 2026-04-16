@@ -1,3 +1,4 @@
+using MaterialDesignThemes.Wpf;
 using System.Windows.Controls;
 using DontBeLazy.WPF.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,5 +17,11 @@ public partial class DashboardView : UserControl
     {
         if (DataContext is DashboardViewModel vm)
             await vm.LoadDataCommand.ExecuteAsync(null);
+    }
+
+    private void OnAddTaskDialogClosing(object sender, DialogClosingEventArgs e)
+    {
+        if (DataContext is DashboardViewModel vm)
+            vm.IsAddDialogOpen = false;
     }
 }
