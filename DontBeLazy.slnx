@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/DontBeLazy.App/DontBeLazy.App.csproj" />
+  </Folder>
+</Solution>
