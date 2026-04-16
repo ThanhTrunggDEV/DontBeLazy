@@ -23,6 +23,7 @@ public class SystemSettingsRepository : ISystemSettingsRepository
             // Seed default if not exists
             settings = new SystemSettings(false, true, "vi", false);
             await _context.Settings.AddAsync(settings);
+            // Must save seed immediately otherwise tracking fails or subsequent calls duplicate
             await _context.SaveChangesAsync();
         }
         
@@ -32,6 +33,5 @@ public class SystemSettingsRepository : ISystemSettingsRepository
     public async Task UpdateSettingsAsync(SystemSettings settings)
     {
         _context.Settings.Update(settings);
-        await _context.SaveChangesAsync();
     }
 }

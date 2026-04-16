@@ -38,13 +38,11 @@ public class QuoteRepository : IQuoteRepository
     public async Task AddAsync(Quote quote)
     {
         await _context.Quotes.AddAsync(quote);
-        await _context.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(Quote quote)
     {
         _context.Quotes.Update(quote);
-        await _context.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(QuoteId id)
@@ -53,7 +51,6 @@ public class QuoteRepository : IQuoteRepository
         if (quote != null)
         {
             _context.Quotes.Remove(quote);
-            await _context.SaveChangesAsync();
         }
     }
 }

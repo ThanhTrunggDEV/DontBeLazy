@@ -46,13 +46,11 @@ public class SessionRepository : ISessionRepository
     public async Task AddAsync(SessionHistory session)
     {
         await _context.Sessions.AddAsync(session);
-        await _context.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(SessionHistory session)
     {
         _context.Sessions.Update(session);
-        await _context.SaveChangesAsync();
     }
 
     public async Task DeleteByDateRangeAsync(DateTime startDate, DateTime endDate)
@@ -64,7 +62,6 @@ public class SessionRepository : ISessionRepository
         if (targetSessions.Any())
         {
             _context.Sessions.RemoveRange(targetSessions);
-            await _context.SaveChangesAsync();
         }
     }
 }

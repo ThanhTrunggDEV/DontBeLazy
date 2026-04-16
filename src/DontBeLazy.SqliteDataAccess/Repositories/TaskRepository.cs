@@ -48,13 +48,11 @@ public class TaskRepository : ITaskRepository
     public async Task AddAsync(FocusTask task)
     {
         await _context.Tasks.AddAsync(task);
-        await _context.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(FocusTask task)
     {
         _context.Tasks.Update(task);
-        await _context.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(TaskId id)
@@ -63,7 +61,6 @@ public class TaskRepository : ITaskRepository
         if (task != null)
         {
             _context.Tasks.Remove(task);
-            await _context.SaveChangesAsync();
         }
     }
 }

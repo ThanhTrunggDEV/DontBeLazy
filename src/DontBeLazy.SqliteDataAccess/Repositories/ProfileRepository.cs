@@ -40,13 +40,11 @@ public class ProfileRepository : IProfileRepository
     public async Task AddAsync(Profile profile)
     {
         await _context.Profiles.AddAsync(profile);
-        await _context.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(Profile profile)
     {
         _context.Profiles.Update(profile);
-        await _context.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(ProfileId id)
@@ -55,7 +53,6 @@ public class ProfileRepository : IProfileRepository
         if (profile != null)
         {
             _context.Profiles.Remove(profile);
-            await _context.SaveChangesAsync();
         }
     }
 }
