@@ -108,3 +108,58 @@ public class HoursToHeightConverter : IValueConverter
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         => throw new NotImplementedException();
 }
+
+/// <summary>Returns the right check icon kind based on status.</summary>
+public class TaskStatusToCheckIconConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        => value is TaskStatusDto.Done ? "CheckCircle" : "CheckCircleOutline";
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}
+
+/// <summary>
+/// Compares TaskStatusDto to a string parameter.
+/// Supports: "Abandoned" → Visible when Abandoned, "NotActive" → true when not Active.
+/// Returns Visibility when targetType is Visibility, bool otherwise.
+/// </summary>
+public class TaskStatusEqualConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is not TaskStatusDto status || parameter is not string param)
+            return targetType == typeof(Visibility) ? Visibility.Collapsed : (object)false;
+
+        bool result = param switch
+        {
+            "Abandoned" => status == TaskStatusDto.Abandoned,
+            "NotActive" => status != TaskStatusDto.Active,
+            "Weekly"    => param == "Weekly",
+            "Custom"    => param == "Custom",
+            _           => false
+        };
+
+        return targetType == typeof(Visibility)
+            ? (result ? Visibility.Visible : Visibility.Collapsed)
+            : (object)result;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}
+
+/// <summary>String equality converter for conditional visibility (e.g. RecurringType == "Weekly").</summary>
+public class StringEqualConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        bool match = value?.ToString() == parameter?.ToString();
+        return targetType == typeof(Visibility)
+            ? (match ? Visibility.Visible : Visibility.Collapsed)
+            : (object)match;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}

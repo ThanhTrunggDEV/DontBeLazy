@@ -24,4 +24,16 @@ public partial class DashboardView : UserControl
         if (DataContext is DashboardViewModel vm)
             vm.IsAddDialogOpen = false;
     }
+
+    private void OnEditTaskDialogClosing(object sender, DialogClosingEventArgs e)
+    {
+        if (DataContext is DashboardViewModel vm)
+            vm.IsEditDialogOpen = false;
+    }
+
+    private void OnAiDialogClosing(object sender, DialogClosingEventArgs e)
+    {
+        if (DataContext is DashboardViewModel vm)
+            vm.IsAiDialogOpen = false;
+    }
 }

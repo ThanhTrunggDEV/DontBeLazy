@@ -33,6 +33,10 @@ public partial class FocusSessionViewModel : ObservableObject
     [ObservableProperty] private bool _isGuiltTripLoading;
     [ObservableProperty] private string _guiltTripQuote = string.Empty;
     [ObservableProperty] private bool _isIntentionDialogOpen;
+    [ObservableProperty] private string _frictionInput = string.Empty;
+
+    private const string FrictionPhrase = "Tôi là kẻ lười biếng và tôi chấp nhận bỏ cuộc";
+    public bool CanConfirmAbandon => FrictionInput.Trim() == FrictionPhrase;
 
     private int _totalSeconds;
 
@@ -138,17 +142,23 @@ public partial class FocusSessionViewModel : ObservableObject
         if (!IsGuiltTripVisible) _timer?.Start(); // user cancelled while loading
     }
 
+    partial void OnFrictionInputChanged(string value)
+        => OnPropertyChanged(nameof(CanConfirmAbandon));
+
     [RelayCommand]
     private void ContinueSession()
     {
         IsGuiltTripVisible = false;
+        FrictionInput = string.Empty;
         _timer?.Start();
     }
 
     [RelayCommand]
     private async Task ConfirmAbandonAsync()
     {
+        if (!CanConfirmAbandon) return;
         IsGuiltTripVisible = false;
+        FrictionInput = string.Empty;
         await AbandonSessionAsync();
     }
 

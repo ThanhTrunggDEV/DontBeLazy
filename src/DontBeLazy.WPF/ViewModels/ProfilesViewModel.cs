@@ -27,6 +27,11 @@ public partial class ProfilesViewModel : ObservableObject
     [ObservableProperty] private string _aiProfileIntent = string.Empty;
     [ObservableProperty] private string _aiProfileResult = string.Empty;
 
+    // Rename Profile
+    [ObservableProperty] private bool _isRenameProfileDialogOpen;
+    [ObservableProperty] private string _renameProfileName = string.Empty;
+    private ProfileDto? _renamingProfile;
+
     public IReadOnlyList<ProfileEntryTypeDto> EntryTypes { get; } =
         Enum.GetValues<ProfileEntryTypeDto>().ToList();
 
@@ -117,4 +122,24 @@ public partial class ProfilesViewModel : ObservableObject
 
     [RelayCommand]
     private void CloseAiProfileDialog() => IsAiProfileDialogOpen = false;
+
+    [RelayCommand]
+    private void OpenRenameProfileDialog(ProfileDto profile)
+    {
+        _renamingProfile = profile;
+        RenameProfileName = profile.Name;
+        IsRenameProfileDialogOpen = true;
+    }
+
+    [RelayCommand]
+    private async Task SaveRenameProfileAsync()
+    {
+        if (_renamingProfile == null || string.IsNullOrWhiteSpace(RenameProfileName)) return;
+        await _profileUseCase.UpdateProfileNameAsync(_renamingProfile.Id, RenameProfileName.Trim());
+        IsRenameProfileDialogOpen = false;
+        await LoadDataAsync();
+    }
+
+    [RelayCommand]
+    private void CloseRenameProfileDialog() => IsRenameProfileDialogOpen = false;
 }

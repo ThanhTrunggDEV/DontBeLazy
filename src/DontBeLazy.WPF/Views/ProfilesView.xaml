@@ -68,9 +68,33 @@
             </Border>
         </materialDesign:DialogHost.DialogContent>
 
-        <!-- Inner: Add Profile Dialog -->
-        <materialDesign:DialogHost IsOpen="{Binding IsAddProfileDialogOpen}"
-                                   DialogClosing="OnAddProfileDialogClosing">
+        <!-- Inner: Rename Profile Dialog -->
+        <materialDesign:DialogHost IsOpen="{Binding IsRenameProfileDialogOpen}"
+                                   DialogClosing="OnRenameProfileDialogClosing">
+            <materialDesign:DialogHost.DialogContent>
+                <Border Padding="36" MinWidth="360" Background="#1E1E3F" CornerRadius="16">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,24">
+                            <materialDesign:PackIcon Kind="PencilOutline" Width="28" Height="28"
+                                                     Foreground="#7C4DFF" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Đổi tên Profile" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <TextBox materialDesign:HintAssist.Hint="Tên mới *"
+                                 Text="{Binding RenameProfileName, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,28"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Content="Huỷ" Style="{StaticResource MaterialDesignFlatButton}"
+                                    Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="0,0,8,0"/>
+                            <Button Content="Lưu" Style="{StaticResource LargePrimaryButton}"
+                                    Command="{Binding SaveRenameProfileCommand}" Height="40"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </materialDesign:DialogHost.DialogContent>
+
+            <!-- Inner: Add Profile Dialog -->
+            <materialDesign:DialogHost IsOpen="{Binding IsAddProfileDialogOpen}"
+                                       DialogClosing="OnAddProfileDialogClosing">
             <materialDesign:DialogHost.DialogContent>
                 <Border Padding="36" MinWidth="400" Background="#1E1E3F" CornerRadius="16">
                     <StackPanel>
@@ -147,15 +171,23 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0">
                                         <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="SemiBold"/>
                                         <TextBlock Text="{Binding Entries.Count, StringFormat='{}{0} entries'}"
                                                    Foreground="#9E9E9E" FontSize="11"/>
                                     </StackPanel>
+                                    <!-- Rename -->
                                     <Button Grid.Column="1" Style="{StaticResource MaterialDesignIconButton}"
+                                            Command="{Binding DataContext.OpenRenameProfileDialogCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                            CommandParameter="{Binding}" ToolTip="Đổi tên">
+                                        <materialDesign:PackIcon Kind="PencilOutline" Width="16"/>
+                                    </Button>
+                                    <!-- Delete -->
+                                    <Button Grid.Column="2" Style="{StaticResource MaterialDesignIconButton}"
                                             Command="{Binding DataContext.DeleteProfileCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
-                                            CommandParameter="{Binding}">
+                                            CommandParameter="{Binding}" ToolTip="Xoá">
                                         <materialDesign:PackIcon Kind="TrashCanOutline" Width="16" Foreground="#F44336"/>
                                     </Button>
                                 </Grid>
@@ -261,6 +293,7 @@
                     </materialDesign:DialogHost>
                 </Grid>
             </Grid>
-        </materialDesign:DialogHost>
-    </materialDesign:DialogHost>
+        </materialDesign:DialogHost><!-- /AddProfile -->
+    </materialDesign:DialogHost><!-- /Rename -->
+</materialDesign:DialogHost><!-- /AI outer -->
 </UserControl>

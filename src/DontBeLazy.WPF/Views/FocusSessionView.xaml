@@ -75,19 +75,34 @@
                             <TextBlock Text="{Binding GuiltTripQuote}"
                                        FontSize="15" TextWrapping="Wrap"
                                        Foreground="#CCBBFF" TextAlignment="Center"
-                                       Margin="0,0,0,36" MaxWidth="400"/>
+                                       Margin="0,0,0,24" MaxWidth="400"/>
+                            <!-- Friction gate -->
+                            <Border Background="#1A0A0A" CornerRadius="10" Padding="16" Margin="0,0,0,20" MaxWidth="420">
+                                <StackPanel>
+                                    <TextBlock FontSize="12" Foreground="#FF6666" TextWrapping="Wrap" TextAlignment="Center" Margin="0,0,0,10">
+                                        <Run Text="Để tôi đi bỏ cuộc, hãy tự tay gõ cụm từ sau:"/>
+                                    </TextBlock>
+                                    <TextBlock Text="&quot;Tôi là kẻ lười biếng và tôi chấp nhận bỏ cuộc&quot;"
+                                               FontSize="12" FontStyle="Italic" Foreground="#FF9999"
+                                               TextAlignment="Center" TextWrapping="Wrap" Margin="0,0,0,12"/>
+                                    <TextBox Text="{Binding FrictionInput, UpdateSourceTrigger=PropertyChanged}"
+                                             materialDesign:HintAssist.Hint="Gõ câu trên..."
+                                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                             TextWrapping="Wrap" FontSize="13"/>
+                                </StackPanel>
+                            </Border>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <Button Command="{Binding ContinueSessionCommand}"
-                                        Style="{StaticResource LargeSuccessButton}"
-                                        Margin="0,0,16,0">
+                                        Style="{StaticResource LargeSuccessButton}" Margin="0,0,16,0">
                                     <StackPanel Orientation="Horizontal">
                                         <materialDesign:PackIcon Kind="ArmFlex" Width="20" Height="20"
                                                                  Margin="0,0,8,0" VerticalAlignment="Center"/>
                                         <TextBlock Text="Tiếp tục nào!" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </Button>
-                                <Button Content="Tôi đã thua..."
+                                <Button Content="Tôi chấp nhận bỏ cuộc"
                                         Command="{Binding ConfirmAbandonCommand}"
+                                        IsEnabled="{Binding CanConfirmAbandon}"
                                         Style="{StaticResource LargeDangerOutlineButton}"/>
                             </StackPanel>
                         </StackPanel>

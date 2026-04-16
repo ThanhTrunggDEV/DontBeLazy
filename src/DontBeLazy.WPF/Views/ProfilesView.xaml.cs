@@ -36,4 +36,10 @@ public partial class ProfilesView : UserControl
         if (DataContext is ProfilesViewModel vm)
             vm.IsAddEntryDialogOpen = false;
     }
+
+    private void OnRenameProfileDialogClosing(object sender, DialogClosingEventArgs e)
+    {
+        if (DataContext is ProfilesViewModel vm)
+            vm.IsRenameProfileDialogOpen = false;
+    }
 }

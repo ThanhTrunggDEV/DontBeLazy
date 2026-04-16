@@ -14,21 +14,35 @@ public partial class DashboardViewModel : ObservableObject
 
     [ObservableProperty] private ObservableCollection<FocusTaskDto> _tasks = new();
     [ObservableProperty] private ObservableCollection<ProfileDto> _profiles = new();
+
+    // ── Add Task ────────────────────────────────────────────────
+    [ObservableProperty] private bool _isAddDialogOpen;
     [ObservableProperty] private string _newTaskName = string.Empty;
     [ObservableProperty] private int _newTaskMinutes = 25;
     [ObservableProperty] private ProfileDto? _selectedProfile;
-    [ObservableProperty] private bool _isAddDialogOpen;
+    [ObservableProperty] private bool _newTaskIsRecurring;
+    [ObservableProperty] private string _newRecurringType = "Daily";   // Daily/Weekly/Custom
+    [ObservableProperty] private string _newWeekDays = string.Empty;   // e.g. "Mon,Wed,Fri"
+    [ObservableProperty] private int _newCustomDays = 2;
+
+    // ── Edit Task ────────────────────────────────────────────────
     [ObservableProperty] private bool _isEditDialogOpen;
     [ObservableProperty] private FocusTaskDto? _editingTask;
     [ObservableProperty] private string _editTaskName = string.Empty;
     [ObservableProperty] private int _editTaskMinutes = 25;
     [ObservableProperty] private ProfileDto? _editSelectedProfile;
+    [ObservableProperty] private bool _editTaskIsRecurring;
+    [ObservableProperty] private string _editRecurringType = "Daily";
+    [ObservableProperty] private string _editWeekDays = string.Empty;
+    [ObservableProperty] private int _editCustomDays = 2;
 
-    // AI
+    // ── AI ───────────────────────────────────────────────────────
     [ObservableProperty] private bool _isAiDialogOpen;
     [ObservableProperty] private bool _isAiLoading;
     [ObservableProperty] private string _aiDialogTitle = string.Empty;
     [ObservableProperty] private string _aiResultText = string.Empty;
+
+    public IReadOnlyList<string> RecurringTypes { get; } = ["Daily", "Weekly", "Custom"];
 
     public DashboardViewModel(IFocusTaskUseCase taskUseCase, IProfileUseCase profileUseCase)
     {
@@ -46,12 +60,17 @@ public partial class DashboardViewModel : ObservableObject
         Profiles = new ObservableCollection<ProfileDto>(profiles);
     }
 
+    // ── Add ──────────────────────────────────────────────────────
     [RelayCommand]
     private void OpenAddDialog()
     {
         NewTaskName = string.Empty;
         NewTaskMinutes = 25;
         SelectedProfile = null;
+        NewTaskIsRecurring = false;
+        NewRecurringType = "Daily";
+        NewWeekDays = string.Empty;
+        NewCustomDays = 2;
         IsAddDialogOpen = true;
     }
 
@@ -59,18 +78,35 @@ public partial class DashboardViewModel : ObservableObject
     private async Task AddTaskAsync()
     {
         if (string.IsNullOrWhiteSpace(NewTaskName)) return;
-        await _taskUseCase.CreateTaskAsync(NewTaskName, NewTaskMinutes, SelectedProfile?.Id);
+        var task = await _taskUseCase.CreateTaskAsync(NewTaskName, NewTaskMinutes, SelectedProfile?.Id);
+        if (NewTaskIsRecurring)
+        {
+            var config = NewRecurringType switch
+            {
+                "Weekly" => NewWeekDays,
+                "Custom" => NewCustomDays.ToString(),
+                _ => string.Empty
+            };
+            await _taskUseCase.SetTaskRecurringAsync(task.Id, NewRecurringType, config);
+        }
         IsAddDialogOpen = false;
         await LoadDataAsync();
     }
 
+    // ── Edit ─────────────────────────────────────────────────────
     [RelayCommand]
     private void OpenEditDialog(FocusTaskDto task)
     {
+        if (task.Status == TaskStatusDto.Active) return; // disabled per UC01
         EditingTask = task;
         EditTaskName = task.Name;
         EditTaskMinutes = task.ExpectedMinutes;
         EditSelectedProfile = Profiles.FirstOrDefault(p => p.Id == task.ProfileId);
+        // Reset recurring fields (not tracked in DTO currently — default to non-recurring)
+        EditTaskIsRecurring = false;
+        EditRecurringType = "Daily";
+        EditWeekDays = string.Empty;
+        EditCustomDays = 2;
         IsEditDialogOpen = true;
     }
 
@@ -79,31 +115,48 @@ public partial class DashboardViewModel : ObservableObject
     {
         if (EditingTask == null || string.IsNullOrWhiteSpace(EditTaskName)) return;
         await _taskUseCase.UpdateTaskAsync(EditingTask.Id, EditTaskName, EditTaskMinutes, EditSelectedProfile?.Id, null);
+        if (EditTaskIsRecurring)
+        {
+            var config = EditRecurringType switch
+            {
+                "Weekly" => EditWeekDays,
+                "Custom" => EditCustomDays.ToString(),
+                _ => string.Empty
+            };
+            await _taskUseCase.SetTaskRecurringAsync(EditingTask.Id, EditRecurringType, config);
+        }
         IsEditDialogOpen = false;
         await LoadDataAsync();
     }
 
+    // ── Delete ───────────────────────────────────────────────────
     [RelayCommand]
     private async Task DeleteTaskAsync(FocusTaskDto task)
     {
+        if (task.Status == TaskStatusDto.Active) return;
         await _taskUseCase.DeleteTaskAsync(task.Id);
         await LoadDataAsync();
     }
 
+    // ── Status changes ───────────────────────────────────────────
     [RelayCommand]
-    private async Task MarkDoneAsync(FocusTaskDto task)
+    private async Task ToggleDoneAsync(FocusTaskDto task)
     {
-        await _taskUseCase.ChangeTaskStatusAsync(task.Id, TaskStatusDto.Done);
+        var newStatus = task.Status == TaskStatusDto.Done
+            ? TaskStatusDto.Pending
+            : TaskStatusDto.Done;
+        await _taskUseCase.ChangeTaskStatusAsync(task.Id, newStatus);
         await LoadDataAsync();
     }
 
     [RelayCommand]
-    private async Task MarkAbandonedAsync(FocusTaskDto task)
+    private async Task RetryAbandonedAsync(FocusTaskDto task)
     {
-        await _taskUseCase.ChangeTaskStatusAsync(task.Id, TaskStatusDto.Abandoned);
+        await _taskUseCase.ChangeTaskStatusAsync(task.Id, TaskStatusDto.Pending);
         await LoadDataAsync();
     }
 
+    // ── AI ───────────────────────────────────────────────────────
     [RelayCommand]
     private async Task AiSuggestPriorityAsync()
     {
