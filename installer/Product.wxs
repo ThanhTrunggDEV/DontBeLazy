@@ -27,11 +27,15 @@
     <!-- Built-in UI with license step -->
     <ui:WixUI Id="WixUI_InstallDir" InstallDirectory="INSTALLFOLDER"/>
 
+    <Icon Id="AppIcon.ico" SourceFile="$(PublishDir)app.ico" />
+    <Property Id="ARPPRODUCTICON" Value="AppIcon.ico" />
+
     <!-- Features -->
     <Feature Id="Main" Title="Don't Be Lazy" Level="1">
       <ComponentGroupRef Id="AppFiles"/>
       <ComponentRef Id="AppShortcutDesktop"/>
       <ComponentRef Id="AppShortcutStartMenu"/>
+      <ComponentRef Id="AppIconComp"/>
     </Feature>
 
   </Package>
@@ -65,8 +69,13 @@
               KeyPath="yes"/>
       </Component>
 
-      <!-- App icon (used by shortcuts) -->
-      <!-- If you add an .ico later, reference it here -->
+      <!-- App icon (auto-published alongside exe) -->
+      <Component Id="AppIconComp" Guid="D4E5F6A7-B890-1234-CDEF-1234567890AB">
+        <File Id="AppIconFile"
+              Source="$(PublishDir)app.ico"
+              Name="app.ico"
+              KeyPath="yes"/>
+      </Component>
 
     </ComponentGroup>
   </Fragment>
@@ -80,7 +89,8 @@
                 Name="Don't Be Lazy"
                 Description="Stay focused. Don't be lazy."
                 Target="[INSTALLFOLDER]DontBeLazy.exe"
-                WorkingDirectory="INSTALLFOLDER"/>
+                WorkingDirectory="INSTALLFOLDER"
+                Icon="AppIcon.ico"/>
       <RemoveFolder Id="RemoveDesktopShortcut" Directory="DesktopFolder" On="uninstall"/>
       <RegistryValue Root="HKCU"
                      Key="Software\ThanhTrunggDEV\DontBeLazy"
@@ -98,7 +108,8 @@
                 Name="Don't Be Lazy"
                 Description="Stay focused. Don't be lazy."
                 Target="[INSTALLFOLDER]DontBeLazy.exe"
-                WorkingDirectory="INSTALLFOLDER"/>
+                WorkingDirectory="INSTALLFOLDER"
+                Icon="AppIcon.ico"/>
       <RemoveFolder Id="RemoveStartMenu" Directory="ProgramMenuSubFolder" On="uninstall"/>
       <RegistryValue Root="HKCU"
                      Key="Software\ThanhTrunggDEV\DontBeLazy"
