@@ -1,10 +1,12 @@
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using DontBeLazy.Domain.Entities;
 using DontBeLazy.Domain.ValueObjects;
 using DontBeLazy.Ports.DTOs;
 using DontBeLazy.Ports.Inbound;
 using DontBeLazy.Ports.Outbound.Repositories;
+using DontBeLazy.Ports.Outbound.Services;
 using DontBeLazy.UseCases.Mappers;
 
 namespace DontBeLazy.UseCases;
@@ -13,11 +15,16 @@ public class FocusTaskUseCase : IFocusTaskUseCase
 {
     private readonly ITaskRepository _taskRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IAiTaskAssistantPort _aiTaskAssistant;
 
-    public FocusTaskUseCase(ITaskRepository taskRepository, IUnitOfWork unitOfWork)
+    public FocusTaskUseCase(
+        ITaskRepository taskRepository,
+        IUnitOfWork unitOfWork,
+        IAiTaskAssistantPort aiTaskAssistant)
     {
         _taskRepository = taskRepository;
         _unitOfWork = unitOfWork;
+        _aiTaskAssistant = aiTaskAssistant;
     }
 
     public async Task<IReadOnlyCollection<FocusTaskDto>> GetAllTasksAsync()
@@ -97,5 +104,28 @@ public class FocusTaskUseCase : IFocusTaskUseCase
         task.SetPaused(isPaused);
         await _taskRepository.UpdateAsync(task);
         await _unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task<string> AiSuggestPriorityAsync()
+    {
+        var tasks = await _taskRepository.GetAllAsync();
+        var pendingTasks = tasks
+            .Where(t => t.Status == DontBeLazy.Domain.Enums.TaskStatus.Pending ||
+                        t.Status == DontBeLazy.Domain.Enums.TaskStatus.Active)
+            .Select(t => new { t.Name, EstimatedMinutes = t.ExpectedMinutes })
+            .ToList();
+
+        if (!pendingTasks.Any())
+            return "Không có công việc nào cần phân tích.";
+
+        var dump = JsonSerializer.Serialize(pendingTasks, new JsonSerializerOptions { WriteIndented = true });
+        return await _aiTaskAssistant.AnalyzeAndSuggestTaskPriorityAsync(dump);
+    }
+
+    public async Task<string> AiBreakdownTaskAsync(Guid taskId)
+    {
+        var task = await _taskRepository.GetByIdAsync(new TaskId(taskId));
+        if (task == null) throw new KeyNotFoundException($"Task {taskId} not found.");
+        return await _aiTaskAssistant.BreakdownTaskAsync(task.Name);
     }
 }

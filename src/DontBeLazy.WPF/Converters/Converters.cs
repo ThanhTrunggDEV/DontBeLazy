@@ -8,7 +8,11 @@ namespace DontBeLazy.WPF.Converters;
 public class BoolToVisibilityConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        => value is true ? Visibility.Visible : Visibility.Collapsed;
+    {
+        bool flag = value is true;
+        if (parameter is string p && p == "Inverse") flag = !flag;
+        return flag ? Visibility.Visible : Visibility.Collapsed;
+    }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         => value is Visibility.Visible;
@@ -16,6 +20,8 @@ public class BoolToVisibilityConverter : IValueConverter
 
 public class InverseBoolConverter : IValueConverter
 {
+    public static readonly InverseBoolConverter Instance = new();
+
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         => value is bool b ? !b : value;
 

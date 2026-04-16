@@ -21,6 +21,12 @@ public partial class ProfilesViewModel : ObservableObject
     [ObservableProperty] private ProfileEntryTypeDto _newEntryType = ProfileEntryTypeDto.Website;
     [ObservableProperty] private bool _isAddEntryDialogOpen;
 
+    // AI Smart Profile
+    [ObservableProperty] private bool _isAiProfileDialogOpen;
+    [ObservableProperty] private bool _isAiProfileLoading;
+    [ObservableProperty] private string _aiProfileIntent = string.Empty;
+    [ObservableProperty] private string _aiProfileResult = string.Empty;
+
     public IReadOnlyList<ProfileEntryTypeDto> EntryTypes { get; } =
         Enum.GetValues<ProfileEntryTypeDto>().ToList();
 
@@ -89,4 +95,26 @@ public partial class ProfilesViewModel : ObservableObject
         await _profileEntryUseCase.RemoveProfileEntryAsync(SelectedProfile.Id, entry.Id);
         await LoadDataAsync();
     }
+
+    [RelayCommand]
+    private void OpenAiProfileDialog()
+    {
+        AiProfileIntent = string.Empty;
+        AiProfileResult = string.Empty;
+        IsAiProfileDialogOpen = true;
+    }
+
+    [RelayCommand]
+    private async Task AiGenerateProfileAsync()
+    {
+        if (string.IsNullOrWhiteSpace(AiProfileIntent)) return;
+        IsAiProfileLoading = true;
+        AiProfileResult = string.Empty;
+        try { AiProfileResult = await _profileUseCase.AiGenerateProfileSuggestionAsync(AiProfileIntent); }
+        catch (Exception ex) { AiProfileResult = $"Lỗi: {ex.Message}"; }
+        finally { IsAiProfileLoading = false; }
+    }
+
+    [RelayCommand]
+    private void CloseAiProfileDialog() => IsAiProfileDialogOpen = false;
 }

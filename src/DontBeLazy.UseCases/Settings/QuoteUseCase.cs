@@ -7,6 +7,7 @@ using DontBeLazy.Domain.ValueObjects;
 using DontBeLazy.Ports.DTOs;
 using DontBeLazy.Ports.Inbound;
 using DontBeLazy.Ports.Outbound.Repositories;
+using DontBeLazy.Ports.Outbound.Services;
 using DontBeLazy.UseCases.Mappers;
 
 namespace DontBeLazy.UseCases.Settings;
@@ -15,11 +16,16 @@ public class QuoteUseCase : IQuoteUseCase
 {
     private readonly IQuoteRepository _quoteRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IAiGuiltTripPort _aiGuiltTrip;
 
-    public QuoteUseCase(IQuoteRepository quoteRepository, IUnitOfWork unitOfWork)
+    public QuoteUseCase(
+        IQuoteRepository quoteRepository,
+        IUnitOfWork unitOfWork,
+        IAiGuiltTripPort aiGuiltTrip)
     {
         _quoteRepository = quoteRepository;
         _unitOfWork = unitOfWork;
+        _aiGuiltTrip = aiGuiltTrip;
     }
 
     public async Task<IReadOnlyCollection<QuoteDto>> GetAllQuotesAsync()
@@ -34,6 +40,27 @@ public class QuoteUseCase : IQuoteUseCase
         if (!quotes.Any()) return null;
         var selected = quotes.ElementAt(new Random().Next(quotes.Count));
         return DtoMapper.ToDto(selected);
+    }
+
+    public async Task<string> GenerateAiGuiltTripAsync(string taskName, string language)
+    {
+        try
+        {
+            var quote = await _aiGuiltTrip.GenerateGuiltTripQuoteAsync(taskName, language);
+            if (!string.IsNullOrWhiteSpace(quote) && !quote.StartsWith("[AI MOCK]"))
+                return quote;
+        }
+        catch { /* fallback to DB */ }
+
+        // Fallback: pick random DB quote
+        var quotes = await _quoteRepository.GetByEventTypeAsync(
+            DontBeLazy.Domain.Enums.QuoteEventType.GiveUp, language);
+        if (quotes.Any())
+            return quotes.ElementAt(new Random().Next(quotes.Count)).Content;
+
+        return language == "vi"
+            ? $"Bạn chỉ cần cố thêm một chút nữa thôi! Đừng bỏ cuộc khi đang làm '{taskName}'."
+            : $"You're so close! Don't give up on '{taskName}' now.";
     }
 
     public async Task<QuoteDto> AddQuoteAsync(string content, string author, QuoteEventTypeDto type, string lang)

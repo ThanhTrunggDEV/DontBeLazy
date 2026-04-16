@@ -52,29 +52,43 @@
                 <Border Background="#1E1E3F" CornerRadius="20" Padding="52"
                         MaxWidth="520" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <StackPanel HorizontalAlignment="Center">
-                        <materialDesign:PackIcon Kind="EmoticonAngryOutline" Width="64" Height="64"
-                                                 HorizontalAlignment="Center" Foreground="#F44336"
-                                                 Margin="0,0,0,16"/>
-                        <TextBlock Text="Bỏ cuộc rồi sao?!"
-                                   FontSize="26" FontWeight="Bold"
-                                   HorizontalAlignment="Center" Margin="0,0,0,16"/>
-                        <TextBlock Text="{Binding GuiltTripQuote}"
-                                   FontSize="15" TextWrapping="Wrap"
-                                   Foreground="#CCBBFF" TextAlignment="Center"
-                                   Margin="0,0,0,36" MaxWidth="400"/>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <Button Command="{Binding ContinueSessionCommand}"
-                                    Style="{StaticResource LargeSuccessButton}"
-                                    Margin="0,0,16,0">
-                                <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="ArmFlex" Width="20" Height="20"
-                                                             Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Tiếp tục nào!" VerticalAlignment="Center"/>
-                                </StackPanel>
-                            </Button>
-                            <Button Content="Tôi đã thua..."
-                                    Command="{Binding ConfirmAbandonCommand}"
-                                    Style="{StaticResource LargeDangerOutlineButton}"/>
+                        <!-- Loading state -->
+                        <StackPanel HorizontalAlignment="Center"
+                                    Visibility="{Binding IsGuiltTripLoading, Converter={StaticResource BoolToVis}}">
+                            <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
+                                         Value="0" IsIndeterminate="True"
+                                         Width="56" Height="56" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Gemini AI đang soạn..." Foreground="#9E9E9E"
+                                       FontSize="14" HorizontalAlignment="Center" Margin="0,16,0,0"/>
+                        </StackPanel>
+
+                        <!-- Quote state -->
+                        <StackPanel HorizontalAlignment="Center"
+                                    Visibility="{Binding IsGuiltTripLoading, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}">
+                            <materialDesign:PackIcon Kind="EmoticonAngryOutline" Width="64" Height="64"
+                                                     HorizontalAlignment="Center" Foreground="#F44336"
+                                                     Margin="0,0,0,16"/>
+                            <TextBlock Text="Bỏ cuộc rồi sao?!"
+                                       FontSize="26" FontWeight="Bold"
+                                       HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                            <TextBlock Text="{Binding GuiltTripQuote}"
+                                       FontSize="15" TextWrapping="Wrap"
+                                       Foreground="#CCBBFF" TextAlignment="Center"
+                                       Margin="0,0,0,36" MaxWidth="400"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Button Command="{Binding ContinueSessionCommand}"
+                                        Style="{StaticResource LargeSuccessButton}"
+                                        Margin="0,0,16,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="ArmFlex" Width="20" Height="20"
+                                                                 Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Tiếp tục nào!" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button Content="Tôi đã thua..."
+                                        Command="{Binding ConfirmAbandonCommand}"
+                                        Style="{StaticResource LargeDangerOutlineButton}"/>
+                            </StackPanel>
                         </StackPanel>
                     </StackPanel>
                 </Border>

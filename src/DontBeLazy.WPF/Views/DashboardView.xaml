@@ -12,143 +12,198 @@
     </UserControl.Resources>
 
     <Grid>
-        <!-- Add Task Dialog -->
-        <materialDesign:DialogHost IsOpen="{Binding IsAddDialogOpen}" OverlayBackground="#CC000000">
+        <!-- AI Result Dialog -->
+        <materialDesign:DialogHost IsOpen="{Binding IsAiDialogOpen}" OverlayBackground="#CC000000">
             <materialDesign:DialogHost.DialogContent>
-                <Border Padding="36" MinWidth="440" Background="#1E1E3F" CornerRadius="16">
+                <Border Padding="36" MinWidth="480" MaxWidth="640" Background="#1E1E3F" CornerRadius="16">
                     <StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,24">
-                            <materialDesign:PackIcon Kind="PlaylistPlus" Width="28" Height="28"
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                            <materialDesign:PackIcon Kind="RobotOutline" Width="28" Height="28"
                                                      Foreground="#7C4DFF" Margin="0,0,12,0"
                                                      VerticalAlignment="Center"/>
-                            <TextBlock Text="Thêm công việc mới" FontSize="20" FontWeight="Bold"
+                            <TextBlock Text="{Binding AiDialogTitle}" FontSize="20" FontWeight="Bold"
                                        VerticalAlignment="Center"/>
                         </StackPanel>
-                        <TextBox materialDesign:HintAssist.Hint="Tên công việc *"
-                                 Text="{Binding NewTaskName, UpdateSourceTrigger=PropertyChanged}"
-                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                 Margin="0,0,0,16"/>
-                        <TextBox materialDesign:HintAssist.Hint="Thời gian ước tính (phút)"
-                                 Text="{Binding NewTaskMinutes}"
-                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                 Margin="0,0,0,16"/>
-                        <ComboBox materialDesign:HintAssist.Hint="Profile (tùy chọn)"
-                                  ItemsSource="{Binding Profiles}"
-                                  SelectedItem="{Binding SelectedProfile}"
-                                  DisplayMemberPath="Name"
-                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                                  Margin="0,0,0,28"/>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Content="Huỷ" Style="{StaticResource MaterialDesignFlatButton}"
-                                    Command="{Binding OpenAddDialogCommand}"
-                                    Margin="0,0,8,0"/>
-                            <Button Content="Thêm" Style="{StaticResource LargePrimaryButton}"
-                                    Command="{Binding AddTaskCommand}"
-                                    Height="40"/>
+
+                        <!-- Loading -->
+                        <StackPanel HorizontalAlignment="Center" Margin="0,16,0,24"
+                                    Visibility="{Binding IsAiLoading, Converter={StaticResource BoolToVis}}">
+                            <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
+                                         Value="0" IsIndeterminate="True" Width="40" Height="40"/>
+                            <TextBlock Text="Gemini AI đang phân tích..." Foreground="#9E9E9E"
+                                       FontSize="13" HorizontalAlignment="Center" Margin="0,12,0,0"/>
                         </StackPanel>
+
+                        <!-- Result -->
+                        <Border Background="#12121F" CornerRadius="10" Padding="16"
+                                Visibility="{Binding IsAiLoading, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}">
+                            <ScrollViewer MaxHeight="320" VerticalScrollBarVisibility="Auto">
+                                <TextBlock Text="{Binding AiResultText}" TextWrapping="Wrap"
+                                           FontSize="13" Foreground="#E0E0E0" FontFamily="Consolas"/>
+                            </ScrollViewer>
+                        </Border>
+
+                        <Button Content="Đóng" Style="{StaticResource MaterialDesignFlatButton}"
+                                Command="{Binding CloseAiDialogCommand}"
+                                HorizontalAlignment="Right" Margin="0,20,0,0"/>
                     </StackPanel>
                 </Border>
             </materialDesign:DialogHost.DialogContent>
 
-            <!-- Main Content -->
-            <Grid Margin="40,36,40,36">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <!-- Header -->
-                <Grid Grid.Row="0" Margin="0,0,0,28">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <materialDesign:PackIcon Kind="ClipboardTextOutline" Width="32" Height="32"
-                                                 Foreground="#7C4DFF" Margin="0,0,14,0"
-                                                 VerticalAlignment="Center"/>
+            <!-- Add Task Dialog -->
+            <materialDesign:DialogHost IsOpen="{Binding IsAddDialogOpen}" OverlayBackground="#CC000000">
+                <materialDesign:DialogHost.DialogContent>
+                    <Border Padding="36" MinWidth="440" Background="#1E1E3F" CornerRadius="16">
                         <StackPanel>
-                            <TextBlock Text="Công việc hôm nay" FontSize="26" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding Tasks.Count, StringFormat='{}{0} việc cần làm'}"
-                                       Foreground="#9E9E9E" FontSize="13" Margin="0,2,0,0"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,24">
+                                <materialDesign:PackIcon Kind="PlaylistPlus" Width="28" Height="28"
+                                                         Foreground="#7C4DFF" Margin="0,0,12,0"
+                                                         VerticalAlignment="Center"/>
+                                <TextBlock Text="Thêm công việc mới" FontSize="20" FontWeight="Bold"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <TextBox materialDesign:HintAssist.Hint="Tên công việc *"
+                                     Text="{Binding NewTaskName, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                     Margin="0,0,0,16"/>
+                            <TextBox materialDesign:HintAssist.Hint="Thời gian ước tính (phút)"
+                                     Text="{Binding NewTaskMinutes}"
+                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                     Margin="0,0,0,16"/>
+                            <ComboBox materialDesign:HintAssist.Hint="Profile (tùy chọn)"
+                                      ItemsSource="{Binding Profiles}"
+                                      SelectedItem="{Binding SelectedProfile}"
+                                      DisplayMemberPath="Name"
+                                      Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                                      Margin="0,0,0,28"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button Content="Huỷ" Style="{StaticResource MaterialDesignFlatButton}"
+                                        Command="{Binding OpenAddDialogCommand}" Margin="0,0,8,0"/>
+                                <Button Content="Thêm" Style="{StaticResource LargePrimaryButton}"
+                                        Command="{Binding AddTaskCommand}" Height="40"/>
+                            </StackPanel>
                         </StackPanel>
-                    </StackPanel>
-                </Grid>
+                    </Border>
+                </materialDesign:DialogHost.DialogContent>
 
-                <!-- Task List -->
-                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                    <ItemsControl ItemsSource="{Binding Tasks}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <materialDesign:Card Margin="0,0,0,10" Padding="0"
-                                                     UniformCornerRadius="12"
-                                                     Background="#1E1E3F">
-                                    <Grid Margin="20,16">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="8"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
+                <!-- Main Content -->
+                <Grid Margin="40,36,40,36">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                                        <!-- Status accent bar -->
-                                        <Rectangle Grid.Column="0" RadiusX="4" RadiusY="4" Margin="-20,-16,12,-16">
-                                            <Rectangle.Fill>
-                                                <SolidColorBrush Color="{Binding Status, Converter={StaticResource StatusToColor}}"/>
-                                            </Rectangle.Fill>
-                                        </Rectangle>
+                    <!-- Header -->
+                    <Grid Grid.Row="0" Margin="0,0,0,24">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <materialDesign:PackIcon Kind="ClipboardTextOutline" Width="32" Height="32"
+                                                     Foreground="#7C4DFF" Margin="0,0,14,0"
+                                                     VerticalAlignment="Center"/>
+                            <StackPanel>
+                                <TextBlock Text="Công việc hôm nay" FontSize="26" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding Tasks.Count, StringFormat='{}{0} việc cần làm'}"
+                                           Foreground="#9E9E9E" FontSize="13" Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </StackPanel>
 
-                                        <!-- Task info -->
-                                        <StackPanel Grid.Column="1">
-                                            <TextBlock Text="{Binding Name}" FontSize="15" FontWeight="SemiBold"/>
-                                            <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                                                <materialDesign:PackIcon Kind="ClockOutline" Width="14" Height="14"
-                                                                         Foreground="#9E9E9E" Margin="0,0,4,0"
-                                                                         VerticalAlignment="Center"/>
-                                                <TextBlock Text="{Binding ExpectedMinutes, StringFormat='{}{0} phút'}"
-                                                           Foreground="#9E9E9E" FontSize="12"
-                                                           VerticalAlignment="Center"/>
-                                                <Border Background="#7C4DFF22" CornerRadius="4" Padding="8,2" Margin="12,0,0,0">
-                                                    <TextBlock Text="{Binding Status, Converter={StaticResource StatusToLabel}}"
-                                                               FontSize="11" Foreground="#BCC0FF"/>
-                                                </Border>
+                        <!-- AI Suggest button -->
+                        <Button Command="{Binding AiSuggestPriorityCommand}"
+                                HorizontalAlignment="Right"
+                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                materialDesign:ButtonAssist.CornerRadius="10">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="RobotOutline" Width="18" Height="18"
+                                                         Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="AI Suggest Priority" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+
+                    <!-- Task List -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding Tasks}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <materialDesign:Card Margin="0,0,0,10" Padding="0"
+                                                         UniformCornerRadius="12"
+                                                         Background="#1E1E3F">
+                                        <Grid Margin="20,16">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="8"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Status accent bar -->
+                                            <Rectangle Grid.Column="0" RadiusX="4" RadiusY="4" Margin="-20,-16,12,-16">
+                                                <Rectangle.Fill>
+                                                    <SolidColorBrush Color="{Binding Status, Converter={StaticResource StatusToColor}}"/>
+                                                </Rectangle.Fill>
+                                            </Rectangle>
+
+                                            <!-- Task info -->
+                                            <StackPanel Grid.Column="1">
+                                                <TextBlock Text="{Binding Name}" FontSize="15" FontWeight="SemiBold"/>
+                                                <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                                    <materialDesign:PackIcon Kind="ClockOutline" Width="14" Height="14"
+                                                                             Foreground="#9E9E9E" Margin="0,0,4,0"
+                                                                             VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding ExpectedMinutes, StringFormat='{}{0} phút'}"
+                                                               Foreground="#9E9E9E" FontSize="12"
+                                                               VerticalAlignment="Center"/>
+                                                    <Border Background="#7C4DFF22" CornerRadius="4" Padding="8,2" Margin="12,0,0,0">
+                                                        <TextBlock Text="{Binding Status, Converter={StaticResource StatusToLabel}}"
+                                                                   FontSize="11" Foreground="#BCC0FF"/>
+                                                    </Border>
+                                                </StackPanel>
                                             </StackPanel>
-                                        </StackPanel>
 
-                                        <!-- Actions -->
-                                        <StackPanel Grid.Column="2" Orientation="Horizontal">
-                                            <Button Style="{StaticResource MaterialDesignIconButton}"
-                                                    Command="{Binding DataContext.MarkDoneCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                    CommandParameter="{Binding}"
-                                                    ToolTip="Đánh dấu hoàn thành">
-                                                <materialDesign:PackIcon Kind="CheckCircleOutline" Width="20" Height="20" Foreground="#4CAF50"/>
-                                            </Button>
-                                            <Button Style="{StaticResource MaterialDesignIconButton}"
-                                                    Command="{Binding DataContext.OpenEditDialogCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                    CommandParameter="{Binding}"
-                                                    ToolTip="Chỉnh sửa">
-                                                <materialDesign:PackIcon Kind="PencilOutline" Width="20" Height="20"/>
-                                            </Button>
-                                            <Button Style="{StaticResource MaterialDesignIconButton}"
-                                                    Command="{Binding DataContext.DeleteTaskCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                    CommandParameter="{Binding}"
-                                                    ToolTip="Xoá">
-                                                <materialDesign:PackIcon Kind="TrashCanOutline" Width="20" Height="20" Foreground="#F44336"/>
-                                            </Button>
-                                        </StackPanel>
-                                    </Grid>
-                                </materialDesign:Card>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
+                                            <!-- Actions -->
+                                            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                                <!-- AI Breakdown -->
+                                                <Button Style="{StaticResource MaterialDesignIconButton}"
+                                                        Command="{Binding DataContext.AiBreakdownTaskCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        ToolTip="AI Breakdown Task">
+                                                    <materialDesign:PackIcon Kind="RobotOutline" Width="18" Height="18" Foreground="#7C4DFF"/>
+                                                </Button>
+                                                <Button Style="{StaticResource MaterialDesignIconButton}"
+                                                        Command="{Binding DataContext.MarkDoneCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        ToolTip="Đánh dấu hoàn thành">
+                                                    <materialDesign:PackIcon Kind="CheckCircleOutline" Width="20" Height="20" Foreground="#4CAF50"/>
+                                                </Button>
+                                                <Button Style="{StaticResource MaterialDesignIconButton}"
+                                                        Command="{Binding DataContext.OpenEditDialogCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        ToolTip="Chỉnh sửa">
+                                                    <materialDesign:PackIcon Kind="PencilOutline" Width="20" Height="20"/>
+                                                </Button>
+                                                <Button Style="{StaticResource MaterialDesignIconButton}"
+                                                        Command="{Binding DataContext.DeleteTaskCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        ToolTip="Xoá">
+                                                    <materialDesign:PackIcon Kind="TrashCanOutline" Width="20" Height="20" Foreground="#F44336"/>
+                                                </Button>
+                                            </StackPanel>
+                                        </Grid>
+                                    </materialDesign:Card>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
 
-                <!-- FAB Add Button -->
-                <Button Grid.Row="1"
-                        Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
-                        Command="{Binding OpenAddDialogCommand}"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                        Margin="0,0,8,8"
-                        Width="56" Height="56"
-                        Background="#7C4DFF">
-                    <materialDesign:PackIcon Kind="Plus" Width="28" Height="28"/>
-                </Button>
-            </Grid>
+                    <!-- FAB Add Button -->
+                    <Button Grid.Row="1"
+                            Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
+                            Command="{Binding OpenAddDialogCommand}"
+                            HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                            Margin="0,0,8,8" Width="56" Height="56"
+                            Background="#7C4DFF">
+                        <materialDesign:PackIcon Kind="Plus" Width="28" Height="28"/>
+                    </Button>
+                </Grid>
+            </materialDesign:DialogHost>
         </materialDesign:DialogHost>
     </Grid>
 </UserControl>

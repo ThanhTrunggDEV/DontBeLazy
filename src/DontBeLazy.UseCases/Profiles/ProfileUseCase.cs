@@ -5,6 +5,7 @@ using DontBeLazy.Domain.ValueObjects;
 using DontBeLazy.Ports.DTOs;
 using DontBeLazy.Ports.Inbound;
 using DontBeLazy.Ports.Outbound.Repositories;
+using DontBeLazy.Ports.Outbound.Services;
 using DontBeLazy.UseCases.Mappers;
 
 namespace DontBeLazy.UseCases.Profiles;
@@ -13,11 +14,16 @@ public class ProfileUseCase : IProfileUseCase
 {
     private readonly IProfileRepository _profileRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IAiProfileAssistantPort _aiProfileAssistant;
 
-    public ProfileUseCase(IProfileRepository profileRepository, IUnitOfWork unitOfWork)
+    public ProfileUseCase(
+        IProfileRepository profileRepository,
+        IUnitOfWork unitOfWork,
+        IAiProfileAssistantPort aiProfileAssistant)
     {
         _profileRepository = profileRepository;
         _unitOfWork = unitOfWork;
+        _aiProfileAssistant = aiProfileAssistant;
     }
 
     public async Task<IReadOnlyCollection<ProfileDto>> GetAllProfilesAsync()
@@ -63,5 +69,10 @@ public class ProfileUseCase : IProfileUseCase
         if (profile == null) throw new KeyNotFoundException($"Profile {profileId} not found.");
         await _profileRepository.DeleteAsync(new ProfileId(profileId));
         await _unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task<string> AiGenerateProfileSuggestionAsync(string intent)
+    {
+        return await _aiProfileAssistant.GenerateSmartProfileAsync(intent);
     }
 }

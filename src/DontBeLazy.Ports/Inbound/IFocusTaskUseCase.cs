@@ -14,4 +14,6 @@ public interface IFocusTaskUseCase
     Task SetTaskRecurringAsync(Guid taskId, string recurringType, string config);
     Task UpdateTaskSortOrderAsync(Guid taskId, int newSortOrder);
     Task PauseTaskAsync(Guid taskId, bool isPaused);
+    Task<string> AiSuggestPriorityAsync();
+    Task<string> AiBreakdownTaskAsync(Guid taskId);
 }

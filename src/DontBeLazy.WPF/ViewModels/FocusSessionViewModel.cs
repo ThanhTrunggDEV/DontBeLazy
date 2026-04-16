@@ -30,6 +30,7 @@ public partial class FocusSessionViewModel : ObservableObject
     [ObservableProperty] private double _timerProgress;
     [ObservableProperty] private int _remainingSeconds;
     [ObservableProperty] private bool _isGuiltTripVisible;
+    [ObservableProperty] private bool _isGuiltTripLoading;
     [ObservableProperty] private string _guiltTripQuote = string.Empty;
     [ObservableProperty] private bool _isIntentionDialogOpen;
 
@@ -119,14 +120,30 @@ public partial class FocusSessionViewModel : ObservableObject
     [RelayCommand]
     private async Task AttemptStopAsync()
     {
-        var quote = await _quoteUseCase.GetQuoteForEventAsync(QuoteEventTypeDto.GiveUp, "vi");
-        GuiltTripQuote = quote?.Content
-            ?? $"Bạn chỉ còn {RemainingSeconds / 60} phút nữa là xong! Bạn thực sự muốn bỏ cuộc sao?";
+        _timer?.Stop();
+        IsGuiltTripLoading = true;
         IsGuiltTripVisible = true;
+        GuiltTripQuote = string.Empty;
+
+        try
+        {
+            var taskName = SelectedTask?.Name ?? "công việc của bạn";
+            GuiltTripQuote = await _quoteUseCase.GenerateAiGuiltTripAsync(taskName, "vi");
+        }
+        finally
+        {
+            IsGuiltTripLoading = false;
+        }
+
+        if (!IsGuiltTripVisible) _timer?.Start(); // user cancelled while loading
     }
 
     [RelayCommand]
-    private void ContinueSession() => IsGuiltTripVisible = false;
+    private void ContinueSession()
+    {
+        IsGuiltTripVisible = false;
+        _timer?.Start();
+    }
 
     [RelayCommand]
     private async Task ConfirmAbandonAsync()

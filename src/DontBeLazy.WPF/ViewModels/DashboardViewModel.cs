@@ -24,6 +24,12 @@ public partial class DashboardViewModel : ObservableObject
     [ObservableProperty] private int _editTaskMinutes = 25;
     [ObservableProperty] private ProfileDto? _editSelectedProfile;
 
+    // AI
+    [ObservableProperty] private bool _isAiDialogOpen;
+    [ObservableProperty] private bool _isAiLoading;
+    [ObservableProperty] private string _aiDialogTitle = string.Empty;
+    [ObservableProperty] private string _aiResultText = string.Empty;
+
     public DashboardViewModel(IFocusTaskUseCase taskUseCase, IProfileUseCase profileUseCase)
     {
         _taskUseCase = taskUseCase;
@@ -97,4 +103,31 @@ public partial class DashboardViewModel : ObservableObject
         await _taskUseCase.ChangeTaskStatusAsync(task.Id, TaskStatusDto.Abandoned);
         await LoadDataAsync();
     }
+
+    [RelayCommand]
+    private async Task AiSuggestPriorityAsync()
+    {
+        AiDialogTitle = "AI Suggest Priority";
+        AiResultText = string.Empty;
+        IsAiLoading = true;
+        IsAiDialogOpen = true;
+        try { AiResultText = await _taskUseCase.AiSuggestPriorityAsync(); }
+        catch (Exception ex) { AiResultText = $"Lỗi: {ex.Message}"; }
+        finally { IsAiLoading = false; }
+    }
+
+    [RelayCommand]
+    private async Task AiBreakdownTaskAsync(FocusTaskDto task)
+    {
+        AiDialogTitle = $"AI Breakdown: {task.Name}";
+        AiResultText = string.Empty;
+        IsAiLoading = true;
+        IsAiDialogOpen = true;
+        try { AiResultText = await _taskUseCase.AiBreakdownTaskAsync(task.Id); }
+        catch (Exception ex) { AiResultText = $"Lỗi: {ex.Message}"; }
+        finally { IsAiLoading = false; }
+    }
+
+    [RelayCommand]
+    private void CloseAiDialog() => IsAiDialogOpen = false;
 }

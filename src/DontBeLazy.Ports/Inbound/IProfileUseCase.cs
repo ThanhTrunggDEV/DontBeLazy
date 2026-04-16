@@ -12,4 +12,5 @@ public interface IProfileUseCase
     Task<ProfileDto> CreateProfileAsync(string name, bool isDefault);
     Task UpdateProfileNameAsync(Guid profileId, string newName);
     Task DeleteProfileAsync(Guid profileId);
+    Task<string> AiGenerateProfileSuggestionAsync(string intent);
 }
