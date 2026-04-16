@@ -26,12 +26,13 @@
 - **Luồng sự kiện chính — Thêm Task mới:**
   1. Người dùng chọn chức năng "Quản lý công việc" (hoặc nhập trực tiếp từ màn hình chính).
   2. Hệ thống hiển thị danh sách các task hiện có, **sắp xếp theo thứ tự tạo mới nhất ở trên** (mặc định). Người dùng có thể kéo thả (drag-and-drop) để sắp xếp lại — thứ tự này được lưu vào Local DB (trường `sort_order`) và giữ nguyên sau khi khởi động lại app.
-  3. Người dùng nhập tên công việc, thiết lập thời gian (VD: 60 phút) và **gán một bộ Whitelist Profile** cấu hình riêng cho Task này.
+  3. Người dùng nhập tên công việc, thiết lập thời gian (VD: 60 phút), chọn **Loại task** (One-time hoặc Recurring) và **gán một bộ Whitelist Profile** cấu hình riêng cho Task này.
   4. Người dùng bấm "Thêm".
   5. Hệ thống validate dữ liệu đầu vào (xem Validation Rules bên dưới), sau đó lưu kết nối (Task <-> Whitelist) vào Local DB và cập nhật hiển thị.
 - **Luồng thay thế — Sửa Task:**
   - Người dùng nhấp "Sửa" trên một task ở trạng thái `Pending`, `Done` hoặc `Abandoned`.
-  - Hệ thống mở form Sửa với các trường: **Tên task**, **Thời gian ước tính**, **Whitelist Profile được gán**. Tất cả đều có thể chỉnh sửa.
+  - Hệ thống mở form Sửa với các trường có thể chỉnh sửa: **Tên task**, **Thời gian ước tính**, **Whitelist Profile được gán**, **Loại task (One-time / Recurring)** và cấu hình chu kỳ nếu là Recurring.
+  - **Đổi type:** Khi đổi từ Recurring → One-time: chu kỳ lặp bị xóa, trạng thái task giữ nguyên. Khi đổi từ One-time → Recurring: hệ thống yêu cầu cấu hình chu kỳ (Daily / Weekly / Custom) như khi tạo mới.
   - Sau khi lưu, hệ thống cập nhật bản ghi trong Local DB mà không thay đổi trạng thái hiện tại của task.
 - **Luồng thay thế — Hoàn thành Task:**
   - Người dùng click checkbox "Hoàn thành". Hệ thống gạch ngang task và chuyển trạng thái sang `Done`.
@@ -45,7 +46,8 @@
   | `Active` | Đang được thực hiện trong phiên Focus hiện tại | ✅ Hiện — có badge "Đang Focus" |
   | `Done` | Đã được đánh dấu hoàn thành bởi người dùng | ✅ Hiện — gạch ngang, mờ đi |
   | `Abandoned` | Phiên bị hủy sớm; task **ở lại danh sách với badge "Đã bỏ"** cho đến khi người dùng tự restart | ✅ Hiện — badge màu cam "Đã bỏ cuộc" |
-  - `Abandoned` là **persistent state** — task không tự động về `Pending`. Người dùng phải chủ động bấm "Thử lại" để chuyển task về `Pending` và bắt đầu phiên mới.
+  - `Abandoned` là **persistent state** — task không tự động về `Pending`. Người dùng phải chủ động bấm "Thử lại" để chuyển task về `Pending`.
+  - **Ngoại lệ với Recurring Task:** Nếu recurring task đang ở trạng thái `Abandoned` khi đến ngày reset, hệ thống **ưu tiên reset về `Pending`** (recurring rule thắng persistent Abandoned). Badge "Đã bỏ cuộc" biến mất, task hiển thị lại bình thường.
   - Task ở trạng thái `Active` sẽ **disable** nút Xóa và nút Sửa trên UI.
   - Task chỉ được Xóa vĩnh viễn khi ở trạng thái `Pending`, `Done` hoặc `Abandoned`.
 - **Validation Rules — Tên Task:**
@@ -54,6 +56,7 @@
 - **Luồng ngoại lệ — Xóa task đang ở trạng thái `Active`:**
   - Hệ thống từ chối và hiển thị: *"Không thể xóa task đang trong phiên Focus. Hãy kết thúc hoặc hủy phiên hiện tại trước."*
 - **Hậu điều kiện:** Dữ liệu task, trạng thái và thứ tự sắp xếp được lưu trữ cục bộ trên máy.
+
 - **Loại Task (Task Type):**
   - Khi tạo hoặc sửa task, người dùng chọn một trong hai loại:
     - **One-time** (mặc định): Task thông thường, hoàn thành xong là xong.
@@ -62,16 +65,17 @@
 #### Cấu hình Recurring Task:
   | Loại lặp | Mô tả |
   |---|---|
-  | `Daily` | Reset về `Pending` mỗi ngày — dùng cho thói quen hàng ngày như học tiếng Anh, tập gym |
+  | `Daily` | Reset về `Pending` mỗi ngày |
   | `Weekly` | Chọn cụ thể các ngày trong tuần (VD: T2, T4, T6) — chỉ visible và `Pending` đúng ngày đã chọn |
-  | `Custom` | Tự đặt chu kỳ: sau mỗi X ngày |
+  | `Custom` | Tự đặt chu kỳ: sau mỗi X ngày kể từ `last_done_date`. Nếu chưa làm lần nào, tính từ `created_date`. |
 
 #### Logic reset Recurring Task:
   - Hệ thống dùng **lazy reset** — không cần background process chạy đêm. Kiểm tra khi app mở hoặc tab Tasks được focus.
-  - Điều kiện reset: `last_done_date < hôm nay` (Daily) hoặc hôm nay nằm trong danh sách ngày đã chọn (Weekly).
+  - Điều kiện reset: `last_done_date < hôm nay` (Daily) hoặc hôm nay nằm trong danh sách ngày đã chọn (Weekly) hoặc `today >= last_done_date + X` (Custom).
   - Khi reset: task về trạng thái `Pending`. **Chỉ hiện 1 instance** — không backfill nếu bỏ lỡ nhiều ngày.
   - **Không reset** nếu task đang ở trạng thái `Active`.
-  - Recurring task **không bao giờ vào `Done` vĩnh viễn** — sau khi Done, nó tự reset vào lần kiểm tra tiếp theo.
+  - **Recurring + Abandoned:** Nếu đến ngày reset mà task đang `Abandoned`, hệ thống reset về `Pending` bình thường (xem State Machine phía trên).
+  - **Mark Done Early trên Recurring Task:** Hệ thống ghi `last_done_date = hôm nay`, Streak cộng bình thường. Task **KHÔNG reset ngay lập tức** — chờ đến lần kiểm tra tiếp theo (mở app hôm sau hoặc khi đủ điều kiện chu kỳ) mới reset về `Pending`.
   - Xóa vĩnh viễn recurring task **không xóa lịch sử phiên** — Analytics vẫn giữ nguyên dữ liệu cũ.
 
 - **Luồng thay thế — Pause Recurring Task:**
@@ -107,6 +111,8 @@
   - Người dùng có thể dùng nút **"Browse..."** để chọn file `.exe` — hệ thống tự điền cả path và process name.
 - **Giới hạn entries:**
   - Mỗi Profile tối đa **50 entries** (website + app cộng lại). Nếu vượt quá, nút "Thêm" bị disable và hiển thị: *"Profile đã đạt giới hạn 50 mục."*
+- **Validation Rules — Tên Profile:**
+  - Không được để trống. Độ dài tối đa: **100 ký tự**.
 - **Luồng ngoại lệ — URL không hợp lệ:**
   - Nếu nhập sai format hoặc thiếu TLD, hệ thống highlight đỏ ô input và hiển thị gợi ý cú pháp đúng.
 - **Luồng ngoại lệ — Trùng tên Profile:**
@@ -123,13 +129,14 @@
   - Default Profile hiển thị badge **"Mặc định"** trên UI để nhắc nhở người dùng chưa cấu hình Whitelist.
 - **Luồng thay thế — Import/Export Profile:**
   - Người dùng vào Settings → **"Whitelist Profiles"** → Bấm **"Export"** để xuất toàn bộ danh sách Profiles ra file `.json`.
-  - Người dùng bấm **"Import"** để nạp lại file `.json` đã export → hệ thống merge với danh sách hiện có (Profile trùng tên sẽ được hỏi: Ghi đè / Bỏ qua).
+  - Người dùng bấm **"Import"** để nạp lại file `.json` đã export → hệ thống merge với danh sách hiện có.
+  - **Conflict resolution khi import:** Nếu Profile trong file trùng tên với Profile đang có, hệ thống hỏi từng trường hợp: **Ghi đè** (xóa toàn bộ entries cũ của Profile đó, thay bằng entries từ file) / **Bỏ qua** (giữ nguyên Profile cũ, bỏ Profile trong file).
   - Dùng cho mục đích backup hoặc khôi phục sau khi cài lại app.
 
 ### UC03: Bắt đầu phiên tập trung (Focus Mode)
 - **Tác nhân:** Người dùng
 - **Mô tả:** Kích hoạt quá trình tính thời gian và hệ thống sẽ tự động bật khiên chắn Block mọi app/web nằm ngoài Whitelist.
-- **Tiền điều kiện:** Phải có ít nhất 1 task ở trạng thái `Pending` hoặc `Abandoned` (đã bấm "Thử lại") trong danh sách.
+- **Tiền điều kiện:** Phải có ít nhất 1 task ở trạng thái `Pending` hoặc `Abandoned` (đã bấm "Thử lại") trong danh sách. Nếu danh sách trống (VD: tất cả Weekly task hôm nay không phải ngày của chúng), màn hình hiển thị Empty State với gợi ý: *"Không có task khả dụng hôm nay. Thêm task mới hoặc kiểm tra lại lịch Recurring."*
 - **Luồng sự kiện chính:**
   1. Tại màn hình chính, người dùng chọn task cần thực hiện.
   2. Hệ thống áp dụng trick **"Lời hứa chủ động"**: Yêu cầu đặt thời gian đếm ngược và tự tay gõ câu cam kết mục tiêu rồi mới được bấm "Start Focus".
@@ -142,6 +149,7 @@
   - Trong lúc đếm giờ, nếu người dùng đã xong việc trước khi hết giờ, có thể bấm nút **"Hoàn thành sớm ✓"** (khác với nút Stop/Give up).
   - Hệ thống hiện xác nhận: *"Bạn đã hoàn thành task trước thời hạn? Điều này sẽ kết thúc phiên và đánh dấu task là Done."* → Bấm "Xác nhận".
   - Hệ thống kết thúc phiên, ghi nhận thời gian thực tế đã tập trung, mở khóa app/web, Task → `Done`, Streak được cộng bình thường.
+  - **Với Recurring Task:** Hệ thống ghi `last_done_date = hôm nay`. Task không reset ngay — chờ đến lần kiểm tra tiếp theo mới về `Pending`.
 - **Luồng thay thế — Nhiều phiên Focus cho 1 Task (Multi-Session):**
   - Một task `Pending` có thể được focus nhiều lần (VD: 3 phiên Pomodoro). Mỗi phiên tạo ra 1 bản ghi session riêng trong DB.
   - Analytics hiển thị tổng thời gian tập trung của **tất cả các phiên** gộp lại theo task/theo ngày.
@@ -149,7 +157,7 @@
 - **Luồng thay thế — Dừng sớm (Strict Mode Tắt — Kích hoạt Cản Bước Tâm Lý):**
   - Trong quá trình đếm giờ, người dùng nhấp vào nút "Stop/Give up".
   - Chức năng **Guilt-tripping** và **Loss Aversion** kích hoạt: Hệ thống hiện thông báo đỏ *"Bạn thực sự muốn vứt bỏ công sức và mất đi chuỗi Streak [X] ngày sao?"*.
-  - Chức năng **Tạo ma sát** kích hoạt: Yêu cầu người dùng tự gõ chính xác dòng chữ *"Tôi là kẻ lười biếng và tôi chấp nhận bỏ cuộc"* mới có thể bấm nút Tắt.
+  - Chức năng **Tạo ma sát** kích hoạt: Yêu cầu người dùng tự gõ chính xác chuỗi **(1)** *"Tôi là kẻ lười biếng và tôi chấp nhận bỏ cuộc"* mới có thể bấm nút Tắt. *(Lưu ý: Đây là chuỗi Friction riêng cho ngữ cảnh bỏ cuộc Focus — khác với chuỗi Friction tắt Strict Mode trong UC04).*
   - Sau khi gõ xong: hệ thống hủy phiên, mở khóa ứng dụng, Reset Streak về 0, Task chuyển sang trạng thái **`Abandoned`** (hiển thị badge cam trong danh sách).
 - **Luồng ngoại lệ — Strict Mode Bật:**
   - Nút "Stop" bị Disable hoặc ẩn hoàn toàn. Mọi cơ chế đóng/kill app bị từ chối.
@@ -163,6 +171,7 @@
   - Nếu app bị tắt đột ngột (không phải Strict Mode), checkpoint vẫn được ghi trong DB.
   - Khi app khởi động lại, nếu phát hiện checkpoint chưa kết thúc của phiên **không phải Strict**: hệ thống hiển thị: *"Có một phiên Focus chưa hoàn thành trước đó. Bạn muốn: **Khôi phục** hay **Bỏ qua** (xóa phiên đó)?"*
   - Nếu "Bỏ qua": phiên bị xóa, task về `Abandoned`. Nếu "Khôi phục": timer tiếp tục từ checkpoint cuối.
+  - **Với Recurring Task bị đưa về `Abandoned` do Orphan Session:** Vòng reset vẫn hoạt động bình thường — nếu đến ngày reset, task tự về `Pending` theo rule Recurring.
 - **Hậu điều kiện:** Lưu lại thời gian tập trung thực tế và trạng thái task cuối cùng vào Local DB.
 
 ### UC04: Quản lý cấu hình Strict Mode
@@ -185,7 +194,7 @@
   1. Người dùng toggle "Strict Mode" sang OFF.
   2. Hệ thống xác nhận 2 bước:
      - **Bước 1:** *"Bạn có chắc muốn tắt Strict Mode? Điều này sẽ cho phép bỏ cuộc dễ dàng hơn."* → Bấm "Tiếp tục".
-     - **Bước 2:** Tự tay gõ: *"Tôi chấp nhận giảm mức độ kỷ luật"* → Bấm "Xác nhận tắt".
+     - **Bước 2:** Tự tay gõ chuỗi **(2)** *"Tôi chấp nhận giảm mức độ kỷ luật"* → Bấm "Xác nhận tắt". *(Lưu ý: Đây là chuỗi Friction riêng cho ngữ cảnh tắt Strict Mode — khác với chuỗi Friction bỏ cuộc Focus trong UC03).*
   3. Hệ thống lưu `strict_mode = false`. Badge cảnh báo biến mất.
 
 #### Luồng ngoại lệ — Đang trong phiên Focus:
@@ -196,7 +205,7 @@
   - Khi ứng dụng khởi động lại sau crash/restart, hệ thống kiểm tra DB xem có checkpoint chưa kết thúc không.
   - Nếu tìm thấy checkpoint của phiên **Strict Mode** chưa hoàn thành:
     - Hệ thống **tự động kích hoạt lại chế độ chặn** ngay khi app load xong.
-    - Hiển thị banner: *"Phiên Strict Mode của bạn đã bị gián đoạn do máy tắt. Hệ thống đã khôi phục lại — còn [X] phút."*
+    - Hiển thị banner: *"Phiên Strict Mode của bạn đã bị gián đoạn do máy tắt. Hệ thống đã khôi phục lại — còn [X] phút (±30 giây do gián đoạn)."* *(Sai lệch tối đa 30 giây do khoảng cách giữa 2 checkpoint — người dùng được thông báo rõ.)*
     - Timer tiếp tục đếm ngược từ thời điểm checkpoint cuối cùng.
   - Nếu tìm thấy checkpoint của phiên **không Strict** chưa hoàn thành → xem UC03 luồng "Orphan Session".
 
@@ -204,6 +213,9 @@
 - **Tác nhân:** Người dùng
 - **Mô tả:** Xem lại lịch sử kỷ luật của bản thân để đánh giá hành trình, nhìn thấy tiến bộ và duy trì động lực.
 - **Tiền điều kiện:** Ứng dụng đang mở.
+- **Múi giờ & ranh giới ngày:**
+  - Tất cả thời gian lưu vào DB theo **Local Time của máy người dùng**.
+  - Ranh giới ngày là **00:00 Local Time**. Phiên tính theo **ngày bắt đầu** — phiên bắt đầu lúc 23:30 và kết thúc lúc 00:10 thuộc ngày 23:30.
 - **Luồng sự kiện chính:**
   1. Người dùng điều hướng tới tab "Thống kê" (Analytics/Dashboard).
   2. Hệ thống mặc định hiển thị dữ liệu của **7 ngày gần nhất**.
@@ -213,8 +225,11 @@
      - 🔥 **Streak Counter** — Chuỗi ngày liên tục có ít nhất 1 phiên hoàn thành. Hiển thị nổi bật ở đầu trang.
      - 🚫 **Số lần bị chặn** — Tổng số lần cố truy cập app/web nằm ngoài Whitelist.
      - ✅ **Tỷ lệ hoàn thành** — Số phiên hoàn thành / tổng số phiên đã bắt đầu (%).
+- **Recurring Task trong Analytics:**
+  - Mỗi phiên Focus của recurring task được lưu là **1 bản ghi riêng** theo ngày — không group tự động theo task name.
+  - Người dùng có thể dùng bộ lọc **"Theo task"** (chọn tên task từ dropdown) để xem tổng số phiên và tổng thời gian của 1 recurring task qua nhiều ngày.
 - **Logic tính Streak:**
-  - Mỗi ngày dương lịch có ít nhất 1 phiên Focus **hoàn thành** (kể cả "Hoàn thành sớm") → cộng 1 ngày vào Streak.
+  - Mỗi ngày dương lịch (theo Local Time) có ít nhất 1 phiên Focus **hoàn thành** (kể cả "Hoàn thành sớm") → cộng 1 ngày vào Streak.
   - Nếu không có phiên hoàn thành nào trong ngày hôm qua → Streak **reset về 0**.
   - Streak được cập nhật tự động sau mỗi phiên kết thúc.
 - **Luồng thay thế — Xóa lịch sử:**
@@ -239,7 +254,7 @@
 - **Tiền điều kiện:** Ứng dụng đang mở **và** tính năng Quote chưa bị tắt trong Settings.
 - **Luồng sự kiện chính (Tự động theo sự kiện):**
   - **Sự kiện 1 — Trước khi bắt đầu:** Ngay sau khi người dùng gõ xong câu cam kết mục tiêu, hệ thống hiển thị 1 quote ngắn tiếp thêm fuel: VD: *"The secret of getting ahead is getting started." — Mark Twain*.
-  - **Sự kiện 2 — Trong lúc tập trung (giữa phiên):** Khi đã trôi qua khoảng 50% thời gian **và** thời gian còn lại ≥ 2 phút, hệ thống hiện một toast nhỏ góc màn hình. Nếu user "Mark Done Early" trước mốc 50%, sự kiện 2 bị bỏ qua hoàn toàn — không fallback.
+  - **Sự kiện 2 — Trong lúc tập trung (giữa phiên):** Khi đã trôi qua khoảng 50% thời gian **và** thời gian còn lại ≥ 2 phút, hệ thống hiện một toast nhỏ góc màn hình. Toast **tự động biến mất sau 5 giây** mà không cần người dùng bấm tắt. Người dùng có thể click vào toast để dismiss ngay lập tức. Nếu user "Mark Done Early" trước mốc 50%, sự kiện 2 bị bỏ qua hoàn toàn — không fallback.
   - **Sự kiện 3 — Khi hoàn thành phiên:** Sau khi đồng hồ về 0 (hoặc Mark Done Early), cùng màn hình chúc mừng xuất hiện một câu quote ăn mừng chiến thắng: VD: *"Well done is better than well said." — Benjamin Franklin*.
   - **Sự kiện 4 — Khi người dùng định bỏ cuộc (Stop sớm):** Trong luồng "Tạo ma sát", trước khi hiện ô gõ tự nhận thua, hệ thống flash một quote đánh thẳng vào sự tự ái: VD: *"Push yourself, because no one else is going to do it for you."*.
 - **Luồng thay thế — Người dùng tự quản lý kho Quote:**
