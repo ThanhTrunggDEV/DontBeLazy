@@ -1,4 +1,4 @@
-﻿# Tài liệu Use Case (UC) - Dự án "Don't Be Lazy"
+# Tài liệu Use Case (UC) - Dự án "Don't Be Lazy"
 
 ## Danh sách Tác nhân (Actors)
 - **Người dùng (User):** Người trực tiếp thao tác trên ứng dụng cài đặt tại máy cá nhân. (Hệ thống không có Multi-role hay Admin do đây là Private Single-user App).
@@ -55,6 +55,11 @@
   - Độ dài tối đa: **200 ký tự** → nếu vượt quá, hệ thống highlight đỏ và hiển thị bộ đếm ký tự còn lại.
 - **Luồng ngoại lệ — Xóa task đang ở trạng thái `Active`:**
   - Hệ thống từ chối và hiển thị: *"Không thể xóa task đang trong phiên Focus. Hãy kết thúc hoặc hủy phiên hiện tại trước."*
+- **✨ [Phase 2 - AI Feature]: AI Phân rã công việc (Task Breakdown)**
+  - **Mô tả:** Vũ khí chống lại sự "Tê liệt vì quy mô" (Analysis Paralysis). Biến một cục đá tảng thành nhiều viên sỏi nhỏ để dễ bắt đầu hơn.
+  - **Hoạt động:** Tại form tạo Task, nếu user gõ một task quá bự (VD: *"Làm báo cáo khóa luận (240 phút)"*), có thể nhấp nút "✨ Nhờ AI chia nhỏ".
+  - **Kết quả:** Hệ thống gọi model AI để đề xuất một chuỗi các Pomodoro nhỏ: *1. Thu thập số liệu (60p) -> 2. Lập dàn ý (45p) -> 3. Viết nội dung (60p) -> 4. Format & Nộp (30p)*.
+  - Người dùng bấm "Áp dụng" → hệ thống tự động băm nhỏ và tạo thành các Task con nối tiếp nhau trong danh sách chờ.
 - **Hậu điều kiện:** Dữ liệu task, trạng thái và thứ tự sắp xếp được lưu trữ cục bộ trên máy.
 
 - **Loại Task (Task Type):**
@@ -134,6 +139,11 @@
   - Người dùng bấm **"Import"** để nạp lại file `.json` đã export → hệ thống merge với danh sách hiện có.
   - **Conflict resolution khi import:** Nếu Profile trong file trùng tên với Profile đang có, hệ thống hỏi từng trường hợp: **Ghi đè** (xóa toàn bộ entries cũ của Profile đó, thay bằng entries từ file) / **Bỏ qua** (giữ nguyên Profile cũ, bỏ Profile trong file).
   - Dùng cho mục đích backup hoặc khôi phục sau khi cài lại app.
+- **✨ [Phase 2 - AI Feature]: AI Sinh Profile (Smart Profile Generator)**
+  - **Mô tả:** Giảm ma sát lúc cấu hình hệ thống chặn, tránh việc người dùng lười gõ từng URL.
+  - **Hoạt động:** Nút "✨ AI Sinh Profile" có sẵn trong form thêm mới Profile. Người dùng nhập mục đích tập trung (VD: *"Profile cho việc Code React và quản trị DB"*).
+  - **Kết quả:** AI tự động phân tích và điền vào form một danh sách đề xuất URL (`localhost`, `react.dev`, `stackoverflow.com`, `github.com`) và App Process (`code`, `postman`, `dbeaver`).
+  - Người dùng kiểm tra, thêm bớt tùy ý rồi bấm "Lưu".
 
 ### UC03: Bắt đầu phiên tập trung (Focus Mode)
 - **Tác nhân:** Người dùng
