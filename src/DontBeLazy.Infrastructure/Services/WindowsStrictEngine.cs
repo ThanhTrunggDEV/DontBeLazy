@@ -20,6 +20,7 @@ public class WindowsStrictEngine : IStrictEnginePort, IDisposable
 
     private readonly string _hostsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "drivers", "etc", "hosts");
     private ManagementEventWatcher? _processStartWatcher;
+    private System.Threading.CancellationTokenSource? _pollingCts;
     
     // Core distracting domains
     private readonly string[] _distractingDomains = new[] {
@@ -149,6 +150,10 @@ public class WindowsStrictEngine : IStrictEnginePort, IDisposable
     {
         StopProcessWatcher(); // Ensure clean state
 
+        // Fallback polling loop (ensures app blocking works even if WMI is denied)
+        _pollingCts = new System.Threading.CancellationTokenSource();
+        _ = Task.Run(() => PollingLoop(_pollingCts.Token));
+
         try 
         {
             var query = new WqlEventQuery("SELECT * FROM Win32_ProcessStartTrace");
@@ -162,8 +167,25 @@ public class WindowsStrictEngine : IStrictEnginePort, IDisposable
         }
     }
 
+    private async Task PollingLoop(System.Threading.CancellationToken token)
+    {
+        while (!token.IsCancellationRequested)
+        {
+            SweepExistingDistractions();
+            try { await Task.Delay(2000, token); }
+            catch (TaskCanceledException) { break; }
+        }
+    }
+
     private void StopProcessWatcher()
     {
+        if (_pollingCts != null)
+        {
+            _pollingCts.Cancel();
+            _pollingCts.Dispose();
+            _pollingCts = null;
+        }
+
         if (_processStartWatcher != null)
         {
             _processStartWatcher.Stop();
