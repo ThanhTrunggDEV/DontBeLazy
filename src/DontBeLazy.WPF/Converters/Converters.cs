@@ -84,3 +84,21 @@ public class ProfileEntryTypeToIconConverter : IValueConverter
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         => throw new NotImplementedException();
 }
+
+/// <summary>Maps hours (0–4+) to a pixel bar height (4–120).</summary>
+public class HoursToHeightConverter : IValueConverter
+{
+    private const double MaxHours  = 4.0;
+    private const double MaxHeight = 120.0;
+    private const double MinHeight = 4.0;
+
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is double hours)
+            return Math.Max(MinHeight, Math.Min(MaxHeight, hours / MaxHours * MaxHeight));
+        return MinHeight;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}

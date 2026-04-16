@@ -103,13 +103,23 @@
                         <!-- Controls (session active) -->
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,32,0,0"
                                     Visibility="{Binding IsSessionActive, Converter={StaticResource BoolToVis}}">
+                            <!-- Pause button (shown when NOT paused) -->
                             <Button Command="{Binding PauseResumeCommand}"
                                     Style="{StaticResource MaterialDesignRaisedButton}"
                                     Width="56" Height="56" Padding="0"
                                     materialDesign:ButtonAssist.CornerRadius="28"
-                                    Background="#2D2D4E" Margin="0,0,16,0">
-                                <materialDesign:PackIcon Kind="{Binding IsPaused, Converter={StaticResource InverseBool}}"
-                                                         Width="24" Height="24"/>
+                                    Background="#2D2D4E" Margin="0,0,16,0"
+                                    Visibility="{Binding IsPaused, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}">
+                                <materialDesign:PackIcon Kind="Pause" Width="24" Height="24"/>
+                            </Button>
+                            <!-- Resume button (shown when paused) -->
+                            <Button Command="{Binding PauseResumeCommand}"
+                                    Style="{StaticResource MaterialDesignRaisedButton}"
+                                    Width="56" Height="56" Padding="0"
+                                    materialDesign:ButtonAssist.CornerRadius="28"
+                                    Background="#4CAF50" Margin="0,0,16,0"
+                                    Visibility="{Binding IsPaused, Converter={StaticResource BoolToVis}}">
+                                <materialDesign:PackIcon Kind="Play" Width="24" Height="24"/>
                             </Button>
                             <Button Command="{Binding AttemptStopCommand}"
                                     Style="{StaticResource MaterialDesignRaisedButton}"
@@ -123,12 +133,21 @@
                         <!-- Start button (session inactive) -->
                         <Button Content="🎯 Bắt đầu phiên"
                                 Command="{Binding OpenIntentionDialogCommand}"
-                                Style="{StaticResource MaterialDesignRaisedButton}"
                                 Background="#7C4DFF" BorderBrush="#7C4DFF"
                                 FontSize="16" Padding="40,14"
                                 materialDesign:ButtonAssist.CornerRadius="12"
-                                HorizontalAlignment="Center" Margin="0,32,0,0"
-                                Visibility="{Binding IsSessionActive, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}"/>
+                                HorizontalAlignment="Center" Margin="0,32,0,0">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsSessionActive}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
                     </StackPanel>
                 </Grid>
 
