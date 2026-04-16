@@ -13,6 +13,10 @@
     <AssemblyName>DontBeLazy</AssemblyName>
     <Product>Don't Be Lazy</Product>
     <Copyright>Copyright © 2025 ThanhTrunggDEV</Copyright>
+    <!-- App icon shown in taskbar, alt-tab, and exe file -->
+    <ApplicationIcon>app.ico</ApplicationIcon>
+    <!-- Manifest: requireAdministrator for DNS flush + process management -->
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <ItemGroup>

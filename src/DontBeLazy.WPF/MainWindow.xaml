@@ -5,6 +5,7 @@
         xmlns:vm="clr-namespace:DontBeLazy.WPF.ViewModels"
         xmlns:views="clr-namespace:DontBeLazy.WPF.Views"
         Title="Don't Be Lazy"
+        Icon="app.ico"
         Width="1100" Height="720"
         MinWidth="900" MinHeight="600"
         WindowStartupLocation="CenterScreen"
