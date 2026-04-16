@@ -57,7 +57,7 @@ Tầng hiển thị tương tác trực tiếp với Người dùng (User).
 - **Kiến trúc:** Sử dụng **MVVM (Model - View - ViewModel)** thông qua `CommunityToolkit.Mvvm`.
 - **Trách nhiệm:**
   - **View:** File `.xaml`, chịu trách nhiệm render nút bấm, biểu đồ, layout với `MaterialDesignThemes`.
-  - **ViewModel:** Định nghĩa bindings, Commands, và xử lý state UI. Gọi xuống hệ thống qua các **Inbound Ports** (UseCases) để gửi lệnh.
+  - **ViewModel:** Định nghĩa bindings (`ObservableObject`), Commands (`RelayCommand`), và xử lý state UI. Gọi xuống hệ thống qua các **Inbound Ports** (UseCases) để nhận dữ liệu, sau đó thực hiện mapping các Data Entities / DTOs thành dữ liệu hiển thị (UI Models) để không làm vấy bẩn tầng Domain.
   - **Dependency Injection (DI) Root:** Project này là điểm khởi chạy (Entrypoint). Nó cấu hình Microsoft DI container (`ServiceCollection`), mapping các Interfaces ở tầng `Ports` với các Concrete Classes ở tầng `Infrastructure` và `SqliteDataAccess`.
 - **Quy tắc:** Phụ thuộc vào TẤT CẢ các tầng còn lại (chỉ để cấu hình DI), nhưng logic code trong ViewModel chỉ được giao tiếp duy nhất thông qua tầng `Ports` và `Domain`.
 
@@ -96,7 +96,7 @@ Mũi tên `─>` thể hiện "Reference tới":
 
 Khi implement, dự án sẽ có cấu trúc vật lý tĩnh (các project .csproj) mapping 1-1 với thiết kế kiến trúc ở trên như sau:
 
-``text
+```text
 DontBeLazy/
 ├── DontBeLazy.slnx                     # Solution File
 ├── src/
@@ -139,4 +139,4 @@ DontBeLazy/
     ├── database_schema.md
     ├── ba_document.md
     └── use_cases.md
-``
+```
