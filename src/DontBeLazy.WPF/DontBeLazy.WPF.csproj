@@ -6,6 +6,13 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <!-- Version is injected by CI from git tag, e.g. 1.2.3 -->
+    <Version>0.1.0</Version>
+    <AssemblyVersion>$(Version)</AssemblyVersion>
+    <FileVersion>$(Version)</FileVersion>
+    <AssemblyName>DontBeLazy</AssemblyName>
+    <Product>Don't Be Lazy</Product>
+    <Copyright>Copyright © 2025 ThanhTrunggDEV</Copyright>
   </PropertyGroup>
 
   <ItemGroup>

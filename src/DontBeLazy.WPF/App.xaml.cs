@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using DontBeLazy.Infrastructure;
 using DontBeLazy.SqliteDataAccess;
 using DontBeLazy.UseCases;
+using DontBeLazy.WPF.Services;
 using DontBeLazy.WPF.ViewModels;
 using DontBeLazy.WPF.Views;
 using MaterialDesignThemes.Wpf;
@@ -43,6 +44,9 @@ public partial class App : Application
 
         var mainWindow = Services.GetRequiredService<MainWindow>();
         mainWindow.Show();
+
+        // Background update check — non-blocking, silent on failure
+        _ = Services.GetRequiredService<UpdateViewModel>().CheckForUpdateAsync();
     }
 
     private void ConfigureServices(IServiceCollection services)
@@ -59,6 +63,8 @@ public partial class App : Application
         services.AddTransient<FocusSessionViewModel>();
         services.AddTransient<AnalyticsViewModel>();
         services.AddTransient<SettingsViewModel>();
+        services.AddSingleton<UpdaterService>();
+        services.AddSingleton<UpdateViewModel>();
 
         // Register Views
         services.AddSingleton<MainWindow>();
