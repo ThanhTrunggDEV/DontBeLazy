@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/DontBeLazy.Domain.Tests/DontBeLazy.Domain.Tests.csproj" />
     <Project Path="src/DontBeLazy.Domain/DontBeLazy.Domain.csproj" />
     <Project Path="src/DontBeLazy.Infrastructure/DontBeLazy.Infrastructure.csproj" />
     <Project Path="src/DontBeLazy.Ports/DontBeLazy.Ports.csproj" />
