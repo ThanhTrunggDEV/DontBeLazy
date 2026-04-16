@@ -165,33 +165,40 @@
 
                     <ListBox ItemsSource="{Binding Profiles}"
                              SelectedItem="{Binding SelectedProfile}"
-                             Background="Transparent">
+                             Background="Transparent"
+                             HorizontalContentAlignment="Stretch"
+                             BorderThickness="0"
+                             Margin="0,0,-16,0" Padding="0,0,16,0">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <Grid Margin="0,4">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0">
-                                        <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="SemiBold"/>
-                                        <TextBlock Text="{Binding Entries.Count, StringFormat='{}{0} entries'}"
-                                                   Foreground="#9E9E9E" FontSize="11"/>
-                                    </StackPanel>
-                                    <!-- Rename -->
-                                    <Button Grid.Column="1" Style="{StaticResource MaterialDesignIconButton}"
-                                            Command="{Binding DataContext.OpenRenameProfileDialogCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
-                                            CommandParameter="{Binding}" ToolTip="Đổi tên">
-                                        <materialDesign:PackIcon Kind="PencilOutline" Width="16"/>
-                                    </Button>
-                                    <!-- Delete -->
-                                    <Button Grid.Column="2" Style="{StaticResource MaterialDesignIconButton}"
-                                            Command="{Binding DataContext.DeleteProfileCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
-                                            CommandParameter="{Binding}" ToolTip="Xoá">
-                                        <materialDesign:PackIcon Kind="TrashCanOutline" Width="16" Foreground="#F44336"/>
-                                    </Button>
-                                </Grid>
+                                <Border Padding="8,8">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Name}" FontSize="15" FontWeight="SemiBold"/>
+                                            <TextBlock Text="{Binding Entries.Count, StringFormat='{}{0} apps / websites'}"
+                                                       Foreground="#9E9E9E" FontSize="12" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                        <!-- Rename -->
+                                        <Button Grid.Column="1" Style="{StaticResource MaterialDesignIconButton}"
+                                                Width="32" Height="32" Padding="4"
+                                                Command="{Binding DataContext.OpenRenameProfileDialogCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                                CommandParameter="{Binding}" ToolTip="Đổi tên" Margin="0,0,4,0">
+                                            <materialDesign:PackIcon Kind="PencilOutline" Width="18" Height="18" Foreground="#7C4DFF"/>
+                                        </Button>
+                                        <!-- Delete -->
+                                        <Button Grid.Column="2" Style="{StaticResource MaterialDesignIconButton}"
+                                                Width="32" Height="32" Padding="4"
+                                                Command="{Binding DataContext.DeleteProfileCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                                CommandParameter="{Binding}" ToolTip="Xoá">
+                                            <materialDesign:PackIcon Kind="TrashCanOutline" Width="18" Height="18" Foreground="#F44336"/>
+                                        </Button>
+                                    </Grid>
+                                </Border>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
