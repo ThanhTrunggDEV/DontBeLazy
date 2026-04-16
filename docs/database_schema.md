@@ -15,7 +15,7 @@ Chỉ có duy nhất 1 bản ghi (Id = 1). Lưu trữ các tham số hệ thốn
 
 | Cột | Kiểu dữ liệu | Ràng buộc / Ý nghĩa |
 |---|---|---|
-| `Id` | INTEGER | PK, Luôn bằng 1. |
+| `Id` | VARCHAR(36) | PK, Dạng GUID. |
 | `GlobalStrictMode` | BOOLEAN | NOT NULL. Mặc định `false`. Tác động lên toàn bộ phiên Focus khi Per-Task không override. (UC04) |
 | `EnableQuotes` | BOOLEAN | NOT NULL. Mặc định `true`. Khi `false`, tắt toàn bộ hệ thống Quote ở mọi sự kiện. (UC06) |
 | `QuoteLanguage` | VARCHAR(10) | NOT NULL. `vi` hoặc `en`. Ngôn ngữ mặc định của câu quote. (UC06) |
@@ -28,7 +28,7 @@ Chỉ có duy nhất 1 bản ghi (Id = 1). Lưu trữ các tham số hệ thốn
 
 | Cột | Kiểu dữ liệu | Ràng buộc / Ý nghĩa |
 |---|---|---|
-| `Id` | INTEGER | PK, AUTOINCREMENT |
+| `Id` | VARCHAR(36) | PK, Guid |
 | `Name` | VARCHAR(100) | NOT NULL, **UNIQUE**. Tên Profile do User tự đặt. (UC02 — Trùng tên bị từ chối) |
 | `IsDefault` | BOOLEAN | NOT NULL. Mặc định `false`. Chỉ duy nhất 1 Profile có `IsDefault = true`. Không thể xóa Profile này. (UC02 — Default Profile) |
 | `CreatedAt` | DATETIME | NOT NULL. Thời gian tạo. |
@@ -41,8 +41,8 @@ Lưu chi tiết các URLs và App entries thuộc về một Profile. Tối đa 
 
 | Cột | Kiểu dữ liệu | Ràng buộc / Ý nghĩa |
 |---|---|---|
-| `Id` | INTEGER | PK, AUTOINCREMENT |
-| `ProfileId` | INTEGER | FK -> `Profiles(Id)`. *ON DELETE CASCADE*. |
+| `Id` | VARCHAR(36) | PK, Guid |
+| `ProfileId` | VARCHAR(36) | FK -> `Profiles(Id)`. *ON DELETE CASCADE*. |
 | `Type` | VARCHAR(20) | NOT NULL. Enum: `Website`, `App`. |
 | `Value` | VARCHAR(500) | NOT NULL. Website: domain trần (VD: `github.com`). App: process name (VD: `code`). |
 | `ExePath` | VARCHAR(1000) | NULLABLE. Chỉ dùng cho `Type = App`. Đường dẫn file `.exe` đầy đủ (VD: `C:\Program Files\Code\code.exe`). Được điền tự động khi user dùng nút "Browse...". (UC02 — App Rules) |
@@ -60,10 +60,10 @@ Bảng cốt lõi quản lý hệ thống trạng thái và vòng đời của c
 
 | Cột | Kiểu dữ liệu | Ràng buộc / Ý nghĩa |
 |---|---|---|
-| `Id` | INTEGER | PK, AUTOINCREMENT |
+| `Id` | VARCHAR(36) | PK, Guid |
 | `Name` | VARCHAR(200) | NOT NULL. Tên công việc. (UC01 — Validation: không trống, tối đa 200 ký tự) |
 | `ExpectedMinutes` | INTEGER | NOT NULL. Phút đếm ngược dự kiến (1 - 240). (UC03 — Validation thời gian) |
-| `ProfileId` | INTEGER | NULLABLE. FK -> `Profiles(Id)`. *ON DELETE SET NULL*. Nếu NULL, app fallback về Default Profile. (UC02 — Xóa Profile đang gán) |
+| `ProfileId` | VARCHAR(36) | NULLABLE. FK -> `Profiles(Id)`. *ON DELETE SET NULL*. Nếu NULL, app fallback về Default Profile. |
 | `PerTaskStrictMode` | **BOOLEAN NULLABLE** | `1` (Bật), `0` (Tắt), `NULL` (Dùng Global Setting). C# mapping: `bool?`. (UC04 — Per-task > Global) |
 | `Status` | VARCHAR(20) | NOT NULL. Enum: `Pending`, `Active`, `Done`, `Abandoned`. Mặc định `Pending`. (UC01 — Task State Machine) |
 | `SortOrder` | INTEGER | NOT NULL. Thứ tự kéo thả hiển thị trên UI. Lưu vào DB, giữ nguyên sau restart. (UC01 — Drag-and-drop) |
@@ -87,8 +87,8 @@ Bảng cốt lõi quản lý hệ thống trạng thái và vòng đời của c
 
 | Cột | Kiểu dữ liệu | Ràng buộc / Ý nghĩa |
 |---|---|---|
-| `Id` | INTEGER | PK, AUTOINCREMENT. |
-| `TaskId` | INTEGER | NULLABLE. FK -> `Tasks(Id)`. *ON DELETE SET NULL*. Dùng để query history theo task nếu Task còn tồn tại. |
+| `Id` | VARCHAR(36) | PK, Guid. |
+| `TaskId` | VARCHAR(36) | NULLABLE. FK -> `Tasks(Id)`. *ON DELETE SET NULL*. Dùng để query history theo task nếu Task còn tồn tại. |
 | `SnapshotTaskName` | VARCHAR(200) | NOT NULL. Tên task lúc bắt đầu phiên. Đảm bảo UI Analytics không bị gãy khi Task bị đổi tên/xóa. |
 | `SnapshotProfileName` | VARCHAR(100) | NULLABLE. Tên Profile lúc bắt đầu phiên. Dùng khi Profile bị đổi tên/xóa sau đó. |
 | `FocusStartDate` | DATETIME | NOT NULL. Thời điểm bắt đầu phiên (Local Time). Cột này quyết định phiên thuộc ngày nào cho Analytics và Streak. (UC05 — Ranh giới ngày) |
@@ -114,8 +114,8 @@ Lưu bản sao cứng của Profile Rules tại thời điểm Start Focus. Dùn
 
 | Cột | Kiểu dữ liệu | Ràng buộc / Ý nghĩa |
 |---|---|---|
-| `Id` | INTEGER | PK, AUTOINCREMENT |
-| `SessionId` | INTEGER | FK -> `SessionHistory(Id)`. *ON DELETE CASCADE*. Mỗi Session có 1 bộ snapshot. |
+| `Id` | VARCHAR(36) | PK, Guid |
+| `SessionId` | VARCHAR(36) | FK -> `SessionHistory(Id)`. *ON DELETE CASCADE*. Mỗi Session có 1 bộ snapshot. |
 | `Type` | VARCHAR(20) | NOT NULL. Enum: `Website`, `App`. |
 | `Value` | VARCHAR(500) | NOT NULL. Domain trần hoặc process name. |
 | `ExePath` | VARCHAR(1000) | NULLABLE. Đường dẫn `.exe` (chỉ cho App). |
@@ -132,7 +132,7 @@ Dữ liệu seed sẵn hoặc do người dùng tạo thêm. Quote hard-coded fa
 
 | Cột | Kiểu dữ liệu | Ràng buộc / Ý nghĩa |
 |---|---|---|
-| `Id` | INTEGER | PK, AUTOINCREMENT |
+| `Id` | VARCHAR(36) | PK, Guid |
 | `Content` | VARCHAR(500) | NOT NULL. Nội dung câu nói. |
 | `Author` | VARCHAR(100) | NULLABLE. Tên tác giả (VD: *Benjamin Franklin*). User quote có thể không có tác giả. |
 | `EventType` | VARCHAR(20) | NOT NULL. Enum: `PreFocus`, `MidFocus`, `PostFocus`, `GiveUp`, `Random`. (UC06 — 4 sự kiện + Random) |

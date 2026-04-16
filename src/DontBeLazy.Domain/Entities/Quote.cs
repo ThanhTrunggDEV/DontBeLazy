@@ -1,10 +1,11 @@
 using DontBeLazy.Domain.Enums;
+using DontBeLazy.Domain.ValueObjects;
 
 namespace DontBeLazy.Domain.Entities;
 
 public class Quote
 {
-    public int Id { get; private set; }
+    public QuoteId Id { get; private set; }
     public string Content { get; private set; }
     public string? Author { get; private set; }
     public QuoteEventType EventType { get; private set; }
@@ -13,6 +14,7 @@ public class Quote
 
     public Quote(string content, string? author, QuoteEventType eventType, string language, bool isBundled)
     {
+        Id = QuoteId.New();
         Content = content;
         Author = author;
         EventType = eventType;

@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
+using DontBeLazy.Domain.ValueObjects;
 
 namespace DontBeLazy.Domain.Entities;
 
 public class Profile
 {
-    public int Id { get; private set; }
+    public ProfileId Id { get; private set; }
     public string Name { get; private set; }
     public bool IsDefault { get; private set; }
     public DateTime CreatedAt { get; private set; }
@@ -17,6 +18,7 @@ public class Profile
 
     public Profile(string name, bool isDefault)
     {
+        Id = ProfileId.New();
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Profile name cannot be empty.");
 

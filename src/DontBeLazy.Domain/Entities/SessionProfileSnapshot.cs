@@ -1,17 +1,19 @@
 using DontBeLazy.Domain.Enums;
+using DontBeLazy.Domain.ValueObjects;
 
 namespace DontBeLazy.Domain.Entities;
 
 public class SessionProfileSnapshot
 {
-    public int Id { get; private set; }
-    public int SessionId { get; private set; }
+    public SnapshotId Id { get; private set; }
+    public SessionId SessionId { get; private set; }
     public ProfileEntryType Type { get; private set; }
     public string Value { get; private set; }
     public string? ExePath { get; private set; }
 
-    public SessionProfileSnapshot(int sessionId, ProfileEntryType type, string value, string? exePath = null)
+    public SessionProfileSnapshot(SessionId sessionId, ProfileEntryType type, string value, string? exePath = null)
     {
+        Id = SnapshotId.New();
         SessionId = sessionId;
         Type = type;
         Value = value;

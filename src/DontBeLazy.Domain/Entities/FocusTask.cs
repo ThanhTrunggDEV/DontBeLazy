@@ -1,15 +1,16 @@
 using System;
 using DontBeLazy.Domain.Enums;
+using DontBeLazy.Domain.ValueObjects;
 using TaskStatus = DontBeLazy.Domain.Enums.TaskStatus;
 
 namespace DontBeLazy.Domain.Entities;
 
 public class FocusTask
 {
-    public int Id { get; private set; }
+    public TaskId Id { get; private set; }
     public string Name { get; private set; }
     public int ExpectedMinutes { get; private set; }
-    public int? ProfileId { get; private set; }
+    public ProfileId? ProfileId { get; private set; }
     public bool? PerTaskStrictMode { get; private set; }
     public TaskStatus Status { get; private set; } = TaskStatus.Pending;
     public int SortOrder { get; private set; }
@@ -25,6 +26,7 @@ public class FocusTask
 
     public FocusTask(string name, int expectedMinutes)
     {
+        Id = TaskId.New();
         if (string.IsNullOrWhiteSpace(name) || name.Length > 200)
             throw new ArgumentException("Task name must be between 1 and 200 characters.");
             
@@ -36,7 +38,7 @@ public class FocusTask
         CreatedAt = DateTime.Now;
     }
 
-    public void UpdateDetails(string name, int expectedMinutes, int? profileId, bool? perTaskStrictMode)
+    public void UpdateDetails(string name, int expectedMinutes, ProfileId? profileId, bool? perTaskStrictMode)
     {
         Name = name;
         ExpectedMinutes = expectedMinutes;

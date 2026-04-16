@@ -1,8 +1,10 @@
+using DontBeLazy.Domain.ValueObjects;
+
 namespace DontBeLazy.Domain.Entities;
 
 public class SystemSettings
 {
-    public int Id { get; private set; } = 1;
+    public SettingsId Id { get; private set; } = SettingsId.New();
     public bool GlobalStrictMode { get; private set; }
     public bool EnableQuotes { get; private set; }
     public string QuoteLanguage { get; private set; } = "vi";

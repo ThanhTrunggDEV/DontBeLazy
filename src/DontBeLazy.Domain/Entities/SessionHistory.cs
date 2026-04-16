@@ -1,12 +1,13 @@
 using System;
 using DontBeLazy.Domain.Enums;
+using DontBeLazy.Domain.ValueObjects;
 
 namespace DontBeLazy.Domain.Entities;
 
 public class SessionHistory
 {
-    public int Id { get; private set; }
-    public int? TaskId { get; private set; }
+    public SessionId Id { get; private set; }
+    public TaskId? TaskId { get; private set; }
     public string SnapshotTaskName { get; private set; }
     public string? SnapshotProfileName { get; private set; }
     
@@ -20,8 +21,9 @@ public class SessionHistory
     public int BlockedCount { get; private set; }
     public bool WasStrictMode { get; private set; }
 
-    public SessionHistory(int? taskId, string taskName, string? profileName, int expectedSeconds, bool wasStrictMode)
+    public SessionHistory(TaskId? taskId, string taskName, string? profileName, int expectedSeconds, bool wasStrictMode)
     {
+        Id = SessionId.New();
         TaskId = taskId;
         SnapshotTaskName = taskName;
         SnapshotProfileName = profileName;
