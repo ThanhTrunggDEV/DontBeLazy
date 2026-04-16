@@ -63,7 +63,7 @@
 
 ## 7. Đề xuất Công nghệ (Technical Recommendation)
 - **Frontend / Giao diện người dùng:** 
-  - **Tauri** (Rust + React/Vue/Svelte) kết hợp với TailwindCSS. Lý do: Ứng dụng build ra rất nhẹ, native và tối ưu hơn Electron rất nhiều.
+  - **C# WPF** (Rust + React/Vue/Svelte) kết hợp với TailwindCSS. Lý do: Ứng dụng build ra rất nhẹ, native và tối ưu hơn Electron rất nhiều.
   - (Hoặc) **Electron** nếu cấu hình team quen thuộc với NodeJS.
 - **Backend / Core Engine:** 
   - **Rust** hoặc **C++ / C#** để can thiệp sâu vào system API của hệ điều hành (quản lý Windows Registry, quản lý process, sửa file hosts cần quyền admin, hook vào service của OS để chống kill app).

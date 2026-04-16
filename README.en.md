@@ -99,7 +99,7 @@ Currently in **Planning & Design** phase. All BA documentation and Use Cases are
 **Roadmap:**
 - [x] Business Analysis document
 - [x] Use Case documentation (UC01–UC06)
-- [ ] Tech stack decision (leaning towards Tauri + Rust)
+- [ ] Tech stack decision (leaning towards C# WPF + Rust)
 - [ ] UI/UX wireframes
 - [ ] Core engine: system-level blocker
 - [ ] MVP release
