@@ -10,6 +10,8 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 
 ### Added / Feature
+- **File Logging System (Decorator Pattern)**: Triển khai hệ thống ghi log ra file theo ngày tại `%AppData%\DontBeLazy\logs\app-YYYY-MM-DD.log`. Sử dụng Decorator Design Pattern để bọc `IFocusSessionUseCase` và `IStrictEnginePort` — ghi lại mọi sự kiện quan trọng (bắt đầu phiên, hoàn thành, chặn web, lỗi hệ thống) mà không chạm vào logic lõi. Log tự động xoay vòng, giữ tối đa 7 ngày gần nhất.
+- **Settings → Mở file log**: Thêm nút "Mở file log" trong mục Quản lý Dữ liệu ở màn hình Cài đặt.
 - **AI Automation Pipeline**: Tự động trích xuất JSON từ kết quả của Gemini (cho AI Profile Generation và AI Task Breakdown), tự động khởi tạo dữ liệu trong DB thay vì chỉ trả về văn bản tĩnh.
 - **Data Management (Export CSV)**: Chức năng xuất dữ liệu lịch sử tập trung (Session History) ra file CSV ở thẻ Analytics.
 - **Data Management (Clear History)**: Bổ sung bộ lọc ngày để dọn dẹp và xoá lịch sử cũ ở màn hình Settings, giúp giải phóng lưu lượng lưu trữ.
@@ -17,7 +19,7 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Fixed & Changed
 - **State Loss / Session Bug (UI)**: Chuyển đổi toàn bộ vòng đời của tập ViewModels (FocusSession, Dashboard, Settings, etc.) sang `AddSingleton` thay vì `AddTransient` để tránh lỗi mất hiển thị thời gian tập trung (Session Data) khi chuyển đổi qua lại giữa các tab UI (Navigation).
 - **Silent Fail / Strict Engine**: Cập nhật cơ chế chặn Web (`hosts` modifier). Ở bản Release build, nếu Antivirus (ví dụ Windows Defender Tamper Protection) chặn app ghi file vì app chưa được ký (unsigned), hệ thống sẽ chủ động hiển thị MessageBox cảnh báo ngay lập tức thay vì lỗi ngầm (Silent Fail).  
-- **Crash Recovery**: Vá các lỗi crash tĩnh (silent crash) và quản lý ngoại lệ chưa xử lý qua `Dispatcher.UnhandledException`.
+- **Crash Recovery**: Vá các lỗi crash tĩnh (silent crash) và quản lý ngoại lệ chưa xử lý qua `Dispatcher.UnhandledException` bằng Logger.
 - **UI / SettingsView**: Sửa lỗi thẻ tag XAML bị sai lệch làm rối `DialogHost`, khắc phục lỗi không thể compile WPF.
 - **ViewModel Syntax & Null Checks**: Xử lý bug namespace `IFocusSessionUseCase`, thuộc tính `PerTaskStrictMode` không tồn tại, và chặn `NullReferenceException` cho Quote Author tại `DtoMapper`. Khép lại toàn bộ vòng lặp review kiến trúc mã nguồn.
 

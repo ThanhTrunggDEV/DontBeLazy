@@ -1,3 +1,6 @@
+using System;
+using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -80,6 +83,28 @@ public partial class SettingsViewModel : ObservableObject
         {
             await _analyticsUseCase.DeleteSessionHistoryAsync(HistoryStartDate, HistoryEndDate.AddDays(1).AddSeconds(-1));
             System.Windows.MessageBox.Show("Đã xoá lịch sử thành công!", "Thông báo", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+        }
+    }
+
+    [RelayCommand]
+    private void OpenLogFile()
+    {
+        var logDir = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "DontBeLazy", "logs");
+        var todayLog = Path.Combine(logDir, $"app-{DateTime.Now:yyyy-MM-dd}.log");
+
+        // Fall back to log folder if today's file doesn't exist yet
+        var target = File.Exists(todayLog) ? todayLog : logDir;
+        try
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(target) { UseShellExecute = true });
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show(
+                $"Không thể mở file log:\n{ex.Message}",
+                "Lỗi", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
         }
     }
 
