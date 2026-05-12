@@ -116,7 +116,15 @@ public class FocusSessionUseCase : IFocusSessionUseCase
         }
         finally
         {
-            await _processPort.ClearRestrictionsAsync();
+            var settings = await _settingsRepository.GetSettingsAsync();
+            if (settings.GlobalStrictMode)
+            {
+                await _processPort.ApplyProfileAsync(new System.Collections.Generic.List<SessionProfileSnapshot>());
+            }
+            else
+            {
+                await _processPort.ClearRestrictionsAsync();
+            }
             _sessionState.Clear();
         }
     }
@@ -169,5 +177,21 @@ public class FocusSessionUseCase : IFocusSessionUseCase
         session.CompleteSession(DontBeLazy.Domain.Enums.CompletionStatus.Abandoned);
         await _sessionRepository.UpdateAsync(session);
         await _unitOfWork.SaveChangesAsync();
+
+        var settings = await _settingsRepository.GetSettingsAsync();
+        if (settings.GlobalStrictMode)
+        {
+            await _processPort.ApplyProfileAsync(new System.Collections.Generic.List<SessionProfileSnapshot>());
+        }
+        else
+        {
+            await _processPort.ClearRestrictionsAsync();
+        }
+        // State is only cleared if Discard matches the active state, but typically Discard is used for incomplete zombies.
+        // If it matches the active session (should be rare), clear it.
+        if (_sessionState.CurrentSession?.Id == session.Id)
+        {
+            _sessionState.Clear();
+        }
     }
 }

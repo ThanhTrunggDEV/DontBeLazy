@@ -14,6 +14,7 @@ public partial class FocusSessionViewModel : ObservableObject
     private readonly IFocusTaskUseCase _taskUseCase;
     private readonly IProfileUseCase _profileUseCase;
     private readonly IQuoteUseCase _quoteUseCase;
+    private readonly ISystemSettingsUseCase _settingsUseCase;
 
     private DispatcherTimer? _timer;
     private SessionHistoryDto? _currentSession;
@@ -39,9 +40,9 @@ public partial class FocusSessionViewModel : ObservableObject
     [ObservableProperty] private string _guiltTripQuote = string.Empty;
     [ObservableProperty] private bool _isIntentionDialogOpen;
     [ObservableProperty] private string _frictionInput = string.Empty;
+    [ObservableProperty] private string _currentFrictionPhrase = "Tôi là kẻ lười biếng và tôi chấp nhận bỏ cuộc";
 
-    private const string FrictionPhrase = "Tôi là kẻ lười biếng và tôi chấp nhận bỏ cuộc";
-    public bool CanConfirmAbandon => FrictionInput.Trim() == FrictionPhrase;
+    public bool CanConfirmAbandon => FrictionInput.Trim() == CurrentFrictionPhrase;
 
     private int _totalSeconds;
     private bool _hasShownMidFocus;
@@ -78,12 +79,14 @@ public partial class FocusSessionViewModel : ObservableObject
         IFocusSessionUseCase sessionUseCase,
         IFocusTaskUseCase taskUseCase,
         IProfileUseCase profileUseCase,
-        IQuoteUseCase quoteUseCase)
+        IQuoteUseCase quoteUseCase,
+        ISystemSettingsUseCase settingsUseCase)
     {
         _sessionUseCase = sessionUseCase;
         _taskUseCase = taskUseCase;
         _profileUseCase = profileUseCase;
         _quoteUseCase = quoteUseCase;
+        _settingsUseCase = settingsUseCase;
     }
 
     public void LoadRestoredSession(SessionHistoryDto restoredSession)
@@ -206,6 +209,28 @@ public partial class FocusSessionViewModel : ObservableObject
 
         try
         {
+            try
+            {
+                var filePath = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Assets", "give_up_quotes.txt");
+                if (System.IO.File.Exists(filePath))
+                {
+                    var lines = System.IO.File.ReadAllLines(filePath)
+                        .Where(l => !string.IsNullOrWhiteSpace(l))
+                        .ToList();
+                        
+                    if (lines.Any())
+                    {
+                        var random = new System.Random();
+                        CurrentFrictionPhrase = lines[random.Next(lines.Count)].Trim();
+                    }
+                }
+            }
+            catch
+            {
+                // Fallback to default if reading fails
+                CurrentFrictionPhrase = "Tôi là kẻ lười biếng và tôi chấp nhận bỏ cuộc";
+            }
+
             var taskName = SelectedTask?.Name ?? "công việc của bạn";
             GuiltTripQuote = await _quoteUseCase.GenerateAiGuiltTripAsync(taskName, "vi");
         }
