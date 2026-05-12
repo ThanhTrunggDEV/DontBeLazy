@@ -11,6 +11,14 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.0.6] - 2026-05-12
+
+### Added / Feature
+- **Auto-Start & Auto-Resume**: Đảm bảo kỷ luật tuyệt đối! Trong quá trình đếm ngược (Focus Session), hệ thống sẽ tự động đăng ký khóa khởi động cùng Windows (Registry `Run`). Nếu máy tính bị tắt đột ngột (hoặc người dùng cố tình Shutdown) và bật lại, ứng dụng sẽ tự động khởi chạy và lập tức **khôi phục (Resume) phiên tập trung dang dở** mà không hiện hộp thoại hỏi ý kiến. Người dùng không thể lách luật bằng cách tắt máy tính. Khóa tự khởi động sẽ được dọn dẹp khi phiên hoàn thành hoặc bị huỷ bỏ đàng hoàng.
+- **Popular Games Blocklist**: Cập nhật danh sách chặn ứng dụng mặc định, bổ sung thêm hàng loạt Launcher và Game phổ biến nhất hiện nay để ngăn chặn phân tâm (Steam, Riot Client, Epic Games, Battle.net, LoL, Valorant, CS2, Dota 2, Roblox, Minecraft, GTA V, Genshin Impact...).
+
+---
+
 ## [1.0.5] - 2026-05-12
 
 ### Added / Feature
