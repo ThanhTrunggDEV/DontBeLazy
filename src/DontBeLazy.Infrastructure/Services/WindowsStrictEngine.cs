@@ -37,7 +37,25 @@ public class WindowsStrictEngine : IStrictEnginePort, IDisposable
         "reddit.com", "www.reddit.com",
         "netflix.com", "www.netflix.com",
         "twitch.tv", "www.twitch.tv",
-        "pinterest.com", "www.pinterest.com"
+        "pinterest.com", "www.pinterest.com",
+        // Comics / Manga / Novels (Vietnamese)
+        "nettruyen.com", "nettruyen.net", "nettruyen.vn", "nettruyenco.vn", "nettruyenbb.com", "nettruyenvn.com", "nettruyenww.com",
+        "truyenqq.com", "truyenqq.net", "truyenqq.vn", "truyenqqvip.com", "truyenqqpro.com", "truyenqqto.com",
+        "pops.vn", "mangatoon.mobi", "waka.vn",
+        "truyenfull.vn", "truyenfull.com", "sstruyen.com", "sstruyen.vn", "dtruyen.com",
+        "nhattruyen.com", "nhattruyen.vip", "saytruyen.net", "saytruyen.com",
+        "cuutruyen.net", "cmanga.com", "baotangtruyentranh.com", "blogtruyen.vn", "thichdoctruyen.vip",
+        "truyentranh.net", "webtruyen.com", "truyenmacom.com", "sangtacviet.pro", "sangtacviet.vip",
+        "truyenwiki.com", "truyenchu.vn", "truyencv.com", "truyennhuatv.com", "goctruyen.com",
+        "truyenhay.com", "truyenmoi.vn", "metruyencv.com", "doctruyen.com", "doctruyen3q.com",
+        "truyensieucap.com", "truyenchon.com", "truyengi.com", "truyenkinhdien.com", "truyencotich.vn", 
+        "truyenvip.com", "meotruyentranh.com", "truyentranhaudio.com",
+        // Text Novels (Vietnamese)
+        "wattpad.com", "truyenyy.com", "truyenyy.vip", "tangthuvien.vn", "wikidich.com", "wikidichvip.com", "enovel.vn",
+        // Movies / Streaming
+        "phimmoi.net", "motphim.net", "tvhay.org", "vieon.vn", "fptplay.vn", "galaxyplay.vn", "vtvgiaitri.vn",
+        // Forums & News (Vietnam)
+        "voz.vn", "tinhte.vn", "webtretho.com", "otofun.net", "kenh14.vn", "znews.vn", "vnexpress.net", "24h.com.vn"
     };
 
     // Core distracting apps (without .exe)
@@ -50,8 +68,11 @@ public class WindowsStrictEngine : IStrictEnginePort, IDisposable
         "leagueoflegends", "valorant", "cs2", "csgo", "dota2", "minecraftlauncher",
         "robloxplayerbeta", "roblox", "gta5", "gtavlauncher", "playgtav",
         "r5apex", "tslgame", "overwatch", "genshinimpact", "HonkaiImpact3rd",
+        "pubglite", "fifazf", "dnf", "wutheringwaves", "starrail",
+        // Emulators
+        "dnplayer", "nox", "HD-Player", "memu",
         // Media & Chat
-        "spotify", "zalo", "telegram", "whatsapp", "messenger", "skype", "viber", "netflix",
+        "spotify", "zalo", "telegram", "whatsapp", "messenger", "skype", "viber", "netflix", "itunes", "capcut",
         // System
         "taskmgr", "vctray"
     };
