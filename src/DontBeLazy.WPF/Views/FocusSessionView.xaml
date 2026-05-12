@@ -82,7 +82,7 @@
                                     <TextBlock FontSize="12" Foreground="#FF6666" TextWrapping="Wrap" TextAlignment="Center" Margin="0,0,0,10">
                                         <Run Text="Để tôi đi bỏ cuộc, hãy tự tay gõ cụm từ sau:"/>
                                     </TextBlock>
-                                    <TextBlock Text="&quot;Tôi là kẻ lười biếng và tôi chấp nhận bỏ cuộc&quot;"
+                                    <TextBlock Text="{Binding CurrentFrictionPhrase, StringFormat='&quot;{0}&quot;'}"
                                                FontSize="12" FontStyle="Italic" Foreground="#FF9999"
                                                TextAlignment="Center" TextWrapping="Wrap" Margin="0,0,0,12"/>
                                     <TextBox Text="{Binding FrictionInput, UpdateSourceTrigger=PropertyChanged}"

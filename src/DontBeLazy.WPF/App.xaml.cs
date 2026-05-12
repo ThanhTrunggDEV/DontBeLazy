@@ -84,6 +84,14 @@ public partial class App : Application
             var theme = helper.GetTheme();
             theme.SetBaseTheme(settings.DarkTheme ? MaterialDesignThemes.Wpf.BaseTheme.Dark : MaterialDesignThemes.Wpf.BaseTheme.Light);
             helper.SetTheme(theme);
+
+            // Apply global strict mode on startup if enabled and no session is being restored yet.
+            // Note: Restoring an incomplete session happens asynchronously later and will override this cleanly.
+            if (settings.GlobalStrictMode)
+            {
+                var processPort = scope.ServiceProvider.GetRequiredService<DontBeLazy.Ports.Outbound.Services.IStrictEnginePort>();
+                processPort.ApplyProfileAsync(new System.Collections.Generic.List<DontBeLazy.Domain.Entities.SessionProfileSnapshot>()).GetAwaiter().GetResult();
+            }
         }
 
         var mainWindow = Services.GetRequiredService<MainWindow>();

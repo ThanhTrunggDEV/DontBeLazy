@@ -11,6 +11,18 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.0.5] - 2026-05-12
+
+### Added / Feature
+- **Smart Web Redirection (Issue 22)**: Khởi tạo `LocalRedirectServer` (Mini HTTP Server sử dụng raw `TcpListener` trên port 80). Khi người dùng cố gắng truy cập các trang web HTTP nằm trong danh sách đen, hệ thống sẽ điều hướng họ sang một màn hình HTML cảnh báo ("MÀY ĐANG LƯỜI BIẾNG!") thay vì hiển thị giao diện báo lỗi kết nối khô khan. (Lưu ý: Đối với mạng HTTPS, trình duyệt sẽ chủ động văng lỗi chứng chỉ để bảo mật, trang web vẫn bị chặn nhưng không hiển thị giao diện HTML này).
+- **Minimize to Tray (Issue 18)**: Thiết kế lại hành vi đóng cửa sổ ứng dụng (Alt+F4 hoặc nút X). Nếu có một Focus Session đang chạy, ứng dụng sẽ thu nhỏ xuống thanh System Tray (Khay hệ thống) thay vì thoát hẳn, ngăn ngừa việc vô tình (hoặc cố ý) kết thúc ứng dụng để trốn tránh kỷ luật.
+
+### Fixed & Changed
+- **Global Strict Mode Bug Fix (Issue 25)**: Khắc phục lỗi chế độ Strict Mode Toàn Cục không tự động kích hoạt. Cập nhật vòng đời để khóa toàn bộ trang web/ứng dụng ngay khi App vừa khởi động và ngay khi người dùng vừa lưu Setting thay đổi `GlobalStrictMode` (chỉ áp dụng khi không có Session nào đang chạy). Đảm bảo chặn mọi lúc mọi nơi kể cả khi không đếm ngược.
+- **Give-up Friction (Issue 26)**: Chuyển đổi toàn bộ cấu hình các câu nói "chấp nhận bỏ cuộc" từ Database sang đọc tĩnh từ file ẩn (`Assets/give_up_quotes.txt`). Xóa bỏ hoàn toàn giao diện tự quản lý thêm/sửa các câu nói này trong Settings để tăng tối đa "sự bất tiện" và tước đoạt quyền tự kiểm soát của người dùng, làm tăng rào cản tâm lý khi muốn abandon session.
+
+---
+
 ## [1.0.4] - 2026-04-17
 
 ### Added / Feature

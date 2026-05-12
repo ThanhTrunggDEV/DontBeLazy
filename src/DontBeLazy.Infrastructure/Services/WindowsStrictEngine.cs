@@ -24,6 +24,7 @@ public class WindowsStrictEngine : IStrictEnginePort, IDisposable
     private readonly string _hostsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "drivers", "etc", "hosts");
     private ManagementEventWatcher? _processStartWatcher;
     private System.Threading.CancellationTokenSource? _pollingCts;
+    private LocalRedirectServer? _redirectServer;
     
     // Core distracting domains
     private readonly string[] _distractingDomains = new[] {
@@ -49,8 +50,9 @@ public class WindowsStrictEngine : IStrictEnginePort, IDisposable
 
     private List<string> _allowedAppNames = new();
 
-    public WindowsStrictEngine()
+    public WindowsStrictEngine(DontBeLazy.Ports.Outbound.Services.IAppLogger logger)
     {
+        _redirectServer = new LocalRedirectServer(logger);
         RestoreHosts(); // Self-heal: cleanup any leftover blocks from previous crashes
     }
 
@@ -63,6 +65,10 @@ public class WindowsStrictEngine : IStrictEnginePort, IDisposable
             .ToList();
 
         var domainsToBlock = _distractingDomains.Where(d => !allowedDomains.Any(a => d.Contains(a))).ToList();
+        if (domainsToBlock.Any())
+        {
+            _redirectServer?.Start();
+        }
         ApplyHostsBlocking(domainsToBlock);
 
         // 2. Process Applications
@@ -82,6 +88,7 @@ public class WindowsStrictEngine : IStrictEnginePort, IDisposable
     public Task ClearRestrictionsAsync()
     {
         StopProcessWatcher();
+        _redirectServer?.Stop();
         RestoreHosts();
         return Task.CompletedTask;
     }
@@ -291,6 +298,7 @@ public class WindowsStrictEngine : IStrictEnginePort, IDisposable
     public void Dispose()
     {
         StopProcessWatcher();
+        _redirectServer?.Dispose();
         RestoreHosts(); // Important: Cleanup when app crashes or closes
     }
 }
