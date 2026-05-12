@@ -11,6 +11,17 @@ và dự án tuân theo [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.0.7] - 2026-05-12
+
+### Added / Feature
+- **Ultimate Entertainment Blocklist**: Càn quét và khóa chặt mọi ngõ ngách giải trí phổ biến nhất Việt Nam vào danh sách cấm mặc định (Default Blacklist):
+  - **Phim & Video**: Chặn các trang xem phim lậu (`phimmoi.net`, `motphim.net`, `tvhay.org`) và nền tảng bản quyền (`vieon.vn`, `fptplay.vn`, `galaxyplay.vn`, `vtvgiaitri.vn`).
+  - **Truyện chữ & Manga**: Đưa hơn 30 tên miền đọc truyện nổi tiếng vào "sổ bìa đen" (`wattpad`, `truyenyy`, `wikidich`, `enovel`, `webtruyen`, `truyencv`, `tangthuvien`...). Đặc biệt quét sạch các biến thể tên miền chứa từ khóa "truyen" phổ biến.
+  - **Mạng xã hội & Diễn đàn**: Khóa các cộng đồng đông dân nhất (`voz.vn`, `tinhte.vn`, `webtretho`, `otofun`) và các trang tin tức giải trí (`kenh14`, `znews`, `vnexpress`, `24h`).
+  - **Game & Ứng dụng**: Bổ sung chặn các phần mềm giả lập (`ldplayer`, `nox`, `bluestacks`), các game hot (`FO4`, `Genshin`, `Honkai Star Rail`, `Wuthering Waves`) và app giải trí (`CapCut`, `iTunes`).
+
+---
+
 ## [1.0.6] - 2026-05-12
 
 ### Added / Feature
