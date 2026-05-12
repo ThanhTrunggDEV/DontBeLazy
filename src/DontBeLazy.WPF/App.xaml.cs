@@ -186,4 +186,20 @@ public partial class App : Application
         catch { }
         e.SetObserved();
     }
+
+    public static void SetAutoStart(bool enable)
+    {
+        try
+        {
+            using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
+            if (key != null)
+            {
+                if (enable)
+                    key.SetValue("DontBeLazy", System.Environment.ProcessPath ?? System.Reflection.Assembly.GetExecutingAssembly().Location);
+                else
+                    key.DeleteValue("DontBeLazy", false);
+            }
+        }
+        catch { }
+    }
 }

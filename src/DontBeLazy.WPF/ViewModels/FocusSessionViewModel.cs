@@ -147,6 +147,8 @@ public partial class FocusSessionViewModel : ObservableObject
         IsSessionActive = true;
         IsPaused = false;
         
+        App.SetAutoStart(true);
+
         _hasShownMidFocus = false;
         _hasShownPostFocus = false;
         var q = await _quoteUseCase.GetQuoteForEventAsync(QuoteEventTypeDto.PreFocus, "vi");
@@ -283,6 +285,9 @@ public partial class FocusSessionViewModel : ObservableObject
         IsSessionActive = false;
         IsPaused = false;
         _currentSession = null;
+        
+        App.SetAutoStart(false);
+
         RemainingSeconds = DurationMinutes * 60;
         TimerProgress = 0;
         UpdateTimerDisplay();

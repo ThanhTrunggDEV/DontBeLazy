@@ -58,23 +58,10 @@ public partial class MainViewModel : ObservableObject
         var orphanSession = await _focusSessionUseCase.GetIncompleteSessionAsync();
         if (orphanSession != null)
         {
-            var result = System.Windows.MessageBox.Show(
-                $"Hệ thống phát hiện phiên tập trung dang dở (Task: {orphanSession.TaskName}).\nBạn có muốn khôi phục và tiếp tục phiên này không?\n\n- Yes: Tiếp tục phiên.\n- No: Xoá bỏ báo cáo của phiên này.", 
-                "Phục hồi Phiên tập trung", 
-                System.Windows.MessageBoxButton.YesNo, 
-                System.Windows.MessageBoxImage.Question);
-
-            if (result == System.Windows.MessageBoxResult.Yes)
-            {
-                await _focusSessionUseCase.RestoreSessionAsync(orphanSession.Id);
-                // Update focus VM to reflect the restored session
-                _focusSessionVm.LoadRestoredSession(orphanSession);
-                NavigateTo("Focus");
-            }
-            else
-            {
-                await _focusSessionUseCase.DiscardSessionAsync(orphanSession.Id);
-            }
+            await _focusSessionUseCase.RestoreSessionAsync(orphanSession.Id);
+            // Update focus VM to reflect the restored session
+            _focusSessionVm.LoadRestoredSession(orphanSession);
+            NavigateTo("Focus");
         }
     }
 }
